@@ -11,7 +11,7 @@ using Reitit.Resources;
 
 namespace Reitit
 {
-    public partial class MainPage : PhoneApplicationPage
+    public partial class MainPage : MapFramePage
     {
         // Constructor
         public MainPage()
@@ -20,6 +20,16 @@ namespace Reitit
 
             // Sample code to localize the ApplicationBar
             //BuildLocalizedApplicationBar();
+        }
+
+        private void MinimizeButton_Click(object sender, RoutedEventArgs e)
+        {
+            Height = 600;
+        }
+
+        private void MaximizeButton_Click(object sender, RoutedEventArgs e)
+        {
+            Height = 800;
         }
 
         // Sample code for building a localized ApplicationBar

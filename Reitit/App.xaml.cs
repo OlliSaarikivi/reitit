@@ -7,22 +7,27 @@ using System.Windows.Navigation;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
 using Reitit.Resources;
+using Oat;
 
 namespace Reitit
 {
-    public partial class App : Application
+    public partial class App : Application, IOatApplication
     {
+        public IIndicatorManager IndicatorManager { get; private set; }
+
         /// <summary>
         /// Provides easy access to the root frame of the Phone Application.
         /// </summary>
         /// <returns>The root frame of the Phone Application.</returns>
-        public static PhoneApplicationFrame RootFrame { get; private set; }
+        public static MapFrame RootFrame { get; private set; }
 
         /// <summary>
         /// Constructor for the Application object.
         /// </summary>
         public App()
         {
+            IndicatorManager = new StackIndicatorManager();
+
             // Global handler for uncaught exceptions.
             UnhandledException += Application_UnhandledException;
 
@@ -114,7 +119,7 @@ namespace Reitit
 
             // Create the frame but don't set it as RootVisual yet; this allows the splash
             // screen to remain active until the application is ready to render.
-            RootFrame = new PhoneApplicationFrame();
+            RootFrame = new MapFrame();
             RootFrame.Navigated += CompleteInitializePhoneApplication;
 
             // Handle navigation failures
