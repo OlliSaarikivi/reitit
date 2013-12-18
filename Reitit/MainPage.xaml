@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
     xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
+    xmlns:maps="clr-namespace:Microsoft.Phone.Maps.Controls;assembly=Microsoft.Phone.Maps"
     xmlns:me="clr-namespace:Reitit"
     FontFamily="{StaticResource PhoneFontFamilyNormal}"
     FontSize="{StaticResource PhoneFontSizeNormal}"
@@ -44,8 +45,8 @@
 
         <!--ContentPanel - place additional content here-->
         <StackPanel x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
-            <Button x:Name="MinimizeButton" Click="MinimizeButton_Click"/>
-            <Button x:Name="MaximizeButton" Click="MaximizeButton_Click"/>
+            <Button Content="Minimize" x:Name="MinimizeButton" Click="MinimizeButton_Click"/>
+            <Button Content="Maximize" x:Name="MaximizeButton" Click="MaximizeButton_Click"/>
         </StackPanel>
 
         <!--Uncomment to see an alignment grid to help ensure your controls are

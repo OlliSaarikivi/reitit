@@ -14,13 +14,16 @@ namespace Reitit
 {
     public partial class MapFrame : PhoneApplicationFrame
     {
-        private TranslateTransform _mapTransform = new TranslateTransform();
+        private readonly int _screen_height;
 
         public Map Map { get; private set; }
 
         public MapFrame()
         {
             InitializeComponent();
+
+            var content = Application.Current.Host.Content;
+            _screen_height = (int)Math.Ceiling((double)(content.ActualHeight * content.ScaleFactor) / 100);
         }
 
         protected override void OnContentChanged(object oldContent, object newContent)
@@ -52,13 +55,21 @@ namespace Reitit
 
         private void UpdateMapTransform(double contentHeight)
         {
-            _mapTransform.Y = -contentHeight / 2;
+            if (Map != null)
+            {
+                Map.TransformCenter = new Point(0.5, (double)(_screen_height + contentHeight) / (2 * _screen_height));
+                Map.Center = Map.Center.DisplaceFrom(Map.Center);
+            }
         }
 
         private void Map_Loaded(object sender, RoutedEventArgs e)
         {
             Map = sender as Map;
-            Map.RenderTransform = _mapTransform;
+            var content = Content as FrameworkElement;
+            if (content != null)
+            {
+                UpdateMapTransform(content.ActualHeight);
+            }
         }
     }
 }

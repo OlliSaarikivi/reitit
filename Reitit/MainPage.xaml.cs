@@ -8,6 +8,7 @@ using System.Windows.Navigation;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
 using Reitit.Resources;
+using System.Device.Location;
 
 namespace Reitit
 {
@@ -24,12 +25,12 @@ namespace Reitit
 
         private void MinimizeButton_Click(object sender, RoutedEventArgs e)
         {
-            Height = 600;
+            Height = 300;
         }
 
         private void MaximizeButton_Click(object sender, RoutedEventArgs e)
         {
-            Height = 800;
+            Height = 750;
         }
 
         // Sample code for building a localized ApplicationBar

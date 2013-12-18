@@ -15,14 +15,14 @@
 			<Setter Property="HorizontalAlignment" Value="Stretch"/>
 			<Setter Property="VerticalAlignment" Value="Stretch"/>
 			<Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-			<Setter Property="VerticalContentAlignment" Value="Stretch"/>
+			<Setter Property="VerticalContentAlignment" Value="Bottom"/>
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="Padding" Value="0"/>
 			<Setter Property="Template">
 				<Setter.Value>
 					<ControlTemplate TargetType="phone:PhoneApplicationFrame">
 						<Grid x:Name="ClientArea" Background="{TemplateBinding Background}" HorizontalAlignment="{TemplateBinding HorizontalAlignment}" VerticalAlignment="{TemplateBinding VerticalAlignment}">
-                            <maps:Map Loaded="Map_Loaded" />
+                            <maps:Map Loaded="Map_Loaded"/>
 							<ContentPresenter ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
 						</Grid>
 					</ControlTemplate>
@@ -30,6 +30,7 @@
 			</Setter>
 		</Style>
 	</phone:PhoneApplicationFrame.Resources>
+
 	<phone:PhoneApplicationFrame.Style>
 		<StaticResource ResourceKey="MapFrameStyle"/>
 	</phone:PhoneApplicationFrame.Style>
