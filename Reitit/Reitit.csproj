@@ -97,25 +97,33 @@
     <Compile Include="MapFramePage.xaml.cs">
       <DependentUpon>MapFramePage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UserControls\AppLogo.xaml.cs">
-      <DependentUpon>AppLogo.xaml</DependentUpon>
-    </Compile>
     <Compile Include="UserControls\ColorizedIconControl.xaml.cs">
       <DependentUpon>ColorizedIconControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UserControls\DataSource.cs" />
+    <Compile Include="UserControls\DatePickerControl.xaml.cs">
+      <DependentUpon>DatePickerControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\DatePickerPopup.xaml.cs">
+      <DependentUpon>DatePickerPopup.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\DateTimeWrapper.cs" />
     <Compile Include="UserControls\LogoTitle.xaml.cs">
       <DependentUpon>LogoTitle.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UserControls\PlainLogo.xaml.cs">
-      <DependentUpon>PlainLogo.xaml</DependentUpon>
+    <Compile Include="UserControls\PickerControl.cs" />
+    <Compile Include="UserControls\PickerPopup.cs" />
+    <Compile Include="UserControls\TimePickerControl.xaml.cs">
+      <DependentUpon>TimePickerControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\TimePickerPopup.xaml.cs">
+      <DependentUpon>TimePickerPopup.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModels\RouteSearchPageVM.cs" />
     <Compile Include="Views\RouteSearchPage.xaml.cs">
       <DependentUpon>RouteSearchPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModels\MainPageVM.cs" />
-    <Compile Include="ViewModel\MainViewModel.cs" />
-    <Compile Include="ViewModel\ViewModelLocator.cs" />
     <Compile Include="Views\MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
@@ -139,21 +147,29 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UserControls\AppLogo.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="UserControls\ColorizedIconControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UserControls\DatePickerControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\DatePickerPopup.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UserControls\LogoTitle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UserControls\PlainLogo.xaml">
-      <Generator>MSBuild:Compile</Generator>
+    <Page Include="UserControls\TimePickerControl.xaml">
       <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\TimePickerPopup.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\RouteSearchPage.xaml">
       <SubType>Designer</SubType>

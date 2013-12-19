@@ -18,6 +18,8 @@ namespace Reitit
 
         public Map Map { get; private set; }
 
+        public Grid Overlay { get; private set; }
+
         public MapFrame()
         {
             InitializeComponent();
@@ -70,6 +72,11 @@ namespace Reitit
             {
                 UpdateMapTransform(content.ActualHeight);
             }
+        }
+
+        private void Overlay_Loaded(object sender, RoutedEventArgs e)
+        {
+            Overlay = sender as Grid;
         }
     }
 }

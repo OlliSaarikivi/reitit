@@ -1,16 +1,74 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Device.Location;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Data;
 
 namespace Reitit
 {
-    class LambdaConverter : IValueConverter
+    public delegate T Convert<S,T,P>(S source, P parameter, CultureInfo culture);
+    public class LambdaConverter<S,T,P> : IValueConverter
     {
+        private Convert<S, T, P> _convert;
+        private Convert<T, S, P> _convertBack;
+        public LambdaConverter(Convert<S, T, P> convert, Convert<T, S, P> convertBack = null)
+        {
+            _convert = convert;
+            _convertBack = convertBack;
+        }
 
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (_convert == null)
+            {
+                throw new Exception("No forward conversion given");
+            }
+            return _convert((S)value, (P)parameter, culture);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (_convertBack == null)
+            {
+                throw new Exception("No backward conversion given");
+            }
+            if (targetType != typeof(S))
+            {
+                throw new Exception("Incorrect target type");
+            }
+            return _convertBack((T)value, (P)parameter, culture);
+        }
+    }
+
+    public class DatePickerConverter : LambdaConverter<DateTime, string, object>
+    {
+        public DatePickerConverter()
+            : base((date, p, culture) =>
+            {
+                return date.ToString(culture.DateTimeFormat.ShortDatePattern);
+            }) { }
+    }
+
+    public class TimePickerConverter : LambdaConverter<DateTime, string, object>
+    {
+        public TimePickerConverter()
+            : base((date, p, culture) =>
+            {
+                return date.ToString("\u200E" + culture.DateTimeFormat.LongTimePattern.Replace(":ss", ""));
+            }) { }
+    }
+
+    public class BooleanToVisibilityConverter : LambdaConverter<bool, Visibility, object>
+    {
+        public BooleanToVisibilityConverter()
+            : base((b, p, culture) =>
+            {
+                return b ? Visibility.Visible : Visibility.Collapsed;
+            }) { }
     }
 
     static class Utils

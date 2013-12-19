@@ -3,10 +3,36 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
              xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
-             xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit">
+             xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
+             xmlns:me="clr-namespace:Reitit">
     <!--Application Resources-->
     <Application.Resources>
         <local:LocalizedStrings xmlns:local="clr-namespace:Reitit" x:Key="LocalizedStrings" />
+
+        <me:DatePickerConverter x:Key="DatePickerConverter"/>
+        <me:TimePickerConverter x:Key="TimePickerConverter"/>
+        <me:BooleanToVisibilityConverter x:Key="VisibilityConverter" />
+
+        <Storyboard x:Key="PickerOpenStoryboard">
+            <DoubleAnimation
+                            Storyboard.TargetName="PlaneProjection"
+                            Storyboard.TargetProperty="RotationX"
+                            From="-30"
+                            To="0"
+                            Duration="0:0:0.1"/>
+        </Storyboard>
+
+        <Storyboard x:Key="PickerCloseStoryboard">
+            <DoubleAnimation
+                            Storyboard.TargetName="PlaneProjection"
+                            Storyboard.TargetProperty="RotationX"
+                            To="90"
+                            Duration="0:0:0.2">
+                <DoubleAnimation.EasingFunction>
+                    <ExponentialEase EasingMode="EaseIn"/>
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+        </Storyboard>
 
         <Style x:Key="SlideTransitionPageStyle" TargetType="phone:PhoneApplicationPage">
             <Setter Property="toolkit:TransitionService.NavigationInTransition">

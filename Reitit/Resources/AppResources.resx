@@ -143,4 +143,25 @@
   <data name="RouteSearchTitle" xml:space="preserve">
     <value>find routes</value>
   </data>
+  <data name="PickerCancelText" xml:space="preserve">
+    <value>cancel</value>
+  </data>
+  <data name="PickerDoneText" xml:space="preserve">
+    <value>done</value>
+  </data>
+  <data name="TimePickerTitle" xml:space="preserve">
+    <value>CHOOSE TIME</value>
+  </data>
+  <data name="DatePickerTitle" xml:space="preserve">
+    <value>CHOOSE DATE</value>
+  </data>
+  <data name="TimeTypeArriveAt" xml:space="preserve">
+    <value>arrive at</value>
+  </data>
+  <data name="TimeTypeDepartAt" xml:space="preserve">
+    <value>depart at</value>
+  </data>
+  <data name="TimeTypeNow" xml:space="preserve">
+    <value>now</value>
+  </data>
 </root>

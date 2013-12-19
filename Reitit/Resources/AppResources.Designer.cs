@@ -88,6 +88,33 @@ namespace Reitit.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to CHOOSE DATE.
+        /// </summary>
+        public static string DatePickerTitle {
+            get {
+                return ResourceManager.GetString("DatePickerTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to cancel.
+        /// </summary>
+        public static string PickerCancelText {
+            get {
+                return ResourceManager.GetString("PickerCancelText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to done.
+        /// </summary>
+        public static string PickerDoneText {
+            get {
+                return ResourceManager.GetString("PickerDoneText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to LeftToRight.
         /// </summary>
         public static string ResourceFlowDirection {
@@ -129,6 +156,42 @@ namespace Reitit.Resources {
         public static string RouteSearchTitle {
             get {
                 return ResourceManager.GetString("RouteSearchTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to CHOOSE TIME.
+        /// </summary>
+        public static string TimePickerTitle {
+            get {
+                return ResourceManager.GetString("TimePickerTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to arrive at.
+        /// </summary>
+        public static string TimeTypeArriveAt {
+            get {
+                return ResourceManager.GetString("TimeTypeArriveAt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to depart at.
+        /// </summary>
+        public static string TimeTypeDepartAt {
+            get {
+                return ResourceManager.GetString("TimeTypeDepartAt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to now.
+        /// </summary>
+        public static string TimeTypeNow {
+            get {
+                return ResourceManager.GetString("TimeTypeNow", resourceCulture);
             }
         }
     }

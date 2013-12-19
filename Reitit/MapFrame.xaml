@@ -32,6 +32,7 @@
                                 x:Name="SecondContentPresenter"
                                 HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                                 VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                            <Grid Loaded="Overlay_Loaded"/>
                         </Grid>
                     </ControlTemplate>
                 </Setter.Value>

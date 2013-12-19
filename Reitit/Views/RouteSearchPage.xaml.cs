@@ -15,6 +15,7 @@ namespace Reitit
         public RouteSearchPage()
         {
             InitializeComponent();
+            DataContext = new RouteSearchPageVM();
         }
     }
 }

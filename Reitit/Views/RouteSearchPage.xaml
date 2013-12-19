@@ -14,7 +14,8 @@
     Foreground="{StaticResource PhoneForegroundBrush}"
     SupportedOrientations="Portrait" Orientation="Portrait"
     Style="{StaticResource SlideTransitionPageStyle}"
-    Height="700">
+    Height="700"
+    toolkit:TiltEffect.IsTiltEnabled="True">
 
 
     <!--LayoutRoot is the root grid where all page content is placed-->
@@ -41,18 +42,18 @@
                 </Grid>
                 <Button x:Name="ToPicker" Style="{StaticResource RoutingCoordinatePickerDefault}" />
                 <TextBlock Text="Time" Style="{StaticResource PhoneTextNormalStyle}" Margin="12,12,12,-6"/>
-                <toolkit:ListPicker x:Name="TimeTypePicker"  Margin="12,6,12,12">
-                    <toolkit:ListPickerItem Name="NowItem" Content="now" />
-                    <toolkit:ListPickerItem Name="DepartureItem" Content="depart at" />
-                    <toolkit:ListPickerItem Name="ArrivalItem" Content="arrive at" />
+                <toolkit:ListPicker x:Name="TimeTypePicker"  Margin="12,6,12,12" SelectedIndex="{Binding TimeTypeIndex, Mode=TwoWay}">
+                    <toolkit:ListPickerItem Name="NowItem" Content="{Binding Path=LocalizedResources.TimeTypeNow, Source={StaticResource LocalizedStrings}}" />
+                    <toolkit:ListPickerItem Name="DepartureItem" Content="{Binding Path=LocalizedResources.TimeTypeDepartAt, Source={StaticResource LocalizedStrings}}" />
+                    <toolkit:ListPickerItem Name="ArrivalItem" Content="{Binding Path=LocalizedResources.TimeTypeArriveAt, Source={StaticResource LocalizedStrings}}" />
                 </toolkit:ListPicker>
-                <Grid Name="TimeRoot" Visibility="Collapsed">
+                <Grid Name="TimeRoot" Visibility="{Binding DateTimeVisible, Converter={StaticResource VisibilityConverter}}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <toolkit:TimePicker Grid.Column="0" x:Name="TimePicker" />
-                    <toolkit:DatePicker Grid.Column="1" x:Name="DatePicker" />
+                    <me:TimePickerControl Grid.Column="0" x:Name="TimePicker" />
+                    <me:DatePickerControl Grid.Column="1" x:Name="DatePicker" />
                 </Grid>
 
                 <!--<Grid>
