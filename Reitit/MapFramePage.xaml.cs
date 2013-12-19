@@ -11,7 +11,7 @@ using System.Windows.Media;
 
 namespace Reitit
 {
-    public class MapFramePage : PhoneApplicationPage
+    public partial class MapFramePage : PhoneApplicationPage
     {
         protected override void OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs e)
         {
@@ -19,7 +19,6 @@ namespace Reitit
 
             SystemTray.IsVisible = true;
             SystemTray.Opacity = 0;
-            // The foreground color is contrasting if the map theme matches the phone theme
             if ((Visibility)Application.Current.Resources["PhoneLightThemeVisibility"] == Visibility.Visible)
             {
                 SystemTray.ForegroundColor = (Color)Application.Current.Resources["PhoneForegroundColor"];

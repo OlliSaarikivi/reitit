@@ -12,7 +12,7 @@ using System.Windows.Media;
 
 namespace Reitit
 {
-    public partial class MapFrame : PhoneApplicationFrame
+    public partial class MapFrame : TransitionFrame
     {
         private readonly int _screen_height;
 
@@ -57,8 +57,8 @@ namespace Reitit
         {
             if (Map != null)
             {
-                Map.TransformCenter = new Point(0.5, (double)(_screen_height + contentHeight) / (2 * _screen_height));
-                Map.Center = Map.Center.DisplaceFrom(Map.Center);
+                Map.TransformCenter = new Point(0.5, 1 - (double)(_screen_height + contentHeight) / (2 * _screen_height));
+                Map.SetView(Map.Center.Copy().DisplaceFrom(Map.Center), Map.ZoomLevel, MapAnimationKind.Linear);
             }
         }
 

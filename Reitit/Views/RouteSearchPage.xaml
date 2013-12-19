@@ -1,0 +1,128 @@
+﻿<me:MapFramePage
+    x:Class="Reitit.RouteSearchPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
+    xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
+    xmlns:maps="clr-namespace:Microsoft.Phone.Maps.Controls;assembly=Microsoft.Phone.Maps"
+    xmlns:bar="clr-namespace:BindableApplicationBar;assembly=BindableApplicationBar"
+    xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
+    xmlns:c4fcontrols="clr-namespace:Coding4Fun.Toolkit.Controls;assembly=Coding4Fun.Toolkit.Controls"
+    xmlns:me="clr-namespace:Reitit"
+    FontFamily="{StaticResource PhoneFontFamilyNormal}"
+    FontSize="{StaticResource PhoneFontSizeNormal}"
+    Foreground="{StaticResource PhoneForegroundBrush}"
+    SupportedOrientations="Portrait" Orientation="Portrait"
+    Style="{StaticResource SlideTransitionPageStyle}"
+    Height="700">
+
+
+    <!--LayoutRoot is the root grid where all page content is placed-->
+    <Grid x:Name="LayoutRoot" Background="{StaticResource PhoneBackgroundBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <me:LogoTitle Grid.Row="0" Text="FIND ROUTES" Margin="24,17,0,28"/>
+
+        <ScrollViewer Grid.Row="2" Name="ContentScroll" Margin="12,0,0,0">
+            <StackPanel Margin="0,0,12,0">
+                <TextBlock Text="From" Style="{StaticResource PhoneTextNormalStyle}" Margin="12,0,12,-6" />
+
+                <Button x:Name="FromPicker" Style="{StaticResource RoutingCoordinatePickerDefault}" />
+
+                <Grid Margin="0,-6,0,-6" Height="44">
+                    <TextBlock Text="To" Style="{StaticResource PhoneTextNormalStyle}" VerticalAlignment="Bottom"/>
+                    <c4fcontrols:RoundButton HorizontalAlignment="Center" VerticalAlignment="Center"
+                		                     ImageSource="/Assets/AppBar/Swap.png"
+                                             Margin="0,-16,0,-26"/>
+                </Grid>
+                <Button x:Name="ToPicker" Style="{StaticResource RoutingCoordinatePickerDefault}" />
+                <TextBlock Text="Time" Style="{StaticResource PhoneTextNormalStyle}" Margin="12,12,12,-6"/>
+                <toolkit:ListPicker x:Name="TimeTypePicker"  Margin="12,6,12,12">
+                    <toolkit:ListPickerItem Name="NowItem" Content="now" />
+                    <toolkit:ListPickerItem Name="DepartureItem" Content="depart at" />
+                    <toolkit:ListPickerItem Name="ArrivalItem" Content="arrive at" />
+                </toolkit:ListPicker>
+                <Grid Name="TimeRoot" Visibility="Collapsed">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <toolkit:TimePicker Grid.Column="0" x:Name="TimePicker" />
+                    <toolkit:DatePicker Grid.Column="1" x:Name="DatePicker" />
+                </Grid>
+
+                <!--<Grid>
+                    <Button Name="AdvancedButton" Margin="0,12,0,0" Content="advanced search" HorizontalAlignment="Left" VerticalAlignment="Top" Tap="AdvancedButton_Tap"/>
+
+                    <StackPanel Name="AdvancedRoot" Visibility="Collapsed">
+
+                        <TextBlock Text="Modes of transport used" Style="{StaticResource PhoneTextNormalStyle}" Margin="12,12,12,-6"/>
+                        <Grid Margin="12,0,12,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <CheckBox IsChecked="True" Grid.Column="0" Name="UseBusCheck" Margin="-12,0,-12,0">
+                                <me:ColorizedIconControl x:Name="BusIcon"/>
+                            </CheckBox>
+                            <CheckBox IsChecked="True" Grid.Column="2" Name="UseMetroCheck" Margin="-12,0,-12,0">
+                                <me:ColorizedIconControl x:Name="MetroIcon"/>
+                            </CheckBox>
+                            <CheckBox IsChecked="True" Grid.Column="4" Name="UseTramCheck" Margin="-12,0,-12,0">
+                                <me:ColorizedIconControl x:Name="TramIcon"/>
+                            </CheckBox>
+                            <CheckBox IsChecked="True" Grid.Column="6" Name="UseTrainCheck" Margin="-12,0,-12,0">
+                                <me:ColorizedIconControl x:Name="TrainIcon"/>
+                            </CheckBox>
+                        </Grid>
+
+                        <TextBlock Text="Walking speed" Style="{StaticResource PhoneTextNormalStyle}" Margin="12,12,12,-6"/>
+                        <toolkit:ListPicker x:Name="WalkSpeedPicker"  Margin="12,6,12,12">
+                            <toolkit:ListPickerItem Name="SlowSpeedItem" Content="slow 30 m/min" />
+                            <toolkit:ListPickerItem Name="DefaultSpeedItem" Content="default 70 m/min" />
+                            <toolkit:ListPickerItem Name="FastSpeedItem" Content="fast 100 m/min" />
+                            <toolkit:ListPickerItem Name="RunningSpeedItem" Content="running 200 m/min" />
+                            <toolkit:ListPickerItem Name="CyclingSpeedItem" Content="cycling 300 m/min" />
+                        </toolkit:ListPicker>
+
+                        <TextBlock Text="Route type" Style="{StaticResource PhoneTextNormalStyle}" Margin="12,12,12,-6"/>
+                        <toolkit:ListPicker x:Name="RouteTypePicker"  Margin="12,6,12,12">
+                            <toolkit:ListPickerItem Name="DefaultTypeItem" Content="default" />
+                            <toolkit:ListPickerItem Name="FastestTypeItem" Content="fastest" />
+                            <toolkit:ListPickerItem Name="TransfersTypeItem" Content="least transfers" />
+                            <toolkit:ListPickerItem Name="WalkingTypeItem" Content="least walking" />
+                        </toolkit:ListPicker>
+
+                        <TextBlock Style="{StaticResource PhoneTextNormalStyle}" Margin="12,12,12,-6">
+                            <TextBlock.Inlines>
+                                <Run Text="Transfer margin: "/>
+                                <Run Text="{Binding Path=Value, ElementName=MarginSlider}"/>
+                                <Run Text=" min"/>
+                            </TextBlock.Inlines>
+                        </TextBlock>
+                        <Slider Name="MarginSlider" SmallChange="1" LargeChange="1" Minimum="0" Maximum="10" ValueChanged="MarginSlider_ValueChanged" />
+
+                    </StackPanel>
+                </Grid>-->
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+
+    <bar:Bindable.ApplicationBar>
+        <bar:BindableApplicationBar BindableOpacity="0.999">
+            <bar:BindableApplicationBarButton Text="{Binding Path=LocalizedResources.RouteSearchButtonText, Source={StaticResource LocalizedStrings}}"
+                                              IconUri="/Assets/AppBar/feature.search.png"
+                                              Command="{Binding SearchCommand}"/>
+        </bar:BindableApplicationBar>
+    </bar:Bindable.ApplicationBar>
+
+</me:MapFramePage>

@@ -8,12 +8,15 @@ using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
 using Reitit.Resources;
 using Oat;
+using ReittiAPI;
 
 namespace Reitit
 {
-    public partial class App : Application, IOatApplication
+    public partial class App : Application, IOatApplication, IReittiAPIApplication
     {
         public IIndicatorManager IndicatorManager { get; private set; }
+        public ModelCache ModelCache { get; private set; }
+        public ReittiAPIClient ReittiClient { get; private set; }
 
         /// <summary>
         /// Provides easy access to the root frame of the Phone Application.
@@ -27,6 +30,8 @@ namespace Reitit
         public App()
         {
             IndicatorManager = new StackIndicatorManager();
+            ModelCache = new ModelCache(50);
+            ReittiClient = new ReittiAPIClient(new Uri("http://api.reittiopas.fi/hsl/1_1_3/"), "reittiwp", "yq8izavx187k");
 
             // Global handler for uncaught exceptions.
             UnhandledException += Application_UnhandledException;
