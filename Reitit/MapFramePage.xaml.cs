@@ -13,6 +13,13 @@ namespace Reitit
 {
     public partial class MapFramePage : PhoneApplicationPage
     {
+        public static DependencyProperty MapSizeProperty = DependencyProperty.Register("MapSize", typeof(int), typeof(MapFramePage), new PropertyMetadata(Utils.ScaledResolution().Height));
+        public int MapSize
+        {
+            get { return (int)this.GetValue(MapSizeProperty); }
+            set { this.SetValue(MapSizeProperty, value); }
+        }
+
         protected override void OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);

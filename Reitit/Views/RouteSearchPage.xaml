@@ -24,96 +24,94 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="72"/>
         </Grid.RowDefinitions>
 
-        <me:LogoTitle Grid.Row="0" Text="FIND ROUTES" Margin="24,17,0,28"/>
+        <me:LogoTitle Grid.Row="0" Text="{Binding Path=LocalizedResources.RouteSearchTitle, Source={StaticResource LocalizedStrings}}" Margin="24,17,0,28"/>
 
         <ScrollViewer Grid.Row="2" Name="ContentScroll" Margin="12,0,0,0">
             <StackPanel Margin="0,0,12,0">
-                <TextBlock Text="From" Style="{StaticResource PhoneTextNormalStyle}" Margin="12,0,12,-6" />
-
+                <TextBlock Text="{Binding Path=LocalizedResources.RouteSearchFromHeader, Source={StaticResource LocalizedStrings}}" Style="{StaticResource PhoneTextNormalStyle}" Margin="12,0,12,-6" />
                 <Button x:Name="FromPicker" Style="{StaticResource RoutingCoordinatePickerDefault}" />
 
                 <Grid Margin="0,-6,0,-6" Height="44">
-                    <TextBlock Text="To" Style="{StaticResource PhoneTextNormalStyle}" VerticalAlignment="Bottom"/>
+                    <TextBlock Text="{Binding Path=LocalizedResources.RouteSearchToHeader, Source={StaticResource LocalizedStrings}}" Style="{StaticResource PhoneTextNormalStyle}" VerticalAlignment="Bottom"/>
                     <c4fcontrols:RoundButton HorizontalAlignment="Center" VerticalAlignment="Center"
                 		                     ImageSource="/Assets/AppBar/Swap.png"
-                                             Margin="0,-16,0,-26"/>
+                                             Margin="0,-16,0,-26"
+                                             Command="{Binding SwapFromToCommand}"/>
                 </Grid>
                 <Button x:Name="ToPicker" Style="{StaticResource RoutingCoordinatePickerDefault}" />
-                <TextBlock Text="Time" Style="{StaticResource PhoneTextNormalStyle}" Margin="12,12,12,-6"/>
-                <toolkit:ListPicker x:Name="TimeTypePicker"  Margin="12,6,12,12" SelectedIndex="{Binding TimeTypeIndex, Mode=TwoWay}">
-                    <toolkit:ListPickerItem Name="NowItem" Content="{Binding Path=LocalizedResources.TimeTypeNow, Source={StaticResource LocalizedStrings}}" />
-                    <toolkit:ListPickerItem Name="DepartureItem" Content="{Binding Path=LocalizedResources.TimeTypeDepartAt, Source={StaticResource LocalizedStrings}}" />
-                    <toolkit:ListPickerItem Name="ArrivalItem" Content="{Binding Path=LocalizedResources.TimeTypeArriveAt, Source={StaticResource LocalizedStrings}}" />
+
+                <TextBlock Text="{Binding Path=LocalizedResources.RouteSearchTimeHeader, Source={StaticResource LocalizedStrings}}" Style="{StaticResource PhoneTextNormalStyle}" Margin="12,12,12,-6"/>
+                <toolkit:ListPicker x:Name="TimeTypePicker"  Margin="12,6,12,12" ItemsSource="{Binding TimeTypes}" SelectedItem="{Binding SelectedTimeType, Mode=TwoWay}" SizeChanged="ListPicker_SizeChanged">
+                    <toolkit:ListPicker.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Text}"/>
+                        </DataTemplate>
+                    </toolkit:ListPicker.ItemTemplate>
                 </toolkit:ListPicker>
-                <Grid Name="TimeRoot" Visibility="{Binding DateTimeVisible, Converter={StaticResource VisibilityConverter}}">
+                <Grid Name="TimeRoot" Visibility="{Binding SelectedTimeType.IsTimed, Converter={StaticResource VisibilityConverter}}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <me:TimePickerControl Grid.Column="0" x:Name="TimePicker" />
-                    <me:DatePickerControl Grid.Column="1" x:Name="DatePicker" />
+                    <me:TimePickerControl Grid.Column="0" Value="{Binding Time, Mode=TwoWay}"/>
+                    <me:DatePickerControl Grid.Column="1" Value="{Binding Date, Mode=TwoWay}"/>
                 </Grid>
 
-                <!--<Grid>
-                    <Button Name="AdvancedButton" Margin="0,12,0,0" Content="advanced search" HorizontalAlignment="Left" VerticalAlignment="Top" Tap="AdvancedButton_Tap"/>
+                <TextBlock Text="{Binding Path=LocalizedResources.RouteSearchModesHeader, Source={StaticResource LocalizedStrings}}" Style="{StaticResource PhoneTextNormalStyle}" Margin="12,12,12,-6"/>
+                <Grid Margin="12,0,12,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <CheckBox IsChecked="{Binding UseBus, Mode=TwoWay}" Grid.Column="0" Margin="-12,0,-12,0">
+                        <me:ColorizedIconControl Icon="/Assets/Bus.png" IconBackground="{StaticResource BusBrush}"/>
+                    </CheckBox>
+                    <CheckBox IsChecked="{Binding UseMetro, Mode=TwoWay}" Grid.Column="2" Margin="-12,0,-12,0">
+                        <me:ColorizedIconControl Icon="/Assets/Metro.png" IconBackground="{StaticResource MetroBrush}"/>
+                    </CheckBox>
+                    <CheckBox IsChecked="{Binding UseTram, Mode=TwoWay}" Grid.Column="4" Margin="-12,0,-12,0">
+                        <me:ColorizedIconControl Icon="/Assets/Tram.png" IconBackground="{StaticResource TramBrush}"/>
+                    </CheckBox>
+                    <CheckBox IsChecked="{Binding UseTrain, Mode=TwoWay}" Grid.Column="6" Margin="-12,0,-12,0">
+                        <me:ColorizedIconControl Icon="/Assets/Train.png" IconBackground="{StaticResource TrainBrush}"/>
+                    </CheckBox>
+                </Grid>
 
-                    <StackPanel Name="AdvancedRoot" Visibility="Collapsed">
+                <TextBlock Text="{Binding Path=LocalizedResources.RouteSearchSpeedHeader, Source={StaticResource LocalizedStrings}}" Style="{StaticResource PhoneTextNormalStyle}" Margin="12,12,12,-6"/>
+                <toolkit:ListPicker x:Name="WalkSpeedPicker"  Margin="12,6,12,12" ItemsSource="{Binding WalkingSpeeds}" SelectedItem="{Binding SelectedSpeed, Mode=TwoWay}" SizeChanged="ListPicker_SizeChanged">
+                    <toolkit:ListPicker.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Text}"/>
+                        </DataTemplate>
+                    </toolkit:ListPicker.ItemTemplate>
+                </toolkit:ListPicker>
 
-                        <TextBlock Text="Modes of transport used" Style="{StaticResource PhoneTextNormalStyle}" Margin="12,12,12,-6"/>
-                        <Grid Margin="12,0,12,0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-                            <CheckBox IsChecked="True" Grid.Column="0" Name="UseBusCheck" Margin="-12,0,-12,0">
-                                <me:ColorizedIconControl x:Name="BusIcon"/>
-                            </CheckBox>
-                            <CheckBox IsChecked="True" Grid.Column="2" Name="UseMetroCheck" Margin="-12,0,-12,0">
-                                <me:ColorizedIconControl x:Name="MetroIcon"/>
-                            </CheckBox>
-                            <CheckBox IsChecked="True" Grid.Column="4" Name="UseTramCheck" Margin="-12,0,-12,0">
-                                <me:ColorizedIconControl x:Name="TramIcon"/>
-                            </CheckBox>
-                            <CheckBox IsChecked="True" Grid.Column="6" Name="UseTrainCheck" Margin="-12,0,-12,0">
-                                <me:ColorizedIconControl x:Name="TrainIcon"/>
-                            </CheckBox>
-                        </Grid>
+                <TextBlock Text="{Binding Path=LocalizedResources.RouteSearchTypeHeader, Source={StaticResource LocalizedStrings}}" Style="{StaticResource PhoneTextNormalStyle}" Margin="12,12,12,-6"/>
+                <toolkit:ListPicker x:Name="RouteTypePicker"  Margin="12,6,12,12" ItemsSource="{Binding RouteTypes}" SelectedItem="{Binding SelectedRouteType, Mode=TwoWay}" SizeChanged="ListPicker_SizeChanged">
+                    <toolkit:ListPicker.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Text}"/>
+                        </DataTemplate>
+                    </toolkit:ListPicker.ItemTemplate>
+                </toolkit:ListPicker>
 
-                        <TextBlock Text="Walking speed" Style="{StaticResource PhoneTextNormalStyle}" Margin="12,12,12,-6"/>
-                        <toolkit:ListPicker x:Name="WalkSpeedPicker"  Margin="12,6,12,12">
-                            <toolkit:ListPickerItem Name="SlowSpeedItem" Content="slow 30 m/min" />
-                            <toolkit:ListPickerItem Name="DefaultSpeedItem" Content="default 70 m/min" />
-                            <toolkit:ListPickerItem Name="FastSpeedItem" Content="fast 100 m/min" />
-                            <toolkit:ListPickerItem Name="RunningSpeedItem" Content="running 200 m/min" />
-                            <toolkit:ListPickerItem Name="CyclingSpeedItem" Content="cycling 300 m/min" />
-                        </toolkit:ListPicker>
-
-                        <TextBlock Text="Route type" Style="{StaticResource PhoneTextNormalStyle}" Margin="12,12,12,-6"/>
-                        <toolkit:ListPicker x:Name="RouteTypePicker"  Margin="12,6,12,12">
-                            <toolkit:ListPickerItem Name="DefaultTypeItem" Content="default" />
-                            <toolkit:ListPickerItem Name="FastestTypeItem" Content="fastest" />
-                            <toolkit:ListPickerItem Name="TransfersTypeItem" Content="least transfers" />
-                            <toolkit:ListPickerItem Name="WalkingTypeItem" Content="least walking" />
-                        </toolkit:ListPicker>
-
-                        <TextBlock Style="{StaticResource PhoneTextNormalStyle}" Margin="12,12,12,-6">
-                            <TextBlock.Inlines>
-                                <Run Text="Transfer margin: "/>
-                                <Run Text="{Binding Path=Value, ElementName=MarginSlider}"/>
-                                <Run Text=" min"/>
-                            </TextBlock.Inlines>
-                        </TextBlock>
-                        <Slider Name="MarginSlider" SmallChange="1" LargeChange="1" Minimum="0" Maximum="10" ValueChanged="MarginSlider_ValueChanged" />
-
-                    </StackPanel>
-                </Grid>-->
+                <TextBlock Style="{StaticResource PhoneTextNormalStyle}" Margin="12,12,12,-6">
+                    <TextBlock.Inlines>
+                        <Run Text="{Binding Path=LocalizedResources.RouteSearchMarginHeader, Source={StaticResource LocalizedStrings}}"/>
+                        <Run Text=": "/>
+                        <Run Text="{Binding Path=Value, ElementName=MarginSlider}"/>
+                        <Run Text=" min"/>
+                    </TextBlock.Inlines>
+                </TextBlock>
+                <Slider Name="MarginSlider" SmallChange="1" LargeChange="1" Minimum="0" Maximum="10" Value="{Binding TransferMargin, Mode=TwoWay}"/>
             </StackPanel>
         </ScrollViewer>
     </Grid>

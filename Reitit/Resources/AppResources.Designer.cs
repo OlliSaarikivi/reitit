@@ -151,11 +151,110 @@ namespace Reitit.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to find routes.
+        ///   Looks up a localized string similar to From.
+        /// </summary>
+        public static string RouteSearchFromHeader {
+            get {
+                return ResourceManager.GetString("RouteSearchFromHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Transfer margin.
+        /// </summary>
+        public static string RouteSearchMarginHeader {
+            get {
+                return ResourceManager.GetString("RouteSearchMarginHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Modes of transport used.
+        /// </summary>
+        public static string RouteSearchModesHeader {
+            get {
+                return ResourceManager.GetString("RouteSearchModesHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Walking speed.
+        /// </summary>
+        public static string RouteSearchSpeedHeader {
+            get {
+                return ResourceManager.GetString("RouteSearchSpeedHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Time.
+        /// </summary>
+        public static string RouteSearchTimeHeader {
+            get {
+                return ResourceManager.GetString("RouteSearchTimeHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to FIND ROUTES.
         /// </summary>
         public static string RouteSearchTitle {
             get {
                 return ResourceManager.GetString("RouteSearchTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to To.
+        /// </summary>
+        public static string RouteSearchToHeader {
+            get {
+                return ResourceManager.GetString("RouteSearchToHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Route type.
+        /// </summary>
+        public static string RouteSearchTypeHeader {
+            get {
+                return ResourceManager.GetString("RouteSearchTypeHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to default.
+        /// </summary>
+        public static string RouteTypeDefault {
+            get {
+                return ResourceManager.GetString("RouteTypeDefault", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to fastest.
+        /// </summary>
+        public static string RouteTypeFastest {
+            get {
+                return ResourceManager.GetString("RouteTypeFastest", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to least transfers.
+        /// </summary>
+        public static string RouteTypeTransfers {
+            get {
+                return ResourceManager.GetString("RouteTypeTransfers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to least walking.
+        /// </summary>
+        public static string RouteTypeWalking {
+            get {
+                return ResourceManager.GetString("RouteTypeWalking", resourceCulture);
             }
         }
         
@@ -192,6 +291,51 @@ namespace Reitit.Resources {
         public static string TimeTypeNow {
             get {
                 return ResourceManager.GetString("TimeTypeNow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to cycling 300 m/min.
+        /// </summary>
+        public static string WalkSpeedCycling {
+            get {
+                return ResourceManager.GetString("WalkSpeedCycling", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to default 70 m/min.
+        /// </summary>
+        public static string WalkSpeedDefault {
+            get {
+                return ResourceManager.GetString("WalkSpeedDefault", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to fast 100 m/min.
+        /// </summary>
+        public static string WalkSpeedFast {
+            get {
+                return ResourceManager.GetString("WalkSpeedFast", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to running 200 m/min.
+        /// </summary>
+        public static string WalkSpeedRunning {
+            get {
+                return ResourceManager.GetString("WalkSpeedRunning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to slow 30 m/min.
+        /// </summary>
+        public static string WalkSpeedSlow {
+            get {
+                return ResourceManager.GetString("WalkSpeedSlow", resourceCulture);
             }
         }
     }

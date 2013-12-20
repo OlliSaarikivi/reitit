@@ -8,6 +8,13 @@
     <!--Application Resources-->
     <Application.Resources>
         <local:LocalizedStrings xmlns:local="clr-namespace:Reitit" x:Key="LocalizedStrings" />
+        
+        <SolidColorBrush x:Key="TrainBrush" Color="#E9001A"/>
+        <SolidColorBrush x:Key="FerryBrush" Color="#5A5CD8"/>
+        <SolidColorBrush x:Key="TramBrush" Color="#00AF2E"/>
+        <SolidColorBrush x:Key="MetroBrush" Color="#EE3E0C"/>
+        <SolidColorBrush x:Key="BusBrush" Color="#193695"/>
+        <SolidColorBrush x:Key="WalkBrush" Color="#0063FF"/>
 
         <me:DatePickerConverter x:Key="DatePickerConverter"/>
         <me:TimePickerConverter x:Key="TimePickerConverter"/>

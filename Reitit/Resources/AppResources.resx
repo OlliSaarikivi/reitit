@@ -141,7 +141,7 @@
     <value>search</value>
   </data>
   <data name="RouteSearchTitle" xml:space="preserve">
-    <value>find routes</value>
+    <value>FIND ROUTES</value>
   </data>
   <data name="PickerCancelText" xml:space="preserve">
     <value>cancel</value>
@@ -163,5 +163,53 @@
   </data>
   <data name="TimeTypeNow" xml:space="preserve">
     <value>now</value>
+  </data>
+  <data name="RouteSearchFromHeader" xml:space="preserve">
+    <value>From</value>
+  </data>
+  <data name="RouteSearchMarginHeader" xml:space="preserve">
+    <value>Transfer margin</value>
+  </data>
+  <data name="RouteSearchModesHeader" xml:space="preserve">
+    <value>Modes of transport used</value>
+  </data>
+  <data name="RouteSearchSpeedHeader" xml:space="preserve">
+    <value>Walking speed</value>
+  </data>
+  <data name="RouteSearchTimeHeader" xml:space="preserve">
+    <value>Time</value>
+  </data>
+  <data name="RouteSearchToHeader" xml:space="preserve">
+    <value>To</value>
+  </data>
+  <data name="RouteSearchTypeHeader" xml:space="preserve">
+    <value>Route type</value>
+  </data>
+  <data name="RouteTypeDefault" xml:space="preserve">
+    <value>default</value>
+  </data>
+  <data name="RouteTypeFastest" xml:space="preserve">
+    <value>fastest</value>
+  </data>
+  <data name="RouteTypeTransfers" xml:space="preserve">
+    <value>least transfers</value>
+  </data>
+  <data name="RouteTypeWalking" xml:space="preserve">
+    <value>least walking</value>
+  </data>
+  <data name="WalkSpeedCycling" xml:space="preserve">
+    <value>cycling 300 m/min</value>
+  </data>
+  <data name="WalkSpeedDefault" xml:space="preserve">
+    <value>default 70 m/min</value>
+  </data>
+  <data name="WalkSpeedFast" xml:space="preserve">
+    <value>fast 100 m/min</value>
+  </data>
+  <data name="WalkSpeedRunning" xml:space="preserve">
+    <value>running 200 m/min</value>
+  </data>
+  <data name="WalkSpeedSlow" xml:space="preserve">
+    <value>slow 30 m/min</value>
   </data>
 </root>

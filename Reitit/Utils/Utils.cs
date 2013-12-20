@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Data;
 
 namespace Reitit
@@ -121,6 +122,34 @@ namespace Reitit
                 coordinate.Longitude = other.Longitude + (_displace_randomizer.Next(2) == 0 ? MapEpsilon : -MapEpsilon);
             }
             return coordinate;
+        }
+
+        public static void EnsureVisible(this ScrollViewer scrollViewer, UIElement uiElement)
+        {
+            scrollViewer.UpdateLayout();
+
+            double maxScrollPos = scrollViewer.ExtentHeight - scrollViewer.ViewportHeight;
+            double scrollPos = scrollViewer.VerticalOffset - scrollViewer.TransformToVisual(uiElement).Transform(new Point(0, 0)).Y;
+
+            if (scrollPos > maxScrollPos)
+            {
+                scrollPos = maxScrollPos;
+            }
+            else if (scrollPos < 0)
+            {
+                scrollPos = 0;
+            }
+
+            scrollViewer.ScrollToVerticalOffset(scrollPos);
+        }
+
+        public static Size ScaledResolution()
+        {
+            var content = Application.Current.Host.Content;
+            double scale = (double)content.ScaleFactor / 100;
+            int h = (int)Math.Ceiling(content.ActualHeight * scale);
+            int w = (int)Math.Ceiling(content.ActualWidth * scale);
+            return new Size(w, h);
         }
     }
 }
