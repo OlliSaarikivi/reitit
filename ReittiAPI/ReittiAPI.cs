@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Text;
-using System.Net;
 using System.Device.Location;
 using System.Collections.Generic;
 using System.Windows;
@@ -15,13 +14,15 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using System.ComponentModel;
 using System.Threading.Tasks;
+using System.Net.Http;
+using System.Net;
 
 namespace ReittiAPI
 {
     public enum ReittiAPIExceptionKind
     {
         ParseException,
-        WebException
+        HttpRequestException
     }
 
     public class ReittiAPIException : Exception
@@ -35,9 +36,9 @@ namespace ReittiAPI
         public ReittiAPIExceptionKind Kind { get; set; }
     }
 
-    public class GeocodeEventArgs
+    public class GeocodeResults
     {
-        public GeocodeEventArgs()
+        public GeocodeResults()
         {
             Pois = new List<Poi>();
             ConnectedStopsList = new List<ConnectedStops>();
@@ -78,19 +79,26 @@ namespace ReittiAPI
     public class ReittiAPIClient
     {
         private const string CoordinateSystems = "&epsg_out=4326&epsg_in=4326";
+        private readonly Uri BaseUri = new Uri("http://api.reittiopas.fi/hsl/1_1_3/");
 
-        private Uri _baseUri;
+        private HttpClient _client;
 
         public string User { private get; set; }
         public string Pass { private get; set; }
 
         public LocationLanguage LocationLanguage { get; set; }
 
-        public ReittiAPIClient(Uri apiUri, string user, string pass)
+        public ReittiAPIClient(string user, string pass)
         {
-            _baseUri = apiUri;
             User = user;
             Pass = pass;
+            LocationLanguage = ReittiAPI.LocationLanguage.Fi;
+            var handler = new HttpClientHandler();
+            if (handler.SupportsAutomaticDecompression)
+            {
+                handler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+            }
+            _client = new HttpClient(handler);
         }
 
         private string GetAddressLang()
@@ -136,15 +144,13 @@ namespace ReittiAPI
             return builder;
         }
 
-        public async Task<GeocodeEventArgs> GeocodeAsync(
+        public async Task<GeocodeResults> GeocodeAsync(
             string key,
             IEnumerable<string> cities = null,
             IEnumerable<string> locTypes = null,
             bool? disableErrorCorrection = null,
             bool? disableUniqueStopNames = null)
         {
-            var client = new WebClient();
-
             string addressLang = GetAddressLang();
             string poiLang = GetPoiLang();
 
@@ -168,14 +174,14 @@ namespace ReittiAPI
                 query.Append("&disable_unique_stop_names=").Append(disableUniqueStopNames.Value ? 1 : 0);
             }
 
-            var uriBuilder = new UriBuilder(_baseUri);
+            var uriBuilder = new UriBuilder(BaseUri);
             uriBuilder.Query = query.ToString();
 
             try
             {
-                string response = await client.DownloadStringAwaitable(uriBuilder.Uri);
+                string response = await _client.GetStringAsync(uriBuilder.Uri);
                 
-                GeocodeEventArgs result = new GeocodeEventArgs();
+                GeocodeResults result = new GeocodeResults();
                 if (response.Trim().Length != 0)
                 {
                     JArray json = JArray.Parse(response);
@@ -187,9 +193,9 @@ namespace ReittiAPI
                 }
                 return result;
             }
-            catch (WebException e)
+            catch (HttpRequestException e)
             {
-                throw new ReittiAPIException(ReittiAPIExceptionKind.WebException, System.Enum.GetName(typeof(WebExceptionStatus), e.Status), e);
+                throw new ReittiAPIException(ReittiAPIExceptionKind.HttpRequestException, e.Message, e);
             }
             catch (JsonReaderException e)
             {
@@ -197,14 +203,12 @@ namespace ReittiAPI
             }
         }
 
-        public async Task<GeocodeEventArgs> ReverseGeocodeAsync(
+        public async Task<GeocodeResults> ReverseGeocodeAsync(
             ReittiCoordinate coordinate,
             int? limit = null,
             int? radius = null,
             IEnumerable<string> resultContains = null)
         {
-            var client = new WebClient();
-
             string addressLang = GetAddressLang();
             string poiLang = GetPoiLang();
 
@@ -238,14 +242,14 @@ namespace ReittiAPI
                 query.Append("&result_contains=").AppendList(resultContains);
             }
 
-            var uriBuilder = new UriBuilder(_baseUri);
+            var uriBuilder = new UriBuilder(BaseUri);
             uriBuilder.Query = query.ToString();
 
             try
             {
-                string response = await client.DownloadStringAwaitable(uriBuilder.Uri);
+                string response = await _client.GetStringAsync(uriBuilder.Uri);
 
-                GeocodeEventArgs result = new GeocodeEventArgs();
+                GeocodeResults result = new GeocodeResults();
                 if (response.Trim().Length != 0)
                 {
                     JArray json = JArray.Parse(response);
@@ -257,9 +261,9 @@ namespace ReittiAPI
                 }
                 return result;
             }
-            catch (WebException e)
+            catch (HttpRequestException e)
             {
-                throw new ReittiAPIException(ReittiAPIExceptionKind.WebException, System.Enum.GetName(typeof(WebExceptionStatus), e.Status), e);
+                throw new ReittiAPIException(ReittiAPIExceptionKind.HttpRequestException, e.Message, e);
             }
             catch (JsonReaderException e)
             {
@@ -267,7 +271,7 @@ namespace ReittiAPI
             }
         }
 
-        private static void ParseGeocodeLocation(JToken token, string responseLang, GeocodeEventArgs eventArgs)
+        private static void ParseGeocodeLocation(JToken token, string responseLang, GeocodeResults eventArgs)
         {
             int locTypeId = token.Value<int>("locTypeId");
             if (locTypeId < 10 || locTypeId == 1008)
@@ -320,8 +324,6 @@ namespace ReittiAPI
             TimeSpan? timeLimit = null,
             int? depLimit = null)
         {
-            var client = new WebClient();
-
             string addressLang = GetAddressLang();
             string poiLang = GetPoiLang();
 
@@ -364,12 +366,12 @@ namespace ReittiAPI
                 }
             }
 
-            var uriBuilder = new UriBuilder(_baseUri);
+            var uriBuilder = new UriBuilder(BaseUri);
             uriBuilder.Query = query.ToString();
 
             try
             {
-                string response = await client.DownloadStringAwaitable(uriBuilder.Uri);
+                string response = await _client.GetStringAsync(uriBuilder.Uri);
 
                 if (response.Trim().Length != 0)
                 {
@@ -387,9 +389,9 @@ namespace ReittiAPI
                 }
                 return null; // TODO: is this an error?
             }
-            catch (WebException e)
+            catch (HttpRequestException e)
             {
-                throw new ReittiAPIException(ReittiAPIExceptionKind.WebException, System.Enum.GetName(typeof(WebExceptionStatus), e.Status), e);
+                throw new ReittiAPIException(ReittiAPIExceptionKind.HttpRequestException, e.Message, e);
             }
             catch (JsonReaderException e)
             {
@@ -402,9 +404,6 @@ namespace ReittiAPI
             int? limit = null,
             int? diameter = null)
         {
-
-            var client = new WebClient();
-
             string addressLang = GetAddressLang();
             string poiLang = GetPoiLang();
 
@@ -434,12 +433,12 @@ namespace ReittiAPI
                 }
             }
 
-            var uriBuilder = new UriBuilder(_baseUri);
+            var uriBuilder = new UriBuilder(BaseUri);
             uriBuilder.Query = query.ToString();
 
             try
             {
-                string response = await client.DownloadStringAwaitable(uriBuilder.Uri);
+                string response = await _client.GetStringAsync(uriBuilder.Uri);
 
                 var stopsList = new List<Stop>();
 
@@ -458,9 +457,9 @@ namespace ReittiAPI
                 }
                 return stopsList;
             }
-            catch (WebException e)
+            catch (HttpRequestException e)
             {
-                throw new ReittiAPIException(ReittiAPIExceptionKind.WebException, System.Enum.GetName(typeof(WebExceptionStatus), e.Status), e);
+                throw new ReittiAPIException(ReittiAPIExceptionKind.HttpRequestException, e.Message, e);
             }
             catch (JsonReaderException e)
             {
@@ -472,8 +471,6 @@ namespace ReittiAPI
             IEnumerable<string> queryStrings,
             IEnumerable<int> transportType = null)
         {
-            var client = new WebClient();
-
             string addressLang = GetAddressLang();
             string poiLang = GetPoiLang();
 
@@ -485,12 +482,12 @@ namespace ReittiAPI
                 query.Append("&transport_type=").AppendList(transportType);
             }
 
-            var uriBuilder = new UriBuilder(_baseUri);
+            var uriBuilder = new UriBuilder(BaseUri);
             uriBuilder.Query = query.ToString();
 
             try
             {
-                string response = await client.DownloadStringAwaitable(uriBuilder.Uri);
+                string response = await _client.GetStringAsync(uriBuilder.Uri);
 
                 var connectedLinesByCode = new Dictionary<string, ConnectedLines>();
                 if (response.Trim().Length != 0)
@@ -562,9 +559,9 @@ namespace ReittiAPI
                 }
                 return connectedLinesByCode.Values;
             }
-            catch (WebException e)
+            catch (HttpRequestException e)
             {
-                throw new ReittiAPIException(ReittiAPIExceptionKind.WebException, System.Enum.GetName(typeof(WebExceptionStatus), e.Status), e);
+                throw new ReittiAPIException(ReittiAPIExceptionKind.HttpRequestException, e.Message, e);
             }
             catch (JsonReaderException e)
             {
@@ -591,8 +588,6 @@ namespace ReittiAPI
             string detail = null,
             int? show = null)
         {
-            var client = new WebClient();
-
             string addressLang = GetAddressLang();
             string poiLang = GetPoiLang();
 
@@ -690,12 +685,12 @@ namespace ReittiAPI
                 query.Append("&show=").Append(show);
             }
 
-            var uriBuilder = new UriBuilder(_baseUri);
+            var uriBuilder = new UriBuilder(BaseUri);
             uriBuilder.Query = query.ToString();
 
             try
             {
-                string response = await client.DownloadStringAwaitable(uriBuilder.Uri);
+                string response = await _client.GetStringAsync(uriBuilder.Uri);
 
                 var routeResults = new List<CompoundRoute>();
                 if (response.Trim().Length != 0)
@@ -722,9 +717,9 @@ namespace ReittiAPI
                 }
                 return routeResults;
             }
-            catch (WebException e)
+            catch (HttpRequestException e)
             {
-                throw new ReittiAPIException(ReittiAPIExceptionKind.WebException, System.Enum.GetName(typeof(WebExceptionStatus), e.Status), e);
+                throw new ReittiAPIException(ReittiAPIExceptionKind.HttpRequestException, e.Message, e);
             }
             catch (JsonReaderException e)
             {

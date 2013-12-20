@@ -97,6 +97,24 @@ namespace Reitit.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to From map.
+        /// </summary>
+        public static string MapLocationPlaceholderText {
+            get {
+                return ResourceManager.GetString("MapLocationPlaceholderText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to My location.
+        /// </summary>
+        public static string MyLocationText {
+            get {
+                return ResourceManager.GetString("MyLocationText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to cancel.
         /// </summary>
         public static string PickerCancelText {

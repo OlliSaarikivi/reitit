@@ -7,17 +7,31 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Media;
 
 namespace Reitit
 {
     public partial class MapFramePage : PhoneApplicationPage
     {
-        public static DependencyProperty MapSizeProperty = DependencyProperty.Register("MapSize", typeof(int), typeof(MapFramePage), new PropertyMetadata(Utils.ScaledResolution().Height));
-        public int MapSize
+        public static DependencyProperty MapHeightProperty = DependencyProperty.Register("MapHeight", typeof(double), typeof(MapFramePage), new PropertyMetadata((double)0));
+        public double MapHeight
         {
-            get { return (int)this.GetValue(MapSizeProperty); }
-            set { this.SetValue(MapSizeProperty, value); }
+            get { return (double)this.GetValue(MapHeightProperty); }
+            set { this.SetValue(MapHeightProperty, value); }
+        }
+
+        public MapFramePage()
+        {
+            Binding binding = new Binding("Height");
+            Convert<double, double, object> convert = (otherHeight, P, C) =>
+            {
+                return App.Current.ScaledResolution.Height - otherHeight;
+            };
+            binding.Converter = new LambdaConverter<double, double, object>(convert, convert);
+            binding.Source = this;
+            binding.Mode = BindingMode.TwoWay;
+            SetBinding(MapHeightProperty, binding);
         }
 
         protected override void OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs e)

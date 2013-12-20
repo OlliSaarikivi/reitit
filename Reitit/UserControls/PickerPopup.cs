@@ -123,6 +123,9 @@ namespace Reitit
             _tertiarySelectorPart.IsExpanded = false;
         }
     }
+
+    public abstract class LocationPickerPopup : PickerPopup<IPickerLocation> { }
+
     public abstract class PickerPopup<T> : UserControl
     {
         private TaskCompletionSource<T> _source;

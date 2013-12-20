@@ -212,4 +212,10 @@
   <data name="WalkSpeedSlow" xml:space="preserve">
     <value>slow 30 m/min</value>
   </data>
+  <data name="MyLocationText" xml:space="preserve">
+    <value>My location</value>
+  </data>
+  <data name="MapLocationPlaceholderText" xml:space="preserve">
+    <value>From map</value>
+  </data>
 </root>

@@ -158,6 +158,16 @@ namespace Reitit
             set { Set(() => TransferMargin, ref _transferMargin, value); }
         }
         private int _transferMargin;
-        
+
+        public RelayCommand SearchCommand
+        {
+            get
+            {
+                return new RelayCommand(async () => await Search() );
+            }
+        }
+        private async Task Search()
+        {
+        }
     }
 }

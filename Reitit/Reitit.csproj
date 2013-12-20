@@ -112,6 +112,7 @@
       <DependentUpon>LogoTitle.xaml</DependentUpon>
     </Compile>
     <Compile Include="UserControls\PickerControl.cs" />
+    <Compile Include="UserControls\PickerLocation.cs" />
     <Compile Include="UserControls\PickerPopup.cs" />
     <Compile Include="UserControls\TimePickerControl.xaml.cs">
       <DependentUpon>TimePickerControl.xaml</DependentUpon>

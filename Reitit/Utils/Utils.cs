@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ReittiAPI;
+using System;
 using System.Collections.Generic;
 using System.Device.Location;
 using System.Globalization;
@@ -8,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using Windows.Devices.Geolocation;
 
 namespace Reitit
 {
@@ -143,13 +145,9 @@ namespace Reitit
             scrollViewer.ScrollToVerticalOffset(scrollPos);
         }
 
-        public static Size ScaledResolution()
+        public static ReittiCoordinate ToReittiCoordinate(this Geoposition position)
         {
-            var content = Application.Current.Host.Content;
-            double scale = (double)content.ScaleFactor / 100;
-            int h = (int)Math.Ceiling(content.ActualHeight * scale);
-            int w = (int)Math.Ceiling(content.ActualWidth * scale);
-            return new Size(w, h);
+            return new ReittiCoordinate(position.Coordinate);
         }
     }
 }

@@ -9,6 +9,7 @@ using Microsoft.Phone.Shell;
 using Reitit.Resources;
 using Oat;
 using ReittiAPI;
+using Windows.Devices.Geolocation;
 
 namespace Reitit
 {
@@ -17,12 +18,15 @@ namespace Reitit
         public IIndicatorManager IndicatorManager { get; private set; }
         public ModelCache ModelCache { get; private set; }
         public ReittiAPIClient ReittiClient { get; private set; }
+        public Size ScaledResolution { get; private set; }
 
         /// <summary>
         /// Provides easy access to the root frame of the Phone Application.
         /// </summary>
         /// <returns>The root frame of the Phone Application.</returns>
         public static MapFrame RootFrame { get; private set; }
+
+        public new static App Current { get { return (App)Application.Current; } }
 
         /// <summary>
         /// Constructor for the Application object.
@@ -31,7 +35,13 @@ namespace Reitit
         {
             IndicatorManager = new StackIndicatorManager();
             ModelCache = new ModelCache(50);
-            ReittiClient = new ReittiAPIClient(new Uri("http://api.reittiopas.fi/hsl/1_1_3/"), "reittiwp", "yq8izavx187k");
+            ReittiClient = new ReittiAPIClient("reittiwp", "yq8izavx187k");
+
+            var content = Application.Current.Host.Content;
+            double scale = (double)content.ScaleFactor / 100;
+            int h = (int)Math.Ceiling(content.ActualHeight * scale);
+            int w = (int)Math.Ceiling(content.ActualWidth * scale);
+            ScaledResolution = new Size(w, h);
 
             // Global handler for uncaught exceptions.
             UnhandledException += Application_UnhandledException;

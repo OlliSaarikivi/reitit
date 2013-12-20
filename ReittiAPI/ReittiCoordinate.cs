@@ -13,6 +13,7 @@ using System.Device.Location;
 using System.Text;
 using System.Globalization;
 using System.Collections.Generic;
+using Windows.Devices.Geolocation;
 
 namespace ReittiAPI
 {
@@ -28,6 +29,11 @@ namespace ReittiAPI
 
         public ReittiCoordinate(GeoCoordinate coordinate)
             : this(coordinate.Latitude, coordinate.Longitude)
+        {
+        }
+
+        public ReittiCoordinate(Geocoordinate coordinate)
+            : this (coordinate.Latitude, coordinate.Longitude)
         {
         }
 
