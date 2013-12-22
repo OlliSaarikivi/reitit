@@ -97,6 +97,33 @@ namespace Reitit.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to We couldn&apos;t find a match. Try a different spelling or search for a nearby location..
+        /// </summary>
+        public static string LocationPickerNoResults {
+            get {
+                return ResourceManager.GetString("LocationPickerNoResults", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to search for places and addresses.
+        /// </summary>
+        public static string LocationPickerSearchHint {
+            get {
+                return ResourceManager.GetString("LocationPickerSearchHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to CHOOSE LOCATION.
+        /// </summary>
+        public static string LocationPickerTitle {
+            get {
+                return ResourceManager.GetString("LocationPickerTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to From map.
         /// </summary>
         public static string MapLocationPlaceholderText {

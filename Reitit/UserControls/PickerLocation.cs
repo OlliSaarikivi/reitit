@@ -11,7 +11,7 @@ using System.Device.Location;
 
 namespace Reitit
 {
-    interface IPickerLocation
+    public interface IPickerLocation
     {
         string DisplayName { get; }
         Task<ReittiCoordinate> GetCoordinates();

@@ -218,4 +218,13 @@
   <data name="MapLocationPlaceholderText" xml:space="preserve">
     <value>From map</value>
   </data>
+  <data name="LocationPickerTitle" xml:space="preserve">
+    <value>CHOOSE LOCATION</value>
+  </data>
+  <data name="LocationPickerNoResults" xml:space="preserve">
+    <value>We couldn't find a match. Try a different spelling or search for a nearby location.</value>
+  </data>
+  <data name="LocationPickerSearchHint" xml:space="preserve">
+    <value>search for places and addresses</value>
+  </data>
 </root>

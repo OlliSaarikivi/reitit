@@ -124,7 +124,9 @@ namespace Reitit
         }
     }
 
-    public abstract class LocationPickerPopup : PickerPopup<IPickerLocation> { }
+    public abstract class LocationPickerPopupBase : PickerPopup<IPickerLocation>
+    {
+    }
 
     public abstract class PickerPopup<T> : UserControl
     {

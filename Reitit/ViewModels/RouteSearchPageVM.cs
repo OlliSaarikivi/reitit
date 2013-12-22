@@ -49,13 +49,6 @@ namespace Reitit
             }
         }
 
-        public bool DateTimeVisible
-        {
-            get { return _dateTimeVisible; }
-            private set { Set(() => DateTimeVisible, ref _dateTimeVisible, value); }
-        }
-        private bool _dateTimeVisible = false;
-
         public class TimeType
         {
             public string Text { get; set; }
