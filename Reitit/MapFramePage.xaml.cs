@@ -7,11 +7,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media;
+using System.Windows.Navigation;
 
 namespace Reitit
 {
+    delegate object ConstructVM(NavigationEventArgs e);
+
     public partial class MapFramePage : PhoneApplicationPage
     {
         public static DependencyProperty MapHeightProperty = DependencyProperty.Register("MapHeight", typeof(double), typeof(MapFramePage), new PropertyMetadata((double)0));
@@ -21,8 +25,14 @@ namespace Reitit
             set { this.SetValue(MapHeightProperty, value); }
         }
 
-        public MapFramePage()
+        private bool _isNewPageInstance = true;
+        private ConstructVM _constructVM;
+        private List<Tombstoner> _tombstoners;
+
+        public MapFramePage(ConstructVM constructVM)
         {
+            _constructVM = constructVM;
+
             Binding binding = new Binding("Height");
             Convert<double, double, object> convert = (otherHeight, P, C) =>
             {
@@ -34,9 +44,28 @@ namespace Reitit
             SetBinding(MapHeightProperty, binding);
         }
 
-        protected override void OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs e)
+        protected void AddTombstoner<T>(Tombstoner<T> stoner)
         {
-            base.OnNavigatedTo(e);
+
+        }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            if (_isNewPageInstance)
+            {
+                if (DataContext == null)
+                {
+                    if (State.Count > 0)
+                    {
+                        DataContext = State["DataContext"];
+                    }
+                    else
+                    {
+                        DataContext = _constructVM(e);
+                    }
+                }
+            }
+            _isNewPageInstance = false;
 
             SystemTray.IsVisible = true;
             SystemTray.Opacity = 0;
@@ -47,6 +76,14 @@ namespace Reitit
             else
             {
                 SystemTray.ForegroundColor = (Color)Application.Current.Resources["PhoneBackgroundColor"];
+            }
+        }
+
+        protected override void OnNavigatedFrom(NavigationEventArgs e)
+        {
+            if (e.NavigationMode != NavigationMode.Back)
+            {
+                State["DataContext"] = DataContext;
             }
         }
     }

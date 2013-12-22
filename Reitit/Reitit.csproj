@@ -123,6 +123,7 @@
     <Compile Include="UserControls\TimePickerPopup.xaml.cs">
       <DependentUpon>TimePickerPopup.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Utils\Tombstoner.cs" />
     <Compile Include="ViewModels\RouteSearchPageVM.cs" />
     <Compile Include="Views\RouteSearchPage.xaml.cs">
       <DependentUpon>RouteSearchPage.xaml</DependentUpon>
