@@ -18,6 +18,8 @@ namespace Reitit
 
         public Map Map { get; private set; }
 
+        public Grid Content2 { get; private set; }
+
         public Grid Overlay { get; private set; }
 
         public MapFrame()
@@ -38,15 +40,16 @@ namespace Reitit
                 oldPage.SizeChanged -= ContentSizeChanged;
             }
 
-            var page = newContent as FrameworkElement;
+            var page = newContent as MapFramePage;
             if (page != null)
             {
+                VerticalContentAlignment = VerticalAlignment.Bottom;
                 page.SizeChanged += ContentSizeChanged;
                 UpdateMapTransform(page.ActualHeight);
             }
             else
             {
-                throw new NotImplementedException("MapFrame does not support non-FrameworkElement content");
+                VerticalContentAlignment = VerticalAlignment.Stretch;
             }
         }
 
@@ -60,7 +63,7 @@ namespace Reitit
             if (Map != null)
             {
                 Map.TransformCenter = new Point(0.5, 1 - (double)(_screen_height + contentHeight) / (2 * _screen_height));
-                Map.SetView(Map.Center.Copy().DisplaceFrom(Map.Center), Map.ZoomLevel, MapAnimationKind.Linear);
+                Map.SetView(Map.Center.Copy().DisplaceFrom(Map.Center), Map.ZoomLevel, MapAnimationKind.None);
             }
         }
 
@@ -77,6 +80,11 @@ namespace Reitit
         private void Overlay_Loaded(object sender, RoutedEventArgs e)
         {
             Overlay = sender as Grid;
+        }
+
+        private void Content_Loaded(object sender, RoutedEventArgs e)
+        {
+            Content2 = sender as Grid;
         }
     }
 }

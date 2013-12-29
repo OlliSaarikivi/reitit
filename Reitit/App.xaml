@@ -18,6 +18,7 @@
 
         <me:DatePickerConverter x:Key="DatePickerConverter"/>
         <me:TimePickerConverter x:Key="TimePickerConverter"/>
+        <me:LocationPickerConverter x:Key="LocationPickerConverter"/>
         <me:BooleanToVisibilityConverter x:Key="VisibilityConverter" />
 
         <Storyboard x:Key="PickerOpenStoryboard">

@@ -14,11 +14,10 @@ namespace Reitit
 {
     public partial class MainPage : MapFramePage
     {
-        // Constructor
         public MainPage()
+            : base((e) => new MainPageVM())
         {
             InitializeComponent();
-            DataContext = new MainPageVM();
         }
     }
 }

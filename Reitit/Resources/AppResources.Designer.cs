@@ -97,11 +97,38 @@ namespace Reitit.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to addresses.
+        /// </summary>
+        public static string LocationPickerAddressesHeader {
+            get {
+                return ResourceManager.GetString("LocationPickerAddressesHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to We couldn&apos;t find a match. Try a different spelling or search for a nearby location..
         /// </summary>
         public static string LocationPickerNoResults {
             get {
                 return ResourceManager.GetString("LocationPickerNoResults", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to other.
+        /// </summary>
+        public static string LocationPickerOtherHeader {
+            get {
+                return ResourceManager.GetString("LocationPickerOtherHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to places.
+        /// </summary>
+        public static string LocationPickerPlacesHeader {
+            get {
+                return ResourceManager.GetString("LocationPickerPlacesHeader", resourceCulture);
             }
         }
         
@@ -115,11 +142,47 @@ namespace Reitit.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Please type at least 3 characters..
+        /// </summary>
+        public static string LocationPickerShortSearchPrompt {
+            get {
+                return ResourceManager.GetString("LocationPickerShortSearchPrompt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Search term too short.
+        /// </summary>
+        public static string LocationPickerShortSearchPromptTitle {
+            get {
+                return ResourceManager.GetString("LocationPickerShortSearchPromptTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to stops.
+        /// </summary>
+        public static string LocationPickerStopsHeader {
+            get {
+                return ResourceManager.GetString("LocationPickerStopsHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to CHOOSE LOCATION.
         /// </summary>
         public static string LocationPickerTitle {
             get {
                 return ResourceManager.GetString("LocationPickerTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Searching....
+        /// </summary>
+        public static string LocationSearching {
+            get {
+                return ResourceManager.GetString("LocationSearching", resourceCulture);
             }
         }
         
@@ -138,6 +201,24 @@ namespace Reitit.Resources {
         public static string MyLocationText {
             get {
                 return ResourceManager.GetString("MyLocationText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Make sure flight mode is turned off and check your mobile data or Wifi connection..
+        /// </summary>
+        public static string NetworkUnavailableText {
+            get {
+                return ResourceManager.GetString("NetworkUnavailableText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Can&apos;t connect to the Internet.
+        /// </summary>
+        public static string NetworkUnavailableTitle {
+            get {
+                return ResourceManager.GetString("NetworkUnavailableTitle", resourceCulture);
             }
         }
         

@@ -227,4 +227,31 @@
   <data name="LocationPickerSearchHint" xml:space="preserve">
     <value>search for places and addresses</value>
   </data>
+  <data name="LocationPickerAddressesHeader" xml:space="preserve">
+    <value>addresses</value>
+  </data>
+  <data name="LocationPickerOtherHeader" xml:space="preserve">
+    <value>other</value>
+  </data>
+  <data name="LocationPickerPlacesHeader" xml:space="preserve">
+    <value>places</value>
+  </data>
+  <data name="LocationPickerStopsHeader" xml:space="preserve">
+    <value>stops</value>
+  </data>
+  <data name="LocationPickerShortSearchPrompt" xml:space="preserve">
+    <value>Please type at least 3 characters.</value>
+  </data>
+  <data name="LocationPickerShortSearchPromptTitle" xml:space="preserve">
+    <value>Search term too short</value>
+  </data>
+  <data name="LocationSearching" xml:space="preserve">
+    <value>Searching...</value>
+  </data>
+  <data name="NetworkUnavailableText" xml:space="preserve">
+    <value>Make sure flight mode is turned off and check your mobile data or Wifi connection.</value>
+  </data>
+  <data name="NetworkUnavailableTitle" xml:space="preserve">
+    <value>Can't connect to the Internet</value>
+  </data>
 </root>

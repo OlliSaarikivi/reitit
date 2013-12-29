@@ -108,6 +108,9 @@
       <DependentUpon>DatePickerPopup.xaml</DependentUpon>
     </Compile>
     <Compile Include="UserControls\DateTimeWrapper.cs" />
+    <Compile Include="UserControls\LocationPickerControl.xaml.cs">
+      <DependentUpon>LocationPickerControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\LocationPickerPopup.xaml.cs">
       <DependentUpon>LocationPickerPopup.xaml</DependentUpon>
     </Compile>
@@ -123,6 +126,8 @@
     <Compile Include="UserControls\TimePickerPopup.xaml.cs">
       <DependentUpon>TimePickerPopup.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Utils\PhysicsConstants.cs" />
+    <Compile Include="Utils\SafeRaise.cs" />
     <Compile Include="Utils\Tombstoner.cs" />
     <Compile Include="ViewModels\RouteSearchPageVM.cs" />
     <Compile Include="Views\RouteSearchPage.xaml.cs">
@@ -152,6 +157,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Themes\Generic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="UserControls\ColorizedIconControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -161,6 +170,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UserControls\DatePickerPopup.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\LocationPickerControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -248,6 +261,7 @@
     <Content Include="Assets\Ferry.png" />
     <Content Include="Assets\LogoSmall.png" />
     <Content Include="Assets\Metro.png" />
+    <Content Include="Assets\Swap.png" />
     <Content Include="Assets\Tiles\FlipCycleTileLarge.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -268,8 +282,6 @@
     <Content Include="Assets\Wait.png" />
     <Content Include="Assets\Walk.png" />
     <Content Include="Toolkit.Content\ApplicationBar.Add.png" />
-    <Content Include="Toolkit.Content\ApplicationBar.Cancel.png" />
-    <Content Include="Toolkit.Content\ApplicationBar.Check.png" />
     <Content Include="Toolkit.Content\ApplicationBar.Delete.png" />
     <Content Include="Toolkit.Content\ApplicationBar.Select.png" />
   </ItemGroup>
@@ -292,9 +304,6 @@
   <ItemGroup>
     <Reference Include="BindableApplicationBar">
       <HintPath>..\packages\BindableApplicationBar.1.1.0.0\lib\wp8\BindableApplicationBar.dll</HintPath>
-    </Reference>
-    <Reference Include="Coding4Fun.Toolkit.Controls">
-      <HintPath>..\packages\Coding4Fun.Toolkit.Controls.2.0.7\lib\windowsphone8\Coding4Fun.Toolkit.Controls.dll</HintPath>
     </Reference>
     <Reference Include="GalaSoft.MvvmLight.Extras.WP8">
       <HintPath>..\packages\MvvmLightLibs.4.2.30.0\lib\wp8\GalaSoft.MvvmLight.Extras.WP8.dll</HintPath>

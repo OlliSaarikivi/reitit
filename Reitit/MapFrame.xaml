@@ -23,15 +23,17 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="phone:PhoneApplicationFrame">
                         <Grid x:Name="ClientArea" Background="{TemplateBinding Background}" HorizontalAlignment="{TemplateBinding HorizontalAlignment}" VerticalAlignment="{TemplateBinding VerticalAlignment}">
-                            <maps:Map Loaded="Map_Loaded"/>
-                            <ContentPresenter
-                                x:Name="FirstContentPresenter"
-                                HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
-                            <ContentPresenter
-                                x:Name="SecondContentPresenter"
-                                HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                            <Grid x:Name="Content" Loaded="Content_Loaded">
+                                <maps:Map Loaded="Map_Loaded"/>
+                                <ContentPresenter
+                                    x:Name="FirstContentPresenter"
+                                    HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                    VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                                <ContentPresenter
+                                    x:Name="SecondContentPresenter"
+                                    HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                    VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                            </Grid>
                             <Grid Loaded="Overlay_Loaded"/>
                         </Grid>
                     </ControlTemplate>

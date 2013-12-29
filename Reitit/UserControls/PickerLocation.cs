@@ -11,13 +11,13 @@ using System.Device.Location;
 
 namespace Reitit
 {
-    interface IPickerLocation
+    public interface IPickerLocation
     {
         string DisplayName { get; }
         Task<ReittiCoordinate> GetCoordinates();
     }
 
-    class MapLocation : ObservableObject, IPickerLocation
+    public class MapLocation : ObservableObject, IPickerLocation
     {
         private ReittiCoordinate _coordinate;
 
@@ -39,7 +39,7 @@ namespace Reitit
         }
     }
 
-    class ReittiLocation : IPickerLocation
+    public class ReittiLocation : IPickerLocation
     {
         public Location Location { get; private set; }
 
@@ -56,8 +56,13 @@ namespace Reitit
         }
     }
 
-    class MeLocation : IPickerLocation
+    public class MeLocation : IPickerLocation
     {
+        public static MeLocation Instance { get { return _instance; } }
+        private static MeLocation _instance = new MeLocation();
+
+        private MeLocation() { }
+
         public string DisplayName { get { return AppResources.MyLocationText; } }
         public async Task<ReittiCoordinate> GetCoordinates()
         {

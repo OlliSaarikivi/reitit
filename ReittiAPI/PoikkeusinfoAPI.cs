@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
@@ -33,7 +34,7 @@ namespace ReittiAPI
             _client = new HttpClient(handler);
         }
 
-        public async Task<Disruptions> GetAsync()
+        public async Task<Disruptions> GetAsync(CancellationToken? cancellationToken = null)
         {
             string languageString;
             switch (Language)
@@ -56,7 +57,16 @@ namespace ReittiAPI
 
             try
             {
-                string response = await _client.GetStringAsync(localizedUri);
+                string response;
+                if (cancellationToken.HasValue)
+                {
+                    response = await (await _client.GetAsync(uriBuilder.Uri, cancellationToken.Value)).Content.ReadAsStringAsync();
+                    cancellationToken.Value.ThrowIfCancellationRequested();
+                }
+                else
+                {
+                    response = await _client.GetStringAsync(uriBuilder.Uri);
+                }
                 var doc = XDocument.Parse(response);
                 try
                 {

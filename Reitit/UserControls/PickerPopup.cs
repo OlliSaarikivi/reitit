@@ -134,6 +134,7 @@ namespace Reitit
         private BindableApplicationBar.BindableApplicationBar _oldAppBar;
         private double _oldSTOpacity;
         private bool _oldSTIsVisible;
+        private bool _oldIsHitTestVisible;
         private ProgressIndicator _oldSTProgressIndicator;
         private Color _oldSTForegroundColor;
         private Color _oldSTBackgroundColor;
@@ -158,6 +159,8 @@ namespace Reitit
             var page = App.RootFrame.Content as PhoneApplicationPage;
             _oldAppBar = Bindable.GetApplicationBar(page);
             Bindable.SetApplicationBar(page, ApplicationBar);
+            _oldIsHitTestVisible = page.IsHitTestVisible;
+            page.IsHitTestVisible = false;
 
             _oldSTOpacity = SystemTray.Opacity;
             _oldSTIsVisible = SystemTray.IsVisible;
@@ -191,6 +194,7 @@ namespace Reitit
 
             var page = App.RootFrame.Content as PhoneApplicationPage;
             Bindable.SetApplicationBar(page, _oldAppBar);
+            page.IsHitTestVisible = _oldIsHitTestVisible;
 
             App.RootFrame.Overlay.Children.Remove(this);
 

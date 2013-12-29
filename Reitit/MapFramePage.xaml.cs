@@ -14,7 +14,7 @@ using System.Windows.Navigation;
 
 namespace Reitit
 {
-    delegate object ConstructVM(NavigationEventArgs e);
+    public delegate object ConstructVM(NavigationEventArgs e);
 
     public partial class MapFramePage : PhoneApplicationPage
     {
@@ -44,7 +44,7 @@ namespace Reitit
             SetBinding(MapHeightProperty, binding);
         }
 
-        protected void AddTombstoner<T>(Tombstoner<T> stoner)
+        protected void AddTombstoner(Tombstoner stoner)
         {
 
         }

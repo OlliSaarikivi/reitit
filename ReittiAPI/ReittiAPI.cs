@@ -16,6 +16,7 @@ using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Net.Http;
 using System.Net;
+using System.Threading;
 
 namespace ReittiAPI
 {
@@ -149,7 +150,8 @@ namespace ReittiAPI
             IEnumerable<string> cities = null,
             IEnumerable<string> locTypes = null,
             bool? disableErrorCorrection = null,
-            bool? disableUniqueStopNames = null)
+            bool? disableUniqueStopNames = null,
+            CancellationToken? cancellationToken = null)
         {
             string addressLang = GetAddressLang();
             string poiLang = GetPoiLang();
@@ -179,7 +181,16 @@ namespace ReittiAPI
 
             try
             {
-                string response = await _client.GetStringAsync(uriBuilder.Uri);
+                string response;
+                if (cancellationToken.HasValue)
+                {
+                    response = await (await _client.GetAsync(uriBuilder.Uri, cancellationToken.Value)).Content.ReadAsStringAsync();
+                    cancellationToken.Value.ThrowIfCancellationRequested();
+                }
+                else
+                {
+                    response = await _client.GetStringAsync(uriBuilder.Uri);
+                }
                 
                 GeocodeResults result = new GeocodeResults();
                 if (response.Trim().Length != 0)
@@ -207,7 +218,8 @@ namespace ReittiAPI
             ReittiCoordinate coordinate,
             int? limit = null,
             int? radius = null,
-            IEnumerable<string> resultContains = null)
+            IEnumerable<string> resultContains = null,
+            CancellationToken? cancellationToken = null)
         {
             string addressLang = GetAddressLang();
             string poiLang = GetPoiLang();
@@ -247,7 +259,16 @@ namespace ReittiAPI
 
             try
             {
-                string response = await _client.GetStringAsync(uriBuilder.Uri);
+                string response;
+                if (cancellationToken.HasValue)
+                {
+                    response = await (await _client.GetAsync(uriBuilder.Uri, cancellationToken.Value)).Content.ReadAsStringAsync();
+                    cancellationToken.Value.ThrowIfCancellationRequested();
+                }
+                else
+                {
+                    response = await _client.GetStringAsync(uriBuilder.Uri);
+                }
 
                 GeocodeResults result = new GeocodeResults();
                 if (response.Trim().Length != 0)
@@ -322,7 +343,8 @@ namespace ReittiAPI
             string code,
             DateTime? dateTime = null,
             TimeSpan? timeLimit = null,
-            int? depLimit = null)
+            int? depLimit = null,
+            CancellationToken? cancellationToken = null)
         {
             string addressLang = GetAddressLang();
             string poiLang = GetPoiLang();
@@ -371,7 +393,16 @@ namespace ReittiAPI
 
             try
             {
-                string response = await _client.GetStringAsync(uriBuilder.Uri);
+                string response;
+                if (cancellationToken.HasValue)
+                {
+                    response = await (await _client.GetAsync(uriBuilder.Uri, cancellationToken.Value)).Content.ReadAsStringAsync();
+                    cancellationToken.Value.ThrowIfCancellationRequested();
+                }
+                else
+                {
+                    response = await _client.GetStringAsync(uriBuilder.Uri);
+                }
 
                 if (response.Trim().Length != 0)
                 {
@@ -402,7 +433,8 @@ namespace ReittiAPI
         public async Task<IEnumerable<Stop>> StopsInAreaAsyc(
             ReittiCoordinate centerCoordinate,
             int? limit = null,
-            int? diameter = null)
+            int? diameter = null,
+            CancellationToken? cancellationToken = null)
         {
             string addressLang = GetAddressLang();
             string poiLang = GetPoiLang();
@@ -438,7 +470,16 @@ namespace ReittiAPI
 
             try
             {
-                string response = await _client.GetStringAsync(uriBuilder.Uri);
+                string response;
+                if (cancellationToken.HasValue)
+                {
+                    response = await (await _client.GetAsync(uriBuilder.Uri, cancellationToken.Value)).Content.ReadAsStringAsync();
+                    cancellationToken.Value.ThrowIfCancellationRequested();
+                }
+                else
+                {
+                    response = await _client.GetStringAsync(uriBuilder.Uri);
+                }
 
                 var stopsList = new List<Stop>();
 
@@ -469,7 +510,8 @@ namespace ReittiAPI
 
         public async Task<IEnumerable<ConnectedLines>> LineInformationAsync(
             IEnumerable<string> queryStrings,
-            IEnumerable<int> transportType = null)
+            IEnumerable<int> transportType = null,
+            CancellationToken? cancellationToken = null)
         {
             string addressLang = GetAddressLang();
             string poiLang = GetPoiLang();
@@ -487,7 +529,16 @@ namespace ReittiAPI
 
             try
             {
-                string response = await _client.GetStringAsync(uriBuilder.Uri);
+                string response;
+                if (cancellationToken.HasValue)
+                {
+                    response = await (await _client.GetAsync(uriBuilder.Uri, cancellationToken.Value)).Content.ReadAsStringAsync();
+                    cancellationToken.Value.ThrowIfCancellationRequested();
+                }
+                else
+                {
+                    response = await _client.GetStringAsync(uriBuilder.Uri);
+                }
 
                 var connectedLinesByCode = new Dictionary<string, ConnectedLines>();
                 if (response.Trim().Length != 0)
@@ -586,7 +637,8 @@ namespace ReittiAPI
             int? walkCost = null,
             int? walkSpeed = null,
             string detail = null,
-            int? show = null)
+            int? show = null,
+            CancellationToken? cancellationToken = null)
         {
             string addressLang = GetAddressLang();
             string poiLang = GetPoiLang();
@@ -690,7 +742,16 @@ namespace ReittiAPI
 
             try
             {
-                string response = await _client.GetStringAsync(uriBuilder.Uri);
+                string response;
+                if (cancellationToken.HasValue)
+                {
+                    response = await (await _client.GetAsync(uriBuilder.Uri, cancellationToken.Value)).Content.ReadAsStringAsync();
+                    cancellationToken.Value.ThrowIfCancellationRequested();
+                }
+                else
+                {
+                    response = await _client.GetStringAsync(uriBuilder.Uri);
+                }
 
                 var routeResults = new List<CompoundRoute>();
                 if (response.Trim().Length != 0)

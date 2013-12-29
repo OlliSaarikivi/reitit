@@ -129,12 +129,12 @@ namespace Reitit
         {
             _id = id;
         }
-        public sealed void Tombstone(IDictionary<string, object> state)
+        public void Tombstone(IDictionary<string, object> state)
         {
             var namespacedState = new NamespacingDictionary<object>(state, _id);
             SaveState(namespacedState);
         }
-        public sealed void Restore(IDictionary<string, object> state)
+        public void Restore(IDictionary<string, object> state)
         {
             var namespacedState = new NamespacingDictionary<object>(state, _id);
             RestoreState(namespacedState);
@@ -154,6 +154,11 @@ namespace Reitit
 
     public class ScrollViewerTombstoner : FrameworkElementTombstoner<ScrollViewer>
     {
+        ScrollViewerTombstoner(ScrollViewer viewer)
+            : base(viewer)
+        {
+        }
+
         protected override void SaveState(IDictionary<string, object> state)
         {
             state["vertical"] = Element.VerticalOffset;
@@ -162,8 +167,8 @@ namespace Reitit
 
         protected override void RestoreState(IDictionary<string, object> state)
         {
-            Element.VerticalOffset = (double)state["vertical"];
-            Element.HorizontalOffset = (double)state["horizontal"];
+            Element.ScrollToVerticalOffset((double)state["vertical"]);
+            Element.ScrollToHorizontalOffset((double)state["horizontal"]);
         }
     }
 }

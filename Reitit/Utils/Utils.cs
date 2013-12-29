@@ -1,14 +1,18 @@
-﻿using ReittiAPI;
+﻿using Microsoft.Phone.Controls;
+using Reitit.Resources;
+using ReittiAPI;
 using System;
 using System.Collections.Generic;
 using System.Device.Location;
 using System.Globalization;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Media;
 using Windows.Devices.Geolocation;
 
 namespace Reitit
@@ -52,7 +56,7 @@ namespace Reitit
         public DatePickerConverter()
             : base((date, p, culture) =>
             {
-                return date.ToString(culture.DateTimeFormat.ShortDatePattern);
+                return date.ToString(CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern);
             }) { }
     }
 
@@ -61,7 +65,16 @@ namespace Reitit
         public TimePickerConverter()
             : base((date, p, culture) =>
             {
-                return date.ToString("\u200E" + culture.DateTimeFormat.LongTimePattern.Replace(":ss", ""));
+                return date.ToString("\u200E" + CultureInfo.CurrentCulture.DateTimeFormat.LongTimePattern.Replace(":ss", ""));
+            }) { }
+    }
+
+    public class LocationPickerConverter : LambdaConverter<IPickerLocation, string, object>
+    {
+        public LocationPickerConverter()
+            : base ((location, p, culture) =>
+            {
+                return location.DisplayName;
             }) { }
     }
 
@@ -76,8 +89,8 @@ namespace Reitit
 
     static class Utils
     {
-        //public static readonly double MapEpsilon = 0.000001;
-        public static readonly double MapEpsilon = 0.1;
+        public static readonly double MapEpsilon = 0.000001;
+        //public static readonly double MapEpsilon = 0.1;
 
         private static int _jiggle_index = 0;
         public static GeoCoordinate Jiggle(this GeoCoordinate coordinate)
@@ -148,6 +161,30 @@ namespace Reitit
         public static ReittiCoordinate ToReittiCoordinate(this Geoposition position)
         {
             return new ReittiCoordinate(position.Coordinate);
+        }
+
+        public static void KeepExpandedInView(this ListPicker picker, ScrollViewer viewer)
+        {
+            if (picker.ListPickerMode == ListPickerMode.Expanded)
+            {
+                GeneralTransform focusedVisualTransform = picker.TransformToVisual(viewer);
+                Rect rectangle = focusedVisualTransform.TransformBounds(new Rect(new Point(picker.Margin.Left, picker.Margin.Top), picker.RenderSize));
+                double newOffset = viewer.VerticalOffset + (rectangle.Bottom - viewer.ViewportHeight);
+                if (newOffset > viewer.VerticalOffset)
+                {
+                    viewer.ScrollToVerticalOffset(newOffset);
+                }
+            }
+        }
+
+        public static bool GetIsNetworkAvailableAndWarn()
+        {
+            var available = NetworkInterface.GetIsNetworkAvailable();
+            if (!available)
+            {
+                MessageBox.Show(AppResources.NetworkUnavailableText, AppResources.NetworkUnavailableTitle, MessageBoxButton.OK);
+            }
+            return available;
         }
     }
 }

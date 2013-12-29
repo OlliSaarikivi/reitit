@@ -8,6 +8,7 @@ using System.Windows.Controls;
 namespace Reitit
 {
     public abstract class DateTimePickerControl : PickerControl<DateTime, DateTime?> { }
+    public abstract class LocationPickerControlBase : PickerControl<IPickerLocation, IPickerLocation> { }
     public abstract class PickerControl<T,U> : UserControl
     {
         public static DependencyProperty ValueProperty = DependencyProperty.Register("Value", typeof(T), typeof(PickerControl<T,U>), new PropertyMetadata(default(T)));

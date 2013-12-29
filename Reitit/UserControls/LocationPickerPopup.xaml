@@ -7,6 +7,8 @@
     xmlns:bar="clr-namespace:BindableApplicationBar;assembly=BindableApplicationBar"
     xmlns:maps="clr-namespace:Microsoft.Phone.Maps.Controls;assembly=Microsoft.Phone.Maps"
     xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
+    xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+    xmlns:mvvmcommands="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Extras.WP8"
     xmlns:me="clr-namespace:Reitit"
     FontFamily="{StaticResource PhoneFontFamilyNormal}"
     FontSize="{StaticResource PhoneFontSizeNormal}"
@@ -69,19 +71,18 @@
             <phone:PivotItem Name="FindPivotItem" Header="find" Tag="{Binding SearchTag}">
                 <StackPanel>
                     <toolkit:PhoneTextBox Hint="{Binding Path=LocalizedResources.LocationPickerSearchHint, Source={StaticResource LocalizedStrings}}"
-                                          Text="{Binding SearchTerm}"/>
+                                          Text="{Binding SearchTerm}">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="KeyDown">
+                                <mvvmcommands:EventToCommand Command="{Binding SearchCommand}" PassEventArgsToCommand="True"/>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                    </toolkit:PhoneTextBox>
                     <ScrollViewer>
                         <Grid>
-                            <ListBox>
-                                <ListBox.ItemTemplate>
-                                    <DataTemplate>
-                                        
-                                    </DataTemplate>
-                                </ListBox.ItemTemplate>
-                            </ListBox>
-                            <phone:LongListSelector>
-                                
-                            </phone:LongListSelector>
+                            <phone:LongListSelector ItemsSource="{Binding ResultLocationGroups}"
+                                                    LayoutMode="List"
+                                                    IsGroupingEnabled="{Binding GroupResults}"/>
                             <TextBlock Text="{Binding Path=LocalizedResources.LocationPickerNoResults, Source={StaticResource LocalizedStrings}}"
                                        Style="{StaticResource EmptyListHeaderStyle}"
                                        TextWrapping="Wrap"
