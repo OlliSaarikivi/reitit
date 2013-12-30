@@ -23,5 +23,10 @@ namespace Reitit
         {
             ((ListPicker)sender).KeepExpandedInView(ContentScroll);
         }
+
+        private void MarginSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            MarginSlider.Value = (int)MarginSlider.Value;
+        }
     }
 }

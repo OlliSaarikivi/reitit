@@ -19,18 +19,25 @@
         <me:DatePickerConverter x:Key="DatePickerConverter"/>
         <me:TimePickerConverter x:Key="TimePickerConverter"/>
         <me:LocationPickerConverter x:Key="LocationPickerConverter"/>
-        <me:BooleanToVisibilityConverter x:Key="VisibilityConverter" />
+        <me:BooleanToVisibilityConverter x:Key="VisibilityConverter"/>
+        <me:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
+        <me:SelectedBrushConverter x:Key="SelectedBrushConverter"/>
+        <me:NullIfFalseConverter x:Key="NullIfFalseConverter"/>
+        <me:NegationConverter x:Key="NegationConverter"/>
 
-        <Storyboard x:Key="PickerOpenStoryboard">
+        <Storyboard x:Key="PopupOpenStoryboard">
             <DoubleAnimation
                             Storyboard.TargetName="PlaneProjection"
                             Storyboard.TargetProperty="RotationX"
                             From="-30"
                             To="0"
                             Duration="0:0:0.1"/>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ThisPopup" Storyboard.TargetProperty="Visibility">
+                <DiscreteObjectKeyFrame KeyTime="0:0:0" Value="Visible"/>
+            </ObjectAnimationUsingKeyFrames>
         </Storyboard>
 
-        <Storyboard x:Key="PickerCloseStoryboard">
+        <Storyboard x:Key="PopupCloseStoryboard">
             <DoubleAnimation
                             Storyboard.TargetName="PlaneProjection"
                             Storyboard.TargetProperty="RotationX"
@@ -40,6 +47,9 @@
                     <ExponentialEase EasingMode="EaseIn"/>
                 </DoubleAnimation.EasingFunction>
             </DoubleAnimation>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ThisPopup" Storyboard.TargetProperty="Visibility">
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.2" Value="Collapsed"/>
+            </ObjectAnimationUsingKeyFrames>
         </Storyboard>
 
         <Style x:Key="SlideTransitionPageStyle" TargetType="phone:PhoneApplicationPage">

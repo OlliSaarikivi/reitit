@@ -294,7 +294,7 @@ namespace ReittiAPI
     public class ConnectedLocations<T> where T : Location
     {
         [DataMember]
-        public string LongName;
+        public string Name;
         [DataMember]
         public List<T> Locations;
 
@@ -312,25 +312,25 @@ namespace ReittiAPI
         [DataMember]
         public ReittiCoordinate Center;
         [DataMember]
-        public string ShortName;
+        public string DisplayCode;
 
         public ConnectedStops(Stop stop)
             : base()
         {
             Locations.Add(stop);
             Center = stop.Coords;
-            LongName = stop.Name;
-            ShortName = stop.DisplayCode;
+            Name = stop.Name;
+            DisplayCode = stop.DisplayCode;
         }
 
         public bool TryAdd(Stop stop)
         {
-            if (LongName != stop.Name)
+            if (Name != stop.Name)
             {
                 return false;
             }
 
-            if (ShortName != stop.DisplayCode)
+            if (DisplayCode != stop.DisplayCode)
             {
                 return false;
             }

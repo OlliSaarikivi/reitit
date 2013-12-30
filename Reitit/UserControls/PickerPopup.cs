@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 
 namespace Reitit
 {
@@ -130,6 +131,8 @@ namespace Reitit
 
     public abstract class PickerPopup<T> : UserControl
     {
+        private Storyboard _openStoryboard, _closeStoryboard;
+
         private TaskCompletionSource<T> _source;
         private BindableApplicationBar.BindableApplicationBar _oldAppBar;
         private double _oldSTOpacity;
@@ -146,6 +149,44 @@ namespace Reitit
             set { this.SetValue(ApplicationBarProperty, value); }
         }
 
+        public PickerPopup()
+        {
+            Visibility = Visibility.Collapsed;
+            App.RootFrame.Overlay.Children.Add(this);
+
+            var planeProjection = new PlaneProjection();
+            Projection = planeProjection;
+
+            DoubleAnimation openAnimation = new DoubleAnimation();
+            openAnimation.From = -50;
+            openAnimation.To = 0;
+            var openEase = new ExponentialEase();
+            openEase.EasingMode = EasingMode.EaseOut;
+            openEase.Exponent = 6;
+            openAnimation.EasingFunction = openEase;
+            openAnimation.Duration = TimeSpan.FromSeconds(0.15);
+            Storyboard.SetTargetProperty(openAnimation, new PropertyPath("RotationX"));
+            Storyboard.SetTarget(openAnimation, planeProjection);
+
+            _openStoryboard = new Storyboard();
+            _openStoryboard.Children.Add(openAnimation);
+
+            DoubleAnimation closeAnimation = new DoubleAnimation();
+            closeAnimation.From = 0;
+            closeAnimation.To = 30;
+            var closeEase = new ExponentialEase();
+            closeEase.EasingMode = EasingMode.EaseIn;
+            closeEase.Exponent = 6;
+            closeAnimation.EasingFunction = closeEase;
+            closeAnimation.Duration = TimeSpan.FromSeconds(0.15);
+            Storyboard.SetTargetProperty(closeAnimation, new PropertyPath("RotationX"));
+            Storyboard.SetTarget(closeAnimation, planeProjection);
+
+            _closeStoryboard = new Storyboard();
+            _closeStoryboard.Children.Add(closeAnimation);
+            _closeStoryboard.Completed += (s, e) => Visibility = Visibility.Collapsed;
+        }
+
         public async Task<T> Show(T current)
         {
             if (_source != null)
@@ -153,8 +194,6 @@ namespace Reitit
                 throw new Exception("Picking already in progress");
             }
             _source = new TaskCompletionSource<T>();
-
-            App.RootFrame.Overlay.Children.Add(this);
 
             var page = App.RootFrame.Content as PhoneApplicationPage;
             _oldAppBar = Bindable.GetApplicationBar(page);
@@ -174,9 +213,16 @@ namespace Reitit
 
             InitializeWithCurrent(current);
 
-            VisualStateManager.GoToState(this, "Open", true);
+            AnimateOpen();
 
             return await _source.Task;
+        }
+
+        private void AnimateOpen()
+        {
+            _closeStoryboard.Stop();
+            Visibility = Visibility.Visible;
+            _openStoryboard.Begin();
         }
 
         private void Close()
@@ -196,9 +242,13 @@ namespace Reitit
             Bindable.SetApplicationBar(page, _oldAppBar);
             page.IsHitTestVisible = _oldIsHitTestVisible;
 
-            App.RootFrame.Overlay.Children.Remove(this);
+            AnimateClose();
+        }
 
-            VisualStateManager.GoToState(this, "Closed", true);
+        private void AnimateClose()
+        {
+            _openStoryboard.Stop();
+            _closeStoryboard.Begin();
         }
 
         protected void Done(T value)

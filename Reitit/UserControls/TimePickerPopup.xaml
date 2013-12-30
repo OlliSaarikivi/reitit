@@ -22,36 +22,6 @@
     </me:DateTimePickerPopup.ApplicationBar>
 
     <Grid x:Name="LayoutRoot" Background="{StaticResource PhoneChromeBrush}" Margin="0,0,0,72">
-        <VisualStateManager.VisualStateGroups>
-            <VisualStateGroup x:Name="VisibilityStates">
-                <VisualState x:Name="Open">
-                    <Storyboard>
-                        <DoubleAnimation
-                            Storyboard.TargetName="PlaneProjection"
-                            Storyboard.TargetProperty="RotationX"
-                            From="-30"
-                            To="0"
-                            Duration="0:0:0.1"/>
-                    </Storyboard>
-                </VisualState>
-                <VisualState x:Name="Closed">
-                    <Storyboard>
-                        <DoubleAnimation
-                            Storyboard.TargetName="PlaneProjection"
-                            Storyboard.TargetProperty="RotationX"
-                            To="90"
-                            Duration="0:0:0.2">
-                            <DoubleAnimation.EasingFunction>
-                                <ExponentialEase EasingMode="EaseIn"/>
-                            </DoubleAnimation.EasingFunction>
-                        </DoubleAnimation>
-                    </Storyboard>
-                </VisualState>
-            </VisualStateGroup>
-        </VisualStateManager.VisualStateGroups>
-        <Grid.Projection>
-            <PlaneProjection x:Name="PlaneProjection"/>
-        </Grid.Projection>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>

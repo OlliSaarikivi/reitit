@@ -133,6 +133,24 @@ namespace Reitit.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to A problem occured when trying to retrieve the results for your search. Try again or contact the app creator if the problem persists..
+        /// </summary>
+        public static string LocationPickerSearchFailed {
+            get {
+                return ResourceManager.GetString("LocationPickerSearchFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Couldn&apos;t retrieve locations.
+        /// </summary>
+        public static string LocationPickerSearchFailedTitle {
+            get {
+                return ResourceManager.GetString("LocationPickerSearchFailedTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to search for places and addresses.
         /// </summary>
         public static string LocationPickerSearchHint {

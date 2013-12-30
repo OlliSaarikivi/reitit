@@ -22,6 +22,20 @@ namespace Reitit
             SelectedRouteType = RouteTypes[0];
         }
 
+        public IPickerLocation From
+        {
+            get { return _from; }
+            set { Set(() => From, ref _from, value); }
+        }
+        private IPickerLocation _from = MeLocation.Instance;
+
+        public IPickerLocation To
+        {
+            get { return _to; }
+            set { Set(() => To, ref _to, value); }
+        }
+        private IPickerLocation _to;
+
         public DateTime Time
         {
             get { return _time; }

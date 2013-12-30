@@ -10,11 +10,15 @@ using Reitit.Resources;
 using Oat;
 using ReittiAPI;
 using Windows.Devices.Geolocation;
+using System.Windows.Media;
 
 namespace Reitit
 {
     public partial class App : Application, IOatApplication, IReittiAPIApplication
     {
+        public Brush ForegroundBrush;
+        public Brush AccentBrush;
+
         public IIndicatorManager IndicatorManager { get; private set; }
         public ModelCache ModelCache { get; private set; }
         public ReittiAPIClient ReittiClient { get; private set; }
@@ -75,6 +79,8 @@ namespace Reitit
                 PhoneApplicationService.Current.UserIdleDetectionMode = IdleDetectionMode.Disabled;
             }
 
+            ForegroundBrush = (Brush)Resources["PhoneForegroundBrush"];
+            AccentBrush = (Brush)Resources["PhoneAccentBrush"];
         }
 
         // Code to execute when the application is launching (eg, from Start)

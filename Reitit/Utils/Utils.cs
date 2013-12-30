@@ -3,6 +3,7 @@ using Reitit.Resources;
 using ReittiAPI;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Device.Location;
 using System.Globalization;
 using System.Linq;
@@ -74,7 +75,7 @@ namespace Reitit
         public LocationPickerConverter()
             : base ((location, p, culture) =>
             {
-                return location.DisplayName;
+                return location != null ? location.Name : "";
             }) { }
     }
 
@@ -85,6 +86,81 @@ namespace Reitit
             {
                 return b ? Visibility.Visible : Visibility.Collapsed;
             }) { }
+    }
+
+    public class NullToVisibilityConverter : LambdaConverter<object, Visibility, object>
+    {
+        public NullToVisibilityConverter()
+            : base((o, p, culture) =>
+            {
+                return o !=  null ? Visibility.Visible : Visibility.Collapsed;
+            }) { }
+    }
+
+    public class SelectedBrushConverter : LambdaConverter<bool, Brush, Brush>
+    {
+        public SelectedBrushConverter()
+            : base((b, p, culture) =>
+            {
+                return b ? App.Current.AccentBrush : (p ?? App.Current.ForegroundBrush);
+            }) { }
+    }
+
+    public class NullIfFalseConverter : LambdaConverter<bool, object, object>
+    {
+        public NullIfFalseConverter()
+            : base((b, p, culture) =>
+            {
+                return b ? p : null;
+            }) { }
+    }
+
+    public class NegationConverter : LambdaConverter<bool, bool, object>
+    {
+        public NegationConverter()
+            : base((b, p, culture) =>
+            {
+                return !b;
+            }) { }
+    }
+
+    public static class VisualStates
+    {
+        public static readonly DependencyProperty CurrentStateProperty = DependencyProperty
+            .RegisterAttached(
+                "CurrentState",
+                typeof(string),
+                typeof(VisualStates),
+                new PropertyMetadata(TransitionToState));
+
+        public static string GetCurrentState(DependencyObject obj)
+        {
+            return (string)obj.GetValue(CurrentStateProperty);
+        }
+
+        public static void SetCurrentState(DependencyObject obj, string value)
+        {
+            obj.SetValue(CurrentStateProperty, value);
+        }
+
+        static void StartOnGuiThread(Action act)
+        {
+            var disp = Deployment.Current.Dispatcher;
+            if (disp.CheckAccess())
+                act();
+            else
+                disp.BeginInvoke(act);
+        }
+
+        private static void TransitionToState(object sender, DependencyPropertyChangedEventArgs args)
+        {
+            Control elt = sender as Control;
+            if (null == elt)
+                throw new ArgumentException("CurrentState is only supported on Control instances");
+
+            string newState = args.NewValue.ToString();
+            StartOnGuiThread(() => VisualStateManager.GoToState(elt, newState, true));
+        }
     }
 
     static class Utils
@@ -185,6 +261,14 @@ namespace Reitit
                 MessageBox.Show(AppResources.NetworkUnavailableText, AppResources.NetworkUnavailableTitle, MessageBoxButton.OK);
             }
             return available;
+        }
+
+        public static void AddRange<T>(this ObservableCollection<T> collection, IEnumerable<T> range)
+        {
+            foreach (var item in range)
+            {
+                collection.Add(item);
+            }
         }
     }
 }

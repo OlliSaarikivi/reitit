@@ -60,12 +60,12 @@ namespace ReittiAPI
                 string response;
                 if (cancellationToken.HasValue)
                 {
-                    response = await (await _client.GetAsync(uriBuilder.Uri, cancellationToken.Value)).Content.ReadAsStringAsync();
+                    response = await (await _client.GetAsync(localizedUri, cancellationToken.Value)).Content.ReadAsStringAsync();
                     cancellationToken.Value.ThrowIfCancellationRequested();
                 }
                 else
                 {
-                    response = await _client.GetStringAsync(uriBuilder.Uri);
+                    response = await _client.GetStringAsync(localizedUri);
                 }
                 var doc = XDocument.Parse(response);
                 try

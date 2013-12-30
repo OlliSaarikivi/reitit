@@ -12,8 +12,32 @@
     xmlns:me="clr-namespace:Reitit"
     FontFamily="{StaticResource PhoneFontFamilyNormal}"
     FontSize="{StaticResource PhoneFontSizeNormal}"
-    Foreground="{StaticResource PhoneForegroundBrush}">
-
+    Foreground="{StaticResource PhoneForegroundBrush}"
+    toolkit:TiltEffect.IsTiltEnabled="True">
+    
+    <me:LocationPickerPopupBase.Resources>
+        <phone:JumpListItemBackgroundConverter x:Key="BackgroundConverter"/>
+        <phone:JumpListItemForegroundConverter x:Key="ForegroundConverter"/>
+        <Style x:Key="JumpListStyle" TargetType="phone:LongListSelector">
+            <Setter Property="LayoutMode" Value="List"/>
+            <Setter Property="ItemTemplate">
+                <Setter.Value>
+                    <DataTemplate>
+                        <Border Background="{Binding Converter={StaticResource BackgroundConverter}}"
+                                                        Margin="24,6,24,0">
+                            <TextBlock Text="{Binding Key}" 
+                                                               Foreground="{Binding Converter={StaticResource ForegroundConverter}}" 
+                                                               Margin="6,12,6,6"
+                                                               FontSize="{StaticResource PhoneFontSizeLarge}"
+                                                               FontFamily="{StaticResource PhoneFontFamilySemiLight}"
+                                                               VerticalAlignment="Center"/>
+                        </Border>
+                    </DataTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </me:LocationPickerPopupBase.Resources>
+    
     <me:LocationPickerPopupBase.ApplicationBar>
         <bar:BindableApplicationBar BindableOpacity="0.999">
             <bar:BindableApplicationBarButton Name="DoneButton"
@@ -26,36 +50,6 @@
     </me:LocationPickerPopupBase.ApplicationBar>
 
     <Grid x:Name="LayoutRoot" Background="{StaticResource PhoneChromeBrush}" Margin="0,0,0,72">
-        <VisualStateManager.VisualStateGroups>
-            <VisualStateGroup x:Name="VisibilityStates">
-                <VisualState x:Name="Open">
-                    <Storyboard>
-                        <DoubleAnimation
-                            Storyboard.TargetName="PlaneProjection"
-                            Storyboard.TargetProperty="RotationX"
-                            From="-30"
-                            To="0"
-                            Duration="0:0:0.1"/>
-                    </Storyboard>
-                </VisualState>
-                <VisualState x:Name="Closed">
-                    <Storyboard>
-                        <DoubleAnimation
-                            Storyboard.TargetName="PlaneProjection"
-                            Storyboard.TargetProperty="RotationX"
-                            To="90"
-                            Duration="0:0:0.2">
-                            <DoubleAnimation.EasingFunction>
-                                <ExponentialEase EasingMode="EaseIn"/>
-                            </DoubleAnimation.EasingFunction>
-                        </DoubleAnimation>
-                    </Storyboard>
-                </VisualState>
-            </VisualStateGroup>
-        </VisualStateManager.VisualStateGroups>
-        <Grid.Projection>
-            <PlaneProjection x:Name="PlaneProjection"/>
-        </Grid.Projection>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition/>
@@ -69,27 +63,57 @@
         <!-- Pivot -->
         <phone:Pivot Grid.Row="1" Title="{Binding Path=LocalizedResources.LocationPickerTitle, Source={StaticResource LocalizedStrings}}">
             <phone:PivotItem Name="FindPivotItem" Header="find" Tag="{Binding SearchTag}">
-                <StackPanel>
-                    <toolkit:PhoneTextBox Hint="{Binding Path=LocalizedResources.LocationPickerSearchHint, Source={StaticResource LocalizedStrings}}"
-                                          Text="{Binding SearchTerm}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <toolkit:PhoneTextBox Grid.Row="0" Hint="{Binding Path=LocalizedResources.LocationPickerSearchHint, Source={StaticResource LocalizedStrings}}"
+                                          Text="{Binding SearchTerm, Mode=TwoWay}" TextChanged="SearchBox_TextChanged">
                         <i:Interaction.Triggers>
                             <i:EventTrigger EventName="KeyDown">
                                 <mvvmcommands:EventToCommand Command="{Binding SearchCommand}" PassEventArgsToCommand="True"/>
                             </i:EventTrigger>
                         </i:Interaction.Triggers>
                     </toolkit:PhoneTextBox>
-                    <ScrollViewer>
-                        <Grid>
-                            <phone:LongListSelector ItemsSource="{Binding ResultLocationGroups}"
-                                                    LayoutMode="List"
-                                                    IsGroupingEnabled="{Binding GroupResults}"/>
-                            <TextBlock Text="{Binding Path=LocalizedResources.LocationPickerNoResults, Source={StaticResource LocalizedStrings}}"
+                    <Grid Grid.Row="1">
+                        <phone:LongListSelector Name="SearchResultsSelector" 
+                                                ItemsSource="{Binding ResultLocationGroups}"
+                                                LayoutMode="List"
+                                                IsGroupingEnabled="True"
+                                                Margin="0,0,-12,0"
+                                                SelectionChanged="SearchResultsSelector_SelectionChanged"
+                                                JumpListStyle="{Binding JumpingEnabled, Converter={StaticResource NullIfFalseConverter}, ConverterParameter={StaticResource JumpListStyle}}">
+                            <phone:LongListSelector.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Margin="0,6,0,6">
+                                        <TextBlock Text="{Binding Name}" 
+                                                   Margin="12,0,12,0" 
+                                                   FontSize="{StaticResource PhoneFontSizeLarge}"
+                                                   TextWrapping="Wrap"
+                                                   Foreground="{Binding Selected, Converter={StaticResource SelectedBrushConverter}}"/>
+                                        <TextBlock Text="{Binding Detail}"
+                                                   Visibility="{Binding Detail, Converter={StaticResource NullToVisibilityConverter}}"
+                                                   Style="{StaticResource PhoneTextSubtleStyle}"
+                                                   Foreground="{Binding Selected, Converter={StaticResource SelectedBrushConverter}, ConverterParameter={StaticResource PhoneSubtleBrush}}"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </phone:LongListSelector.ItemTemplate>
+                            <phone:LongListSelector.GroupHeaderTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Key}"
+                                               Foreground="{Binding Path=DataContext.JumpingEnabled, ElementName=ThisPopup, Converter={StaticResource SelectedBrushConverter}, ConverterParameter={StaticResource PhoneSubtleBrush}}"
+                                               Margin="12,6,12,6"
+                                               Style="{StaticResource PhoneTextGroupHeaderStyle}"/>
+                                </DataTemplate>
+                            </phone:LongListSelector.GroupHeaderTemplate>
+                        </phone:LongListSelector>
+                        <TextBlock Text="{Binding Path=LocalizedResources.LocationPickerNoResults, Source={StaticResource LocalizedStrings}}"
                                        Style="{StaticResource EmptyListHeaderStyle}"
                                        TextWrapping="Wrap"
                                        Visibility="{Binding NoResultsVisible, Converter={StaticResource VisibilityConverter}}"/>
-                        </Grid>
-                    </ScrollViewer>
-                </StackPanel>
+                    </Grid>
+                </Grid>
             </phone:PivotItem>
             <phone:PivotItem Name="MapPivotItem" Header="map" Tag="{Binding MapTag}">
                 <maps:Map Margin="-12,0,-12,0" />

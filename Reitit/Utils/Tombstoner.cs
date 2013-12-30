@@ -129,12 +129,12 @@ namespace Reitit
         {
             _id = id;
         }
-        public void Tombstone(IDictionary<string, object> state)
+        public void TombstoneTo(IDictionary<string, object> state)
         {
             var namespacedState = new NamespacingDictionary<object>(state, _id);
             SaveState(namespacedState);
         }
-        public void Restore(IDictionary<string, object> state)
+        public void RestoreFrom(IDictionary<string, object> state)
         {
             var namespacedState = new NamespacingDictionary<object>(state, _id);
             RestoreState(namespacedState);

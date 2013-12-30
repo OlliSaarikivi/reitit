@@ -254,4 +254,10 @@
   <data name="NetworkUnavailableTitle" xml:space="preserve">
     <value>Can't connect to the Internet</value>
   </data>
+  <data name="LocationPickerSearchFailed" xml:space="preserve">
+    <value>A problem occured when trying to retrieve the results for your search. Try again or contact the app creator if the problem persists.</value>
+  </data>
+  <data name="LocationPickerSearchFailedTitle" xml:space="preserve">
+    <value>Couldn't retrieve locations</value>
+  </data>
 </root>

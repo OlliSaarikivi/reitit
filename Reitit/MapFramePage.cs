@@ -25,9 +25,17 @@ namespace Reitit
             set { this.SetValue(MapHeightProperty, value); }
         }
 
+        public List<Tombstoner> Tombstoners
+        {
+            get
+            {
+                return _tombstoners;
+            }
+        }
+        private List<Tombstoner> _tombstoners = new List<Tombstoner>();
+
         private bool _isNewPageInstance = true;
         private ConstructVM _constructVM;
-        private List<Tombstoner> _tombstoners;
 
         public MapFramePage(ConstructVM constructVM)
         {
@@ -44,11 +52,6 @@ namespace Reitit
             SetBinding(MapHeightProperty, binding);
         }
 
-        protected void AddTombstoner(Tombstoner stoner)
-        {
-
-        }
-
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             if (_isNewPageInstance)
@@ -58,6 +61,10 @@ namespace Reitit
                     if (State.Count > 0)
                     {
                         DataContext = State["DataContext"];
+                        foreach (var stoner in Tombstoners)
+                        {
+                            stoner.RestoreFrom(State);
+                        }
                     }
                     else
                     {
@@ -84,6 +91,10 @@ namespace Reitit
             if (e.NavigationMode != NavigationMode.Back)
             {
                 State["DataContext"] = DataContext;
+                foreach (var stoner in Tombstoners)
+                {
+                    stoner.TombstoneTo(State);
+                }
             }
         }
     }

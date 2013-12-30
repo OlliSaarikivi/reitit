@@ -8,12 +8,13 @@ using System.Threading.Tasks;
 using Windows.Devices.Geolocation;
 using GalaSoft.MvvmLight;
 using System.Device.Location;
+using System.Windows.Media;
 
 namespace Reitit
 {
     public interface IPickerLocation
     {
-        string DisplayName { get; }
+        string Name { get; }
         Task<ReittiCoordinate> GetCoordinates();
     }
 
@@ -21,12 +22,14 @@ namespace Reitit
     {
         private ReittiCoordinate _coordinate;
 
-        public string DisplayName
+        public string Name
         {
-            get { return _displayName; }
-            set { Set(() => DisplayName, ref _displayName, value); }
+            get { return _name; }
+            set { Set(() => Name, ref _name, value); }
         }
-        private string _displayName = AppResources.MapLocationPlaceholderText;
+        private string _name = AppResources.MapLocationPlaceholderText;
+
+        public string Detail { get { return null; } }
 
         public MapLocation(ReittiCoordinate coordinate)
         {
@@ -39,20 +42,52 @@ namespace Reitit
         }
     }
 
-    public class ReittiLocation : IPickerLocation
+    public abstract class ReittiLocationBase : ObservableObject, IPickerLocation
     {
-        public Location Location { get; private set; }
+        public abstract string Name { get; }
+        public abstract Task<ReittiCoordinate> GetCoordinates();
+        public abstract string Detail { get; }
+        public bool Selected
+        {
+            get { return _selected; }
+            set { Set(() => Selected, ref _selected, value); }
+        }
+        private bool _selected = false;
+    }
 
-        public string DisplayName { get { return Location.Name; } }
+    public class ReittiLocation : ReittiLocationBase
+    {
+        private Location _location;
+
+        public override string Name { get { return _location.Name; } }
+        public override string Detail { get { return null; } }
 
         public ReittiLocation(Location location)
         {
-            Location = location;
+            _location = location;
         }
 
-        public Task<ReittiCoordinate> GetCoordinates()
+        public override Task<ReittiCoordinate> GetCoordinates()
         {
-            return Task.FromResult(Location.Coords);
+            return Task.FromResult(_location.Coords);
+        }
+    }
+
+    public class ReittiStopsLocation : ReittiLocationBase
+    {
+        private ConnectedStops _stops;
+
+        public override string Name { get { return _stops.Name; } }
+        public override string Detail { get { return _stops.DisplayCode; } }
+
+        public ReittiStopsLocation(ConnectedStops stops)
+        {
+            _stops = stops;
+        }
+
+        public override Task<ReittiCoordinate> GetCoordinates()
+        {
+            return Task.FromResult(_stops.Center);
         }
     }
 
@@ -63,7 +98,8 @@ namespace Reitit
 
         private MeLocation() { }
 
-        public string DisplayName { get { return AppResources.MyLocationText; } }
+        public string Name { get { return AppResources.MyLocationText; } }
+        public string Detail { get { return null; } }
         public async Task<ReittiCoordinate> GetCoordinates()
         {
             var locator = new Geolocator
