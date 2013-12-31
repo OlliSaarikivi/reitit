@@ -251,7 +251,7 @@ namespace Reitit
             _closeStoryboard.Begin();
         }
 
-        protected void Done(T value)
+        public void Done(T value)
         {
             if (_source != null)
             {

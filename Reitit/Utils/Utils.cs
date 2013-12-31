@@ -123,44 +123,14 @@ namespace Reitit
                 return !b;
             }) { }
     }
-
-    public static class VisualStates
+    
+    public class NotNullConverter : LambdaConverter<object, bool, object>
     {
-        public static readonly DependencyProperty CurrentStateProperty = DependencyProperty
-            .RegisterAttached(
-                "CurrentState",
-                typeof(string),
-                typeof(VisualStates),
-                new PropertyMetadata(TransitionToState));
-
-        public static string GetCurrentState(DependencyObject obj)
-        {
-            return (string)obj.GetValue(CurrentStateProperty);
-        }
-
-        public static void SetCurrentState(DependencyObject obj, string value)
-        {
-            obj.SetValue(CurrentStateProperty, value);
-        }
-
-        static void StartOnGuiThread(Action act)
-        {
-            var disp = Deployment.Current.Dispatcher;
-            if (disp.CheckAccess())
-                act();
-            else
-                disp.BeginInvoke(act);
-        }
-
-        private static void TransitionToState(object sender, DependencyPropertyChangedEventArgs args)
-        {
-            Control elt = sender as Control;
-            if (null == elt)
-                throw new ArgumentException("CurrentState is only supported on Control instances");
-
-            string newState = args.NewValue.ToString();
-            StartOnGuiThread(() => VisualStateManager.GoToState(elt, newState, true));
-        }
+        public NotNullConverter()
+            : base((o, p, culture) =>
+            {
+                return o != null;
+            }) { }
     }
 
     static class Utils
@@ -232,11 +202,6 @@ namespace Reitit
             }
 
             scrollViewer.ScrollToVerticalOffset(scrollPos);
-        }
-
-        public static ReittiCoordinate ToReittiCoordinate(this Geoposition position)
-        {
-            return new ReittiCoordinate(position.Coordinate);
         }
 
         public static void KeepExpandedInView(this ListPicker picker, ScrollViewer viewer)

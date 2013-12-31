@@ -24,6 +24,7 @@
         <me:SelectedBrushConverter x:Key="SelectedBrushConverter"/>
         <me:NullIfFalseConverter x:Key="NullIfFalseConverter"/>
         <me:NegationConverter x:Key="NegationConverter"/>
+        <me:NotNullConverter x:Key="NotNullConverter"/>
 
         <Storyboard x:Key="PopupOpenStoryboard">
             <DoubleAnimation

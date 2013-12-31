@@ -27,42 +27,47 @@ namespace ReittiAPI
             Longitude = longitude;
         }
 
-        public ReittiCoordinate(GeoCoordinate coordinate)
-            : this(coordinate.Latitude, coordinate.Longitude)
+        public static bool TryParse(string s, out ReittiCoordinate coordinate)
         {
+            var substrings = s.Split(',');
+            double latitude, longitude;
+            if (substrings.Length == 2 &&
+                double.TryParse(substrings[0], NumberStyles.Any, CultureInfo.InvariantCulture, out latitude) &&
+                double.TryParse(substrings[1], NumberStyles.Any, CultureInfo.InvariantCulture, out longitude))
+            {
+                coordinate = new ReittiCoordinate(latitude, longitude);
+                return true;
+            }
+            coordinate = null;
+            return false;
         }
 
-        public ReittiCoordinate(Geocoordinate coordinate)
-            : this (coordinate.Latitude, coordinate.Longitude)
-        {
-        }
-
-        public ReittiCoordinate(string s)
+        public static ReittiCoordinate Parse(string s)
         {
             var substrings = s.Split(',');
             if (substrings.Length == 2)
             {
-                try
-                {
-                    Longitude = double.Parse(substrings[0], CultureInfo.InvariantCulture);
-                    Latitude = double.Parse(substrings[1], CultureInfo.InvariantCulture);
-                }
-                catch (FormatException)
-                {
-                    throw new ArgumentException("Invalid coordinate string: " + s);
-                }
+                return new ReittiCoordinate(
+                    double.Parse(substrings[0], CultureInfo.InvariantCulture),
+                    double.Parse(substrings[1], CultureInfo.InvariantCulture));
             }
-            else
-            {
-                throw new ArgumentException("Invalid coordinate string: " + s);
-            }
+            throw new FormatException("Not enough parts");
         }
 
-        public GeoCoordinate AsGeoCoordinate()
+        public static implicit operator GeoCoordinate(ReittiCoordinate c)
         {
-            return new GeoCoordinate(Latitude, Longitude);
+            return new GeoCoordinate(c.Latitude, c.Longitude);
         }
 
+        public static explicit operator ReittiCoordinate(GeoCoordinate c)
+        {
+            return new ReittiCoordinate(c.Latitude, c.Longitude);
+        }
+
+        public static explicit operator ReittiCoordinate(Geocoordinate c)
+        {
+            return new ReittiCoordinate(c.Latitude, c.Longitude);
+        }
 
         public override string ToString()
         {

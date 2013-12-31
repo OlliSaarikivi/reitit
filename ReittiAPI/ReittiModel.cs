@@ -68,7 +68,7 @@ namespace ReittiAPI
             }
 
             string coordintateString = source.Value<string>("coords");
-            Coords = new ReittiCoordinate(coordintateString);
+            Coords = ReittiCoordinate.Parse(coordintateString);
         }
 
         protected virtual string GetName()
@@ -207,7 +207,7 @@ namespace ReittiAPI
             }
 
             string coordinateString = source.Value<string>("coords");
-            Coords = new ReittiCoordinate(coordinateString);
+            Coords = ReittiCoordinate.Parse(coordinateString);
 
             JArray departuresArray = source["departures"] as JArray;
             if (departuresArray != null)
@@ -267,7 +267,7 @@ namespace ReittiAPI
             CitiesByLang[responseLang] = source.Value<string>("city_name");
 
             string coordinateString = source.Value<string>("coords");
-            Coords = new ReittiCoordinate(coordinateString);
+            Coords = ReittiCoordinate.Parse(coordinateString);
         }
 
         public void UpdateFromStopsInAreaResponse(JToken source, string responseLang)
@@ -284,7 +284,7 @@ namespace ReittiAPI
             CitiesByLang[responseLang] = source.Value<string>("city");
 
             string coordinateString = source.Value<string>("coords");
-            Coords = new ReittiCoordinate(coordinateString);
+            Coords = ReittiCoordinate.Parse(coordinateString);
 
             Dist = source.Value<int>("dist");
         }
@@ -506,7 +506,7 @@ namespace ReittiAPI
             TimetableUrl = new Uri(Utils.CleanUrl(timetableUrlString));
 
             string lineShapeString = source.Value<string>("line_shape");
-            LineShape = Utils.ParseAsArray(lineShapeString, (s) => new ReittiCoordinate(s));
+            LineShape = Utils.ParseAsArray(lineShapeString, s => ReittiCoordinate.Parse(s));
 
             JArray stopsArray = source["line_stops"] as JArray;
             if (stopsArray != null)

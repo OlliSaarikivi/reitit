@@ -106,7 +106,7 @@ namespace Reitit
             {
                 DesiredAccuracy = PositionAccuracy.High
             };
-            return (await locator.GetGeopositionAsync(TimeSpan.Zero, TimeSpan.FromSeconds(15))).ToReittiCoordinate();
+            return (ReittiCoordinate)(await locator.GetGeopositionAsync(TimeSpan.Zero, TimeSpan.FromSeconds(15))).Coordinate;
         }
     }
 }

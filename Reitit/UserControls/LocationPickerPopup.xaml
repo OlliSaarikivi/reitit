@@ -41,6 +41,7 @@
     <me:LocationPickerPopupBase.ApplicationBar>
         <bar:BindableApplicationBar BindableOpacity="0.999">
             <bar:BindableApplicationBarButton Name="DoneButton"
+                                              IsEnabled="{Binding VisibleSelection, Converter={StaticResource NotNullConverter}}"
                                               Text="{Binding Path=LocalizedResources.PickerDoneText, Source={StaticResource LocalizedStrings}}"
                                               IconUri="/Assets/AppBar/check.png"/>
             <bar:BindableApplicationBarButton Name="CancelButton"
@@ -61,7 +62,14 @@
             Grid.Row="0"
             Height="32"/>
         <!-- Pivot -->
-        <phone:Pivot Grid.Row="1" Title="{Binding Path=LocalizedResources.LocationPickerTitle, Source={StaticResource LocalizedStrings}}">
+        <phone:Pivot Grid.Row="1" 
+                     Name="Pivot"
+                     Title="{Binding Path=LocalizedResources.LocationPickerTitle, Source={StaticResource LocalizedStrings}}">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="SelectionChanged">
+                    <mvvmcommands:EventToCommand Command="{Binding PivotChangedCommand}" PassEventArgsToCommand="True"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
             <phone:PivotItem Name="FindPivotItem" Header="find" Tag="{Binding SearchTag}">
                 <Grid>
                     <Grid.RowDefinitions>
@@ -77,14 +85,15 @@
                         </i:Interaction.Triggers>
                     </toolkit:PhoneTextBox>
                     <Grid Grid.Row="1">
-                        <phone:LongListSelector Name="SearchResultsSelector" 
+                        <me:FixedLongListSelector Name="SearchResultsSelector" 
                                                 ItemsSource="{Binding ResultLocationGroups}"
                                                 LayoutMode="List"
                                                 IsGroupingEnabled="True"
                                                 Margin="0,0,-12,0"
                                                 SelectionChanged="SearchResultsSelector_SelectionChanged"
+                                                SelectedItem="{Binding SelectedResult, Mode=TwoWay}"
                                                 JumpListStyle="{Binding JumpingEnabled, Converter={StaticResource NullIfFalseConverter}, ConverterParameter={StaticResource JumpListStyle}}">
-                            <phone:LongListSelector.ItemTemplate>
+                            <me:FixedLongListSelector.ItemTemplate>
                                 <DataTemplate>
                                     <StackPanel Margin="0,6,0,6">
                                         <TextBlock Text="{Binding Name}" 
@@ -98,16 +107,16 @@
                                                    Foreground="{Binding Selected, Converter={StaticResource SelectedBrushConverter}, ConverterParameter={StaticResource PhoneSubtleBrush}}"/>
                                     </StackPanel>
                                 </DataTemplate>
-                            </phone:LongListSelector.ItemTemplate>
-                            <phone:LongListSelector.GroupHeaderTemplate>
+                            </me:FixedLongListSelector.ItemTemplate>
+                            <me:FixedLongListSelector.GroupHeaderTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding Key}"
                                                Foreground="{Binding Path=DataContext.JumpingEnabled, ElementName=ThisPopup, Converter={StaticResource SelectedBrushConverter}, ConverterParameter={StaticResource PhoneSubtleBrush}}"
                                                Margin="12,6,12,6"
                                                Style="{StaticResource PhoneTextGroupHeaderStyle}"/>
                                 </DataTemplate>
-                            </phone:LongListSelector.GroupHeaderTemplate>
-                        </phone:LongListSelector>
+                            </me:FixedLongListSelector.GroupHeaderTemplate>
+                        </me:FixedLongListSelector>
                         <TextBlock Text="{Binding Path=LocalizedResources.LocationPickerNoResults, Source={StaticResource LocalizedStrings}}"
                                        Style="{StaticResource EmptyListHeaderStyle}"
                                        TextWrapping="Wrap"
@@ -115,9 +124,9 @@
                     </Grid>
                 </Grid>
             </phone:PivotItem>
-            <phone:PivotItem Name="MapPivotItem" Header="map" Tag="{Binding MapTag}">
+            <!--<phone:PivotItem Name="MapPivotItem" Header="map" Tag="{Binding MapTag}">
                 <maps:Map Margin="-12,0,-12,0" />
-            </phone:PivotItem>
+            </phone:PivotItem>-->
             <phone:PivotItem Name="FavoritesPivotItem" Header="favorites" Tag="{Binding FavoritesTag}">
                 <Grid/>
             </phone:PivotItem>

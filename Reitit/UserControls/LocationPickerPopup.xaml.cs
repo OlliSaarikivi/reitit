@@ -29,7 +29,7 @@ namespace Reitit
 
             DoneButton.Command = new RelayCommand(() =>
             {
-                throw new NotImplementedException();
+                Done(((LocationPickerPopupVM)DataContext).VisibleSelection);
             });
             CancelButton.Command = new RelayCommand(() =>
             {
@@ -71,10 +71,38 @@ namespace Reitit
         }
     }
 
-    class LocationPickerPopupVM : ObservableObject
+    class LocationPickerPopupVM : ExtendedObservableObject
     {
         public LocationPickerPopup View { get; set; }
 
+        public DerivedProperty<IPickerLocation> VisibleSelectionProperty;
+        public IPickerLocation VisibleSelection { get { return VisibleSelectionProperty.Get(); } }
+
+        public LocationPickerPopupVM()
+        {
+            VisibleSelectionProperty = CreateDerivedProperty(() => VisibleSelection,
+                () => SelectedPivotTag == SearchTag ? SelectedResult : null);
+            PropertyChanged += (s, e) =>
+            {
+                if (e.PropertyName == "VisibleSelection")
+                {
+                    View.DoneButton.IsEnabled = VisibleSelection != null;
+                }
+            };
+        }
+
+        public RelayCommand<SelectionChangedEventArgs> PivotChangedCommand
+        {
+            get
+            {
+                return new RelayCommand<SelectionChangedEventArgs>((e) =>
+                {
+                    var tag = ((PivotItem)e.AddedItems[0]).Tag;
+                    SelectedPivotTag = tag;
+                });
+            }
+        }
+        
         public string SearchTerm
         {
             get { return _searchTerm; }
@@ -88,6 +116,13 @@ namespace Reitit
             set { Set(() => NoResultsVisible, ref _noResultsVisible, value); }
         }
         private bool _noResultsVisible = false;
+
+        public object SelectedPivotTag
+        {
+            get { return _selectedPivotTag; }
+            set { Set(() => SelectedPivotTag, ref _selectedPivotTag, value); }
+        }
+        private object _selectedPivotTag;
 
         public object SearchTag
         {
@@ -110,12 +145,20 @@ namespace Reitit
             get { return _resultLocationGroups; }
         }
         private ObservableCollection<LocationGroup> _resultLocationGroups = new ObservableCollection<LocationGroup>();
+
         public bool JumpingEnabled
         {
             get { return _jumpingEnabled; }
             set { Set(() => JumpingEnabled, ref _jumpingEnabled, value); }
         }
         private bool _jumpingEnabled = true;
+
+        public ReittiLocationBase SelectedResult
+        {
+            get { return _selectedResult; }
+            set { Set(() => SelectedResult, ref _selectedResult, value); }
+        }
+        private ReittiLocationBase _selectedResult;
 
         private CancellationTokenSource _searchTokenSource;
         public RelayCommand<KeyEventArgs> SearchCommand
