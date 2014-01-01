@@ -21,6 +21,7 @@ namespace Reitit
 
         public IIndicatorManager IndicatorManager { get; private set; }
         public ModelCache ModelCache { get; private set; }
+        public ParameterCache Parameters { get; private set; }
         public ReittiAPIClient ReittiClient { get; private set; }
         public Size ScaledResolution { get; private set; }
 
@@ -39,6 +40,7 @@ namespace Reitit
         {
             IndicatorManager = new StackIndicatorManager();
             ModelCache = new ModelCache(50);
+            Parameters = new ParameterCache();
             ReittiClient = new ReittiAPIClient("reittiwp", "yq8izavx187k");
 
             var content = Application.Current.Host.Content;

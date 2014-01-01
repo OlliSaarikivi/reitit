@@ -83,14 +83,13 @@
     <Grid x:Name="LayoutRoot" Background="{StaticResource PhoneBackgroundBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="72"/>
         </Grid.RowDefinitions>
 
         <me:LogoTitle Grid.Row="0" Text="{Binding Path=LocalizedResources.RouteSearchTitle, Source={StaticResource LocalizedStrings}}" Margin="24,17,0,28"/>
 
-        <ScrollViewer Grid.Row="2" Name="ContentScroll" Margin="12,0,0,0">
+        <ScrollViewer Grid.Row="1" Name="ContentScroll" Margin="12,0,0,0">
             <StackPanel Margin="0,0,12,0">
                 <TextBlock Text="{Binding Path=LocalizedResources.RouteSearchFromHeader, Source={StaticResource LocalizedStrings}}" Style="{StaticResource PhoneTextNormalStyle}" Margin="12,0,12,-6" />
                 <me:LocationPickerControl Value="{Binding From, Mode=TwoWay}"/>

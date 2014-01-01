@@ -14,9 +14,13 @@ namespace Reitit
     public partial class RouteSearchPage : MapFramePage
     {
         public RouteSearchPage()
-            : base((e) => new RouteSearchPageVM())
         {
             InitializeComponent();
+        }
+
+        protected override object ConstructVM(NavigationEventArgs e)
+        {
+            return new RouteSearchPageVM();
         }
 
         private void ListPicker_SizeChanged(object sender, SizeChangedEventArgs e)

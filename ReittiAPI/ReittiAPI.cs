@@ -17,6 +17,7 @@ using System.Threading.Tasks;
 using System.Net.Http;
 using System.Net;
 using System.Threading;
+using System.Runtime.Serialization;
 
 namespace ReittiAPI
 {
@@ -75,6 +76,51 @@ namespace ReittiAPI
     {
         Fi,
         Sv,
+    }
+
+    [DataContract]
+    public class RouteSearchParameters
+    {
+        [DataMember]
+        public ReittiCoordinate From;
+        [DataMember]
+        public ReittiCoordinate To;
+        [DataMember]
+        public ReittiCoordinate Via;
+        [DataMember]
+        public TimeSpan? ViaTime;
+        [DataMember]
+        public DateTime? DateTime;
+        [DataMember]
+        public string Timetype;
+        [DataMember]
+        public string Zone;
+        [DataMember]
+        public List<string> TransportTypes;
+        [DataMember]
+        public Dictionary<int, double> ModeCostsByTransportTypeId;
+        [DataMember]
+        public string Optimize;
+        [DataMember]
+        public int? ChangeMargin;
+        [DataMember]
+        public int? ChangeCost;
+        [DataMember]
+        public int? WaitCost;
+        [DataMember]
+        public int? WalkCost;
+        [DataMember]
+        public int? WalkSpeed;
+        [DataMember]
+        public string Detail;
+        [DataMember]
+        public int? Show;
+
+        public RouteSearchParameters()
+        {
+            TransportTypes = new List<string>();
+            ModeCostsByTransportTypeId = new Dictionary<int, double>();
+        }
     }
 
     public class ReittiAPIClient
@@ -621,23 +667,7 @@ namespace ReittiAPI
         }
 
         public async Task<List<CompoundRoute>> RouteAsync(
-            ReittiCoordinate from,
-            ReittiCoordinate to,
-            ReittiCoordinate via = null,
-            TimeSpan? viaTime = null,
-            DateTime? dateTime = null,
-            string timetype = null,
-            string zone = null,
-            IEnumerable<string> transportTypes = null,
-            IDictionary<int, double> modeCostsByTransportTypeId = null,
-            string optimize = null,
-            int? changeMargin = null,
-            int? changeCost = null,
-            int? waitCost = null,
-            int? walkCost = null,
-            int? walkSpeed = null,
-            string detail = null,
-            int? show = null,
+            RouteSearchParameters parameters,
             CancellationToken? cancellationToken = null)
         {
             string addressLang = GetAddressLang();
@@ -646,95 +676,92 @@ namespace ReittiAPI
             var query = GetCommonParameters(addressLang, poiLang, poiSpecific: false);
             query.Append("&request=route");
 
-            query.Append("&from=").Append(from);
+            query.Append("&from=").Append(parameters.From);
 
-            query.Append("&to=").Append(to);
+            query.Append("&to=").Append(parameters.To);
 
-            if (via != null)
+            if (parameters.Via != null)
             {
-                query.Append("&via=").Append(via);
+                query.Append("&via=").Append(parameters.Via);
             }
 
-            if (viaTime != null)
+            if (parameters.ViaTime != null)
             {
-                query.Append("&via_time=").Append((int)Math.Ceiling(viaTime.Value.TotalMinutes));
+                query.Append("&via_time=").Append((int)Math.Ceiling(parameters.ViaTime.Value.TotalMinutes));
             }
 
-            if (dateTime != null)
+            if (parameters.DateTime != null)
             {
-                query.Append("&date=").Append(dateTime.Value.ToString("yyyyMMdd"));
-                query.Append("&time=").Append(dateTime.Value.ToString("HHmm"));
+                query.Append("&date=").Append(parameters.DateTime.Value.ToString("yyyyMMdd"));
+                query.Append("&time=").Append(parameters.DateTime.Value.ToString("HHmm"));
             }
 
-            if (timetype != null)
+            if (parameters.Timetype != null)
             {
-                query.Append("&timetype=").Append(timetype);
+                query.Append("&timetype=").Append(parameters.Timetype);
             }
 
-            if (zone != null)
+            if (parameters.Zone != null)
             {
-                query.Append("&zone=").Append(zone);
+                query.Append("&zone=").Append(parameters.Zone);
             }
 
-            if (transportTypes != null)
+            if (parameters.TransportTypes.Count > 0)
             {
-                query.Append("&transport_types=").AppendList(transportTypes);
+                query.Append("&transport_types=").AppendList(parameters.TransportTypes);
             }
 
-            if (modeCostsByTransportTypeId != null)
+            foreach (var entry in parameters.ModeCostsByTransportTypeId)
             {
-                foreach (var entry in modeCostsByTransportTypeId)
+                query.Append("&mode_cost_").Append(entry.Key).Append('=');
+                if (entry.Value < 0)
                 {
-                    query.Append("&mode_cost_").Append(entry.Key).Append('=');
-                    if (entry.Value < 0)
-                    {
-                        query.Append("-1");
-                    }
-                    else
-                    {
-                        query.Append(entry.Value.ToString("0.0"));
-                    }
+                    query.Append("-1");
+                }
+                else
+                {
+                    query.Append(entry.Value.ToString("0.0"));
                 }
             }
 
-            if (optimize != null)
+            if (parameters.Optimize != null)
             {
-                query.Append("&optimize=").Append(optimize);
+                query.Append("&optimize=").Append(parameters.Optimize);
             }
 
-            if (changeMargin != null)
+            if (parameters.ChangeMargin != null)
             {
-                query.Append("&change_margin=").Append(changeMargin);
+                query.Append("&change_margin=").Append(parameters.ChangeMargin);
             }
 
-            if (changeCost != null)
+            if (parameters.ChangeCost != null)
             {
-                query.Append("&change_cost=").Append(changeCost);
+                query.Append("&change_cost=").Append(parameters.ChangeCost);
             }
 
-            if (waitCost != null)
+            if (parameters.WaitCost != null)
             {
-                query.Append("&wait_cost=").Append(waitCost);
+                query.Append("&wait_cost=").Append(parameters.WaitCost);
             }
 
-            if (walkCost != null)
+            if (parameters.WalkCost != null)
             {
-                query.Append("&walk_cost=").Append(walkCost);
+                query.Append("&walk_cost=").Append(parameters.WalkCost);
             }
 
-            if (walkSpeed != null)
+            if (parameters.WalkSpeed != null)
             {
-                query.Append("&walk_speed=").Append(walkSpeed);
+                query.Append("&walk_speed=").Append(parameters.WalkSpeed);
             }
 
-            if (detail != null)
+            if (parameters.Detail != null)
             {
-                query.Append("&detail=").Append(detail);
+                query.Append("&detail=").Append(parameters.Detail);
             }
 
-            if (show != null)
+            if (parameters.Show != null)
             {
-                query.Append("&show=").Append(show);
+                query.Append("&show=").Append(parameters.Show);
             }
 
             var uriBuilder = new UriBuilder(BaseUri);

@@ -15,9 +15,13 @@ namespace Reitit
     public partial class MainPage : MapFramePage
     {
         public MainPage()
-            : base((e) => new MainPageVM())
         {
             InitializeComponent();
+        }
+
+        protected override object ConstructVM(NavigationEventArgs e)
+        {
+            return new MainPageVM();
         }
     }
 }

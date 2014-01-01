@@ -260,4 +260,7 @@
   <data name="LocationPickerSearchFailedTitle" xml:space="preserve">
     <value>Couldn't retrieve locations</value>
   </data>
+  <data name="RoutesTitle" xml:space="preserve">
+    <value>ROUTES</value>
+  </data>
 </root>

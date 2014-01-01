@@ -367,6 +367,15 @@ namespace Reitit.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to ROUTES.
+        /// </summary>
+        public static string RoutesTitle {
+            get {
+                return ResourceManager.GetString("RoutesTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to default.
         /// </summary>
         public static string RouteTypeDefault {

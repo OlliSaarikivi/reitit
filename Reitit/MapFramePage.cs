@@ -14,9 +14,7 @@ using System.Windows.Navigation;
 
 namespace Reitit
 {
-    public delegate object ConstructVM(NavigationEventArgs e);
-
-    public partial class MapFramePage : PhoneApplicationPage
+    public abstract class MapFramePage : PhoneApplicationPage
     {
         public static DependencyProperty MapHeightProperty = DependencyProperty.Register("MapHeight", typeof(double), typeof(MapFramePage), new PropertyMetadata((double)0));
         public double MapHeight
@@ -35,12 +33,9 @@ namespace Reitit
         private List<Tombstoner> _tombstoners = new List<Tombstoner>();
 
         private bool _isNewPageInstance = true;
-        private ConstructVM _constructVM;
 
-        public MapFramePage(ConstructVM constructVM)
+        public MapFramePage()
         {
-            _constructVM = constructVM;
-
             Binding binding = new Binding("Height");
             Convert<double, double, object> convert = (otherHeight, P, C) =>
             {
@@ -51,6 +46,8 @@ namespace Reitit
             binding.Mode = BindingMode.TwoWay;
             SetBinding(MapHeightProperty, binding);
         }
+
+        protected abstract object ConstructVM(NavigationEventArgs e);
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
@@ -68,7 +65,7 @@ namespace Reitit
                     }
                     else
                     {
-                        DataContext = _constructVM(e);
+                        DataContext = ConstructVM(e);
                     }
                 }
             }

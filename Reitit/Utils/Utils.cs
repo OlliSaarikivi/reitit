@@ -270,5 +270,17 @@ namespace Reitit
                 collection.Add(item);
             }
         }
+
+        public static Color FlattenOn(this Color foreground, Color background)
+        {
+            int foreA = foreground.A;
+            int backA = 255 - foreground.A;
+            return Color.FromArgb(
+                255,
+                (byte)(((int)foreground.R * foreA + background.R * (int)backA) / 255),
+                (byte)(((int)foreground.G * foreA + background.G * (int)backA) / 255),
+                (byte)(((int)foreground.B * foreA + background.B * (int)backA) / 255)
+                );
+        }
     }
 }
