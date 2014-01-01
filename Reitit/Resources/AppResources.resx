@@ -263,4 +263,13 @@
   <data name="RoutesTitle" xml:space="preserve">
     <value>ROUTES</value>
   </data>
+  <data name="RouteControlHoursWaitFormat" xml:space="preserve">
+    <value>'Wait 'h' hours 'm' minutes'</value>
+  </data>
+  <data name="RouteControlMinutesWaitFormat" xml:space="preserve">
+    <value>'Wait 'm' minutes'</value>
+  </data>
+  <data name="LocationPickerAddFavText" xml:space="preserve">
+    <value>add to favorites</value>
+  </data>
 </root>

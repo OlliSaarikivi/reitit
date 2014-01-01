@@ -11,6 +11,7 @@ using Oat;
 using ReittiAPI;
 using Windows.Devices.Geolocation;
 using System.Windows.Media;
+using System.IO.IsolatedStorage;
 
 namespace Reitit
 {
@@ -19,6 +20,7 @@ namespace Reitit
         public Brush ForegroundBrush;
         public Brush AccentBrush;
 
+        public FavoritesManager Favorites { get; private set; }
         public IIndicatorManager IndicatorManager { get; private set; }
         public ModelCache ModelCache { get; private set; }
         public ParameterCache Parameters { get; private set; }
@@ -38,10 +40,13 @@ namespace Reitit
         /// </summary>
         public App()
         {
+            TiltEffect.TiltableItems.Add(typeof(TiltPresenter));
+
+            Favorites = new FavoritesManager();
             IndicatorManager = new StackIndicatorManager();
-            ModelCache = new ModelCache(50);
+            ModelCache = new ModelCache(AppConfiguration.ModelCacheSize);
             Parameters = new ParameterCache();
-            ReittiClient = new ReittiAPIClient("reittiwp", "yq8izavx187k");
+            ReittiClient = new ReittiAPIClient(AppConfiguration.ReittiAPIUser, AppConfiguration.ReittiAPIPass);
 
             var content = Application.Current.Host.Content;
             double scale = (double)content.ScaleFactor / 100;
@@ -101,12 +106,19 @@ namespace Reitit
         // This code will not execute when the application is closing
         private void Application_Deactivated(object sender, DeactivatedEventArgs e)
         {
+            SavePersistentData();
         }
 
         // Code to execute when the application is closing (eg, user hit Back)
         // This code will not execute when the application is deactivated
         private void Application_Closing(object sender, ClosingEventArgs e)
         {
+            SavePersistentData();
+        }
+
+        private void SavePersistentData()
+        {
+            IsolatedStorageSettings.ApplicationSettings.Save();
         }
 
         // Code to execute if a navigation fails

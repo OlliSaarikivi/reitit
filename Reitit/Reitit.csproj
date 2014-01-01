@@ -110,6 +110,9 @@
     <Compile Include="UserControls\ExpandingRouteControl.xaml.cs">
       <DependentUpon>ExpandingRouteControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UserControls\FavIcon.xaml.cs">
+      <DependentUpon>FavIcon.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\LocationPickerControl.xaml.cs">
       <DependentUpon>LocationPickerControl.xaml</DependentUpon>
     </Compile>
@@ -128,10 +131,18 @@
     <Compile Include="UserControls\TimePickerPopup.xaml.cs">
       <DependentUpon>TimePickerPopup.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Utils\AppConfiguration.cs" />
+    <Compile Include="Utils\FavoritesManager.cs" />
+    <Compile Include="Utils\IconManager.cs" />
     <Compile Include="Utils\ParameterCache.cs" />
+    <Compile Include="Utils\ExtendedObservableObject.cs" />
+    <Compile Include="Utils\FixedLongListSelector.cs" />
     <Compile Include="Utils\PhysicsConstants.cs" />
     <Compile Include="Utils\SafeRaise.cs" />
+    <Compile Include="Utils\Setting.cs" />
+    <Compile Include="Utils\TiltPresenter.cs" />
     <Compile Include="Utils\Tombstoner.cs" />
+    <Compile Include="Utils\TransformObservableCollection.cs" />
     <Compile Include="ViewModels\RouteSearchPageVM.cs" />
     <Compile Include="ViewModels\RoutesPageVM.cs" />
     <Compile Include="Views\RouteSearchPage.xaml.cs">
@@ -179,6 +190,10 @@
     <Page Include="UserControls\ExpandingRouteControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\FavIcon.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="UserControls\LocationPickerControl.xaml">
       <SubType>Designer</SubType>

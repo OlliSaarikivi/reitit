@@ -9,6 +9,7 @@ using Windows.Devices.Geolocation;
 using GalaSoft.MvvmLight;
 using System.Device.Location;
 using System.Windows.Media;
+using System.Runtime.Serialization;
 
 namespace Reitit
 {
@@ -18,16 +19,46 @@ namespace Reitit
         Task<ReittiCoordinate> GetCoordinates();
     }
 
-    public class MapLocation : ObservableObject, IPickerLocation
+    [DataContract]
+    public class FavoritePickerLocation : ExtendedObservableObject, IPickerLocation
     {
-        private ReittiCoordinate _coordinate;
+        [DataMember]
+        public FavoriteLocation _location;
+
+        public string Name { get { return _location.Name; } }
+
+        public bool Selected
+        {
+            get { return _selected; }
+            set { Set(() => Selected, ref _selected, value); }
+        }
+        [DataMember]
+        public bool _selected = false;
+
+        public FavoritePickerLocation(FavoriteLocation location)
+        {
+            _location = location;
+        }
+
+        public Task<ReittiCoordinate> GetCoordinates()
+        {
+            return Task.FromResult(_location.Coordinate);
+        }
+    }
+
+    [DataContract]
+    public class MapLocation : ExtendedObservableObject, IPickerLocation
+    {
+        [DataMember]
+        public ReittiCoordinate _coordinate;
 
         public string Name
         {
             get { return _name; }
             set { Set(() => Name, ref _name, value); }
         }
-        private string _name = AppResources.MapLocationPlaceholderText;
+        [DataMember]
+        public string _name = AppResources.MapLocationPlaceholderText;
 
         public string Detail { get { return null; } }
 
@@ -42,7 +73,8 @@ namespace Reitit
         }
     }
 
-    public abstract class ReittiLocationBase : ObservableObject, IPickerLocation
+    [DataContract]
+    public abstract class ReittiLocationBase : ExtendedObservableObject, IPickerLocation
     {
         public abstract string Name { get; }
         public abstract Task<ReittiCoordinate> GetCoordinates();
@@ -52,12 +84,15 @@ namespace Reitit
             get { return _selected; }
             set { Set(() => Selected, ref _selected, value); }
         }
-        private bool _selected = false;
+        [DataMember]
+        public bool _selected = false;
     }
 
+    [DataContract]
     public class ReittiLocation : ReittiLocationBase
     {
-        private Location _location;
+        [DataMember]
+        public Location _location;
 
         public override string Name { get { return _location.Name; } }
         public override string Detail { get { return null; } }
@@ -73,9 +108,11 @@ namespace Reitit
         }
     }
 
+    [DataContract]
     public class ReittiStopsLocation : ReittiLocationBase
     {
-        private ConnectedStops _stops;
+        [DataMember]
+        public ConnectedStops _stops;
 
         public override string Name { get { return _stops.Name; } }
         public override string Detail { get { return _stops.DisplayCode; } }
@@ -91,6 +128,7 @@ namespace Reitit
         }
     }
 
+    [DataContract]
     public class MeLocation : IPickerLocation
     {
         public static MeLocation Instance { get { return _instance; } }
@@ -106,7 +144,7 @@ namespace Reitit
             {
                 DesiredAccuracy = PositionAccuracy.High
             };
-            return (await locator.GetGeopositionAsync(TimeSpan.Zero, TimeSpan.FromSeconds(15))).ToReittiCoordinate();
+            return (ReittiCoordinate)(await locator.GetGeopositionAsync(TimeSpan.Zero, TimeSpan.FromSeconds(15))).Coordinate;
         }
     }
 }

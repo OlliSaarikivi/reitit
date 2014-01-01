@@ -4,6 +4,7 @@ using Microsoft.Phone.Controls.Primitives;
 using Microsoft.Phone.Shell;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,6 +12,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using System.Windows.Navigation;
 
 namespace Reitit
 {
@@ -152,7 +154,6 @@ namespace Reitit
         public PickerPopup()
         {
             Visibility = Visibility.Collapsed;
-            App.RootFrame.Overlay.Children.Add(this);
 
             var planeProjection = new PlaneProjection();
             Projection = planeProjection;
@@ -184,7 +185,11 @@ namespace Reitit
 
             _closeStoryboard = new Storyboard();
             _closeStoryboard.Children.Add(closeAnimation);
-            _closeStoryboard.Completed += (s, e) => Visibility = Visibility.Collapsed;
+            _closeStoryboard.Completed += (s, e) =>
+            {
+                Visibility = Visibility.Collapsed;
+                App.RootFrame.Overlay.Children.Remove(this);
+            };
         }
 
         public async Task<T> Show(T current)
@@ -200,6 +205,7 @@ namespace Reitit
             Bindable.SetApplicationBar(page, ApplicationBar);
             _oldIsHitTestVisible = page.IsHitTestVisible;
             page.IsHitTestVisible = false;
+            page.BackKeyPress += BackKeyPress;
 
             _oldSTOpacity = SystemTray.Opacity;
             _oldSTIsVisible = SystemTray.IsVisible;
@@ -218,9 +224,24 @@ namespace Reitit
             return await _source.Task;
         }
 
+        private void BackKeyPress(object sender, CancelEventArgs e)
+        {
+            if (_source != null)
+            {
+                e.Cancel = true;
+                Done(default(T));
+                var page = App.RootFrame.Content as PhoneApplicationPage;
+                page.Focus();
+            }
+        }
+
         private void AnimateOpen()
         {
             _closeStoryboard.Stop();
+            if (!App.RootFrame.Overlay.Children.Contains(this))
+            {
+                App.RootFrame.Overlay.Children.Add(this);
+            }
             Visibility = Visibility.Visible;
             _openStoryboard.Begin();
         }
@@ -241,6 +262,7 @@ namespace Reitit
             var page = App.RootFrame.Content as PhoneApplicationPage;
             Bindable.SetApplicationBar(page, _oldAppBar);
             page.IsHitTestVisible = _oldIsHitTestVisible;
+            page.BackKeyPress -= BackKeyPress;
 
             AnimateClose();
         }
@@ -251,7 +273,7 @@ namespace Reitit
             _closeStoryboard.Begin();
         }
 
-        protected void Done(T value)
+        public void Done(T value)
         {
             if (_source != null)
             {

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Reitit
 {
-    class RoutesPageVM : ObservableObject
+    public class RoutesPageVM : ExtendedObservableObject
     {
         public RouteSearchParameters SearchParameters { get; private set; }
         public ObservableCollection<CompoundRoute> Routes { get { return _routes; } }

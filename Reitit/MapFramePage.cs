@@ -94,5 +94,10 @@ namespace Reitit
                 }
             }
         }
+
+        protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
+        {
+
+        }
     }
 }

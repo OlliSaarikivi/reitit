@@ -11,14 +11,11 @@ using ReittiAPI;
 using System.Windows.Media;
 using Shapes = System.Windows.Shapes;
 using GalaSoft.MvvmLight;
+using System.Windows.Data;
+using Reitit.Resources;
 
 namespace Reitit
 {
-    public class ExpandingRouteControlVM : ObservableObject
-    {
-
-    }
-
     public partial class ExpandingRouteControl : UserControl
     {
         private Brush _transparent;
@@ -38,10 +35,24 @@ namespace Reitit
             get { return (CompoundRoute)GetValue(RouteProperty); }
             set { SetValue(RouteProperty, value); }
         }
-
-        // Using a DependencyProperty as the backing store for Route.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty RouteProperty =
             DependencyProperty.Register("Route", typeof(CompoundRoute), typeof(ExpandingRouteControl), new PropertyMetadata(null, OnRouteChanged));
+
+        public string From
+        {
+            get { return (string)GetValue(FromProperty); }
+            set { SetValue(FromProperty, value); }
+        }
+        public static readonly DependencyProperty FromProperty =
+            DependencyProperty.Register("From", typeof(string), typeof(ExpandingRouteControl), new PropertyMetadata(0));
+
+        public string To
+        {
+            get { return (string)GetValue(ToProperty); }
+            set { SetValue(ToProperty, value); }
+        }
+        public static readonly DependencyProperty ToProperty =
+            DependencyProperty.Register("To", typeof(string), typeof(ExpandingRouteControl), new PropertyMetadata(0));
 
         private static void OnRouteChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -280,30 +291,29 @@ namespace Reitit
 
         private void AddLocationDetails(LegLocation location, bool isFirst, bool isLast, int row)
         {
-            string displayName = null;
-            if (location.Name != null)
+            var locationName = new TextBlock
             {
-                displayName = location.Name;
-            }
-            else if (isFirst)
-            {
-                displayName = FromName;
-            }
-            else if (isLast)
-            {
-                displayName = ToName;
-            }
-
-            var lengthTextBlock = new TextBlock
-            {
-                Text = displayName,
                 VerticalAlignment = VerticalAlignment.Center,
                 FontSize = _largeFontSize,
                 Margin = new Thickness(12, 12, 0, 12)
             };
-            Grid.SetRow(lengthTextBlock, row);
-            Grid.SetColumn(lengthTextBlock, 2);
-            Root.Children.Add(lengthTextBlock);
+
+            if (isFirst || isLast)
+            {
+                var binding = new Binding(isFirst ? "From" : "To");
+                binding.Converter = new DefaultIfNullConverter();
+                binding.ConverterParameter = location.Name;
+                binding.Source = this;
+                BindingOperations.SetBinding(locationName, TextBlock.TextProperty, binding);
+            }
+            else
+            {
+                locationName.Text = location.Name;
+            }
+
+            Grid.SetRow(locationName, row);
+            Grid.SetColumn(locationName, 2);
+            Root.Children.Add(locationName);
         }
 
         private void AddWaitDetails(TimeSpan waitTime, int row)
@@ -312,11 +322,11 @@ namespace Reitit
 
             if (waitTime.TotalHours < 1)
             {
-                waitText = waitTime.ToString("'Wait 'm' minutes'");
+                waitText = waitTime.ToString(AppResources.RouteControlMinutesWaitFormat);
             }
             else
             {
-                waitText = waitTime.ToString("'Wait 'h' hours 'm' minutes'");
+                waitText = waitTime.ToString(AppResources.RouteControlHoursWaitFormat);
             }
 
             var lengthTextBlock = new TextBlock
@@ -461,13 +471,13 @@ namespace Reitit
                     Root.Children.Add(allPanel);
                 }
 
-                tilt.Tap += (s, e) =>
-                {
-                    if (OnTapLine != null && leg.Line != null)
-                    {
-                        OnTapLine(this, leg.Line);
-                    }
-                };
+                //tilt.Tap += (s, e) =>
+                //{
+                //    if (OnTapLine != null && leg.Line != null)
+                //    {
+                //        OnTapLine(this, leg.Line);
+                //    }
+                //};
             }
         }
     }

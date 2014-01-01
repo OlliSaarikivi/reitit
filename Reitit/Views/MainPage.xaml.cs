@@ -9,6 +9,7 @@ using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
 using Reitit.Resources;
 using System.Device.Location;
+using BindableApplicationBar;
 
 namespace Reitit
 {

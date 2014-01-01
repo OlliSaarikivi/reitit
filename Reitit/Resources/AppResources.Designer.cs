@@ -97,6 +97,15 @@ namespace Reitit.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to add to favorites.
+        /// </summary>
+        public static string LocationPickerAddFavText {
+            get {
+                return ResourceManager.GetString("LocationPickerAddFavText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to addresses.
         /// </summary>
         public static string LocationPickerAddressesHeader {
@@ -282,6 +291,24 @@ namespace Reitit.Resources {
         public static string RouteButtonText {
             get {
                 return ResourceManager.GetString("RouteButtonText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &apos;Wait &apos;h&apos; hours &apos;m&apos; minutes&apos;.
+        /// </summary>
+        public static string RouteControlHoursWaitFormat {
+            get {
+                return ResourceManager.GetString("RouteControlHoursWaitFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &apos;Wait &apos;m&apos; minutes&apos;.
+        /// </summary>
+        public static string RouteControlMinutesWaitFormat {
+            get {
+                return ResourceManager.GetString("RouteControlMinutesWaitFormat", resourceCulture);
             }
         }
         

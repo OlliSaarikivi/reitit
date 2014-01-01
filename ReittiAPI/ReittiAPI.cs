@@ -254,7 +254,7 @@ namespace ReittiAPI
             {
                 throw new ReittiAPIException(ReittiAPIExceptionKind.HttpRequestException, e.Message, e);
             }
-            catch (JsonReaderException e)
+            catch (Exception e)
             {
                 throw new ReittiAPIException(ReittiAPIExceptionKind.ParseException, "Could not parse server response. Please contact the app creator.", e);
             }
@@ -332,7 +332,7 @@ namespace ReittiAPI
             {
                 throw new ReittiAPIException(ReittiAPIExceptionKind.HttpRequestException, e.Message, e);
             }
-            catch (JsonReaderException e)
+            catch (Exception e)
             {
                 throw new ReittiAPIException(ReittiAPIExceptionKind.ParseException, "Could not parse server response. Please contact the app creator.", e);
             }
@@ -470,7 +470,7 @@ namespace ReittiAPI
             {
                 throw new ReittiAPIException(ReittiAPIExceptionKind.HttpRequestException, e.Message, e);
             }
-            catch (JsonReaderException e)
+            catch (Exception e)
             {
                 throw new ReittiAPIException(ReittiAPIExceptionKind.ParseException, "Could not parse server response. Please contact the app creator.", e);
             }
@@ -548,7 +548,7 @@ namespace ReittiAPI
             {
                 throw new ReittiAPIException(ReittiAPIExceptionKind.HttpRequestException, e.Message, e);
             }
-            catch (JsonReaderException e)
+            catch (Exception e)
             {
                 throw new ReittiAPIException(ReittiAPIExceptionKind.ParseException, "Could not parse server response. Please contact the app creator.", e);
             }
@@ -660,7 +660,7 @@ namespace ReittiAPI
             {
                 throw new ReittiAPIException(ReittiAPIExceptionKind.HttpRequestException, e.Message, e);
             }
-            catch (JsonReaderException e)
+            catch (Exception e)
             {
                 throw new ReittiAPIException(ReittiAPIExceptionKind.ParseException, "Could not parse server response. Please contact the app creator.", e);
             }
@@ -809,7 +809,7 @@ namespace ReittiAPI
             {
                 throw new ReittiAPIException(ReittiAPIExceptionKind.HttpRequestException, e.Message, e);
             }
-            catch (JsonReaderException e)
+            catch (Exception e)
             {
                 throw new ReittiAPIException(ReittiAPIExceptionKind.ParseException, "Could not parse server response. Please contact the app creator.", e);
             }

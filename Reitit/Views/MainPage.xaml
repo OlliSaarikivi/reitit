@@ -14,7 +14,8 @@
     Height="0">
 
     <bar:Bindable.ApplicationBar>
-        <bar:BindableApplicationBar BindableOpacity="0.666" BackgroundColor="Black">
+        <bar:BindableApplicationBar BackgroundColor="{StaticResource PhoneSemitransparentColor}"
+                                    Opacity="{Binding Source={StaticResource PhoneSemitransparentColor}, Converter={StaticResource ColorToOpacityConverter}}">
             <bar:BindableApplicationBarButton Text="{Binding Path=LocalizedResources.RouteButtonText, Source={StaticResource LocalizedStrings}}"
                                               IconUri="/Assets/AppBar/appbar.directions.png"
                                               Command="{Binding RouteCommand}"/>

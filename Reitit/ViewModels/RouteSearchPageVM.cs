@@ -6,14 +6,20 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
 namespace Reitit
 {
-
-    class RouteSearchPageVM : ObservableObject
+    [KnownType(typeof(FavoritePickerLocation))]
+    [KnownType(typeof(MapLocation))]
+    [KnownType(typeof(ReittiLocation))]
+    [KnownType(typeof(ReittiStopsLocation))]
+    [KnownType(typeof(MeLocation))]
+    [DataContract]
+    public class RouteSearchPageVM : ExtendedObservableObject
     {
         public RouteSearchPageVM()
         {
@@ -27,28 +33,32 @@ namespace Reitit
             get { return _from; }
             set { Set(() => From, ref _from, value); }
         }
-        private IPickerLocation _from = MeLocation.Instance;
+        [DataMember]
+        public IPickerLocation _from = MeLocation.Instance;
 
         public IPickerLocation To
         {
             get { return _to; }
             set { Set(() => To, ref _to, value); }
         }
-        private IPickerLocation _to;
+        [DataMember]
+        public IPickerLocation _to;
 
         public DateTime Time
         {
             get { return _time; }
             set { Set(() => Time, ref _time, value); }
         }
-        private DateTime _time = DateTime.Now;
+        [DataMember]
+        public DateTime _time = DateTime.Now;
 
         public DateTime Date
         {
             get { return _date; }
             set { Set(() => Date, ref _date, value); }
         }
-        private DateTime _date = DateTime.Now;
+        [DataMember]
+        public DateTime _date = DateTime.Now;
 
         public RelayCommand SwapFromToCommand
         {
@@ -63,10 +73,14 @@ namespace Reitit
             }
         }
 
+        [DataContract]
         public class TimeType
         {
+            [DataMember]
             public string Text { get; set; }
+            [DataMember]
             public string Type { get; set; }
+            [DataMember]
             public bool IsTimed { get; set; }
         }
         public List<TimeType> TimeTypes
@@ -83,7 +97,8 @@ namespace Reitit
             get { return _selectedTimeType; }
             set {Set(() => SelectedTimeType, ref _selectedTimeType, value); }
         }
-        private TimeType _selectedTimeType;
+        [DataMember]
+        public TimeType _selectedTimeType;
         
 
         public bool UseBus
@@ -91,32 +106,39 @@ namespace Reitit
             get { return _useBus; }
             set { Set(() => UseBus, ref _useBus, value); }
         }
-        private bool _useBus = true;
+        [DataMember]
+        public bool _useBus = true;
 
         public bool UseMetro
         {
             get { return _useMetro; }
             set { Set(() => UseMetro, ref _useMetro, value); }
         }
-        private bool _useMetro = true;
+        [DataMember]
+        public bool _useMetro = true;
 
         public bool UseTram
         {
             get { return _useTram; }
             set { Set(() => UseTram, ref _useTram, value); }
         }
-        private bool _useTram = true;
+        [DataMember]
+        public bool _useTram = true;
 
         public bool UseTrain
         {
             get { return _useTrain; }
             set { Set(() => UseTrain, ref _useTrain, value); }
         }
-        private bool _useTrain = true;
+        [DataMember]
+        public bool _useTrain = true;
 
+        [DataContract]
         public class Speed
         {
+            [DataMember]
             public string Text { get; set; }
+            [DataMember]
             public int Value { get; set; }
         }
         public List<Speed> WalkingSpeeds
@@ -135,11 +157,15 @@ namespace Reitit
             get { return _selectedSpeed; }
             set { Set(() => SelectedSpeed, ref _selectedSpeed, value); }
         }
-        private Speed _selectedSpeed;
+        [DataMember]
+        public Speed _selectedSpeed;
 
+        [DataContract]
         public class RouteType
         {
+            [DataMember]
             public string Text { get; set; }
+            [DataMember]
             public string Optimization { get; set; }
         }
         public List<RouteType> RouteTypes
@@ -157,14 +183,16 @@ namespace Reitit
             get { return _selectedRouteType; }
             set { Set(() => SelectedRouteType, ref _selectedRouteType, value); }
         }
-        private RouteType _selectedRouteType;
+        [DataMember]
+        public RouteType _selectedRouteType;
 
         public int TransferMargin
         {
             get { return _transferMargin; }
             set { Set(() => TransferMargin, ref _transferMargin, value); }
         }
-        private int _transferMargin;
+        [DataMember]
+        public int _transferMargin;
 
         public RelayCommand SearchCommand
         {

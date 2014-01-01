@@ -123,44 +123,41 @@ namespace Reitit
                 return !b;
             }) { }
     }
-
-    public static class VisualStates
+    
+    public class NotNullConverter : LambdaConverter<object, bool, object>
     {
-        public static readonly DependencyProperty CurrentStateProperty = DependencyProperty
-            .RegisterAttached(
-                "CurrentState",
-                typeof(string),
-                typeof(VisualStates),
-                new PropertyMetadata(TransitionToState));
+        public NotNullConverter()
+            : base((o, p, culture) =>
+            {
+                return o != null;
+            }) { }
+    }
 
-        public static string GetCurrentState(DependencyObject obj)
-        {
-            return (string)obj.GetValue(CurrentStateProperty);
-        }
+    public class DefaultIfNullConverter : LambdaConverter<object, object, object>
+    {
+        public DefaultIfNullConverter()
+            : base((o, p, culture) =>
+            {
+                return o != null ? o : p;
+            }) { }
+    }
 
-        public static void SetCurrentState(DependencyObject obj, string value)
-        {
-            obj.SetValue(CurrentStateProperty, value);
-        }
+    public class EqualConverter : LambdaConverter<object, object, object>
+    {
+        public EqualConverter()
+            : base((o, p, culture) =>
+            {
+                return o == p;
+            }) { }
+    }
 
-        static void StartOnGuiThread(Action act)
-        {
-            var disp = Deployment.Current.Dispatcher;
-            if (disp.CheckAccess())
-                act();
-            else
-                disp.BeginInvoke(act);
-        }
-
-        private static void TransitionToState(object sender, DependencyPropertyChangedEventArgs args)
-        {
-            Control elt = sender as Control;
-            if (null == elt)
-                throw new ArgumentException("CurrentState is only supported on Control instances");
-
-            string newState = args.NewValue.ToString();
-            StartOnGuiThread(() => VisualStateManager.GoToState(elt, newState, true));
-        }
+    public class ColorToOpacityConverter : LambdaConverter<Color, double, object>
+    {
+        public ColorToOpacityConverter()
+            : base((c, p, culture) =>
+            {
+                return (double)c.A / byte.MaxValue;
+            }) { }
     }
 
     static class Utils
@@ -234,11 +231,6 @@ namespace Reitit
             scrollViewer.ScrollToVerticalOffset(scrollPos);
         }
 
-        public static ReittiCoordinate ToReittiCoordinate(this Geoposition position)
-        {
-            return new ReittiCoordinate(position.Coordinate);
-        }
-
         public static void KeepExpandedInView(this ListPicker picker, ScrollViewer viewer)
         {
             if (picker.ListPickerMode == ListPickerMode.Expanded)
@@ -281,6 +273,81 @@ namespace Reitit
                 (byte)(((int)foreground.G * foreA + background.G * (int)backA) / 255),
                 (byte)(((int)foreground.B * foreA + background.B * (int)backA) / 255)
                 );
+        }
+
+        public static readonly Brush TrainStroke = new SolidColorBrush(Color.FromArgb(255, 233, 0, 26));
+        public static readonly Brush FerryStroke = new SolidColorBrush(Color.FromArgb(255, 90, 197, 216));
+        public static readonly Brush TramStroke = new SolidColorBrush(Color.FromArgb(255, 0, 175, 46));
+        public static readonly Brush MetroStroke = new SolidColorBrush(Color.FromArgb(255, 238, 62, 12));
+        public static readonly Brush BusStroke = new SolidColorBrush(Color.FromArgb(255, 25, 54, 149));
+        public static readonly Brush WalkStroke = new SolidColorBrush(Color.FromArgb(255, 0, 99, 255));
+
+        public static Brush GetStrokeForType(string type)
+        {
+            if (type == "walk")
+            {
+                return WalkStroke;
+            }
+            else if (type == "2")
+            {
+                return TramStroke;
+            }
+            else if (type == "6")
+            {
+                return MetroStroke;
+            }
+            else if (type == "7")
+            {
+                return FerryStroke;
+            }
+            else if (type == "12")
+            {
+                return TrainStroke;
+            }
+            else // Buses and everything else
+            {
+                return BusStroke;
+            }
+        }
+
+        public static ImageSource GetIconForType(string type)
+        {
+            if (type == "walk")
+            {
+                return (ImageSource)new ImageSourceConverter().ConvertFromString("/Assets/Walk.png");
+            }
+            else if (type == "2")
+            {
+                return (ImageSource)new ImageSourceConverter().ConvertFromString("/Assets/Tram.png");
+            }
+            else if (type == "6")
+            {
+                return (ImageSource)new ImageSourceConverter().ConvertFromString("/Assets/Metro.png");
+            }
+            else if (type == "7")
+            {
+                return (ImageSource)new ImageSourceConverter().ConvertFromString("/Assets/Ferry.png");
+            }
+            else if (type == "12")
+            {
+                return (ImageSource)new ImageSourceConverter().ConvertFromString("/Assets/Train.png");
+            }
+            else // Buses and everything else
+            {
+                return (ImageSource)new ImageSourceConverter().ConvertFromString("/Assets/Bus.png");
+            }
+        }
+
+        public static string FormatDistance(double distance)
+        {
+            if (distance < 1000)
+            {
+                return distance.ToString("0") + "\u00A0m";
+            }
+            else
+            {
+                return (distance / 1000).ToString("0.0") + "\u00A0km";
+            }
         }
     }
 }
