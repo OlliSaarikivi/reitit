@@ -53,10 +53,7 @@ namespace Reitit
         }
         protected override void InitializeWithCurrent(IPickerLocation current)
         {
-            DataContext = new LocationPickerPopupVM
-            {
-                View = this
-            };
+            DataContext = new LocationPickerPopupVM(this);
 
             if (_searchBoxLoaded)
             {
@@ -84,7 +81,7 @@ namespace Reitit
 
     class LocationPickerPopupVM : ExtendedObservableObject
     {
-        public LocationPickerPopup View { get; set; }
+        private LocationPickerPopup _view;
 
         public DerivedProperty<IPickerLocation> VisibleSelectionProperty;
         public IPickerLocation VisibleSelection { get { return VisibleSelectionProperty.Get(); } }
@@ -92,11 +89,14 @@ namespace Reitit
         public DerivedProperty<bool> IsAddFavEnabledProperty;
         public bool IsAddFavEnabled { get { return IsAddFavEnabledProperty.Get(); } }
 
-        public LocationPickerPopupVM()
+        public LocationPickerPopupVM(LocationPickerPopup view)
         {
+            _view = view;
+
             VisibleSelectionProperty = CreateDerivedProperty(() => VisibleSelection,
                 () => SelectedPivotTag == SearchTag ? (IPickerLocation)SelectedResult :
                      (SelectedPivotTag == FavoritesTag ? SelectedFavorite : null));
+            _view.DoneButton.IsEnabled = VisibleSelection != null;
 
             IsAddFavEnabledProperty = CreateDerivedProperty(() => IsAddFavEnabled,
                 () => SelectedPivotTag != FavoritesTag && VisibleSelection != null);
@@ -105,11 +105,11 @@ namespace Reitit
             {
                 if (e.PropertyName == "VisibleSelection")
                 {
-                    View.DoneButton.IsEnabled = VisibleSelection != null;
+                    _view.DoneButton.IsEnabled = VisibleSelection != null;
                 }
                 else if (e.PropertyName == "IsAddFavEnabled")
                 {
-                    View.AddFavMenuItem.IsEnabled = IsAddFavEnabled;
+                    _view.AddFavMenuItem.IsEnabled = IsAddFavEnabled;
                 }
             };
         }
@@ -261,7 +261,7 @@ namespace Reitit
                 {
                     hasWritten = true;
                 };
-                View.SearchBox.TextChanged += textChangedHandler;
+                _view.SearchBox.TextChanged += textChangedHandler;
                 try
                 {
                     using (new TrayStatus(AppResources.LocationSearching))
@@ -312,14 +312,14 @@ namespace Reitit
                                                                                     select grp.Count).Sum() > 7;
 
                                 // Scroll to top
-                                View.UpdateLayout();
+                                _view.UpdateLayout();
                                 if (ResultLocationGroups.Count != 0)
                                 {
-                                    View.SearchResultsSelector.ScrollTo(ResultLocationGroups[0]);
+                                    _view.SearchResultsSelector.ScrollTo(ResultLocationGroups[0]);
                                 }
                                 if (!hasWritten)
                                 {
-                                    View.Focus();
+                                    _view.Focus();
                                 }
                             }
                             catch (ReittiAPIException)
@@ -332,7 +332,7 @@ namespace Reitit
                 }
                 finally
                 {
-                    View.SearchBox.TextChanged -= textChangedHandler;
+                    _view.SearchBox.TextChanged -= textChangedHandler;
                 }
             }
         }

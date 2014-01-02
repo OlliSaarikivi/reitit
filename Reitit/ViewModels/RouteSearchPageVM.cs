@@ -1,6 +1,7 @@
 ﻿using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using Microsoft.Phone.Controls;
+using Oat;
 using Reitit.Resources;
 using System;
 using System.Collections.Generic;
@@ -19,13 +20,19 @@ namespace Reitit
     [KnownType(typeof(ReittiStopsLocation))]
     [KnownType(typeof(MeLocation))]
     [DataContract]
-    public class RouteSearchPageVM : ExtendedObservableObject
+    public class RouteSearchPageVM : ViewModelBase
     {
-        public RouteSearchPageVM()
+        protected override void Initialize()
         {
-            SelectedTimeType = TimeTypes[0];
-            SelectedSpeed = WalkingSpeeds[0];
-            SelectedRouteType = RouteTypes[0];
+            SelectedTimeTypeProperty = CreateDerivedProperty(
+                () => SelectedTimeType,
+                () => TimeTypes[SelectedTimeTypeIndex]);
+            SelectedSpeedProperty = CreateDerivedProperty(
+                () => SelectedSpeed,
+                () => WalkingSpeeds[SelectedSpeedIndex]);
+            SelectedRouteTypeProperty = CreateDerivedProperty(
+                () => SelectedRouteType,
+                () => RouteTypes[SelectedRouteTypeIndex]);
         }
 
         public IPickerLocation From
@@ -87,20 +94,25 @@ namespace Reitit
         {
             get { return _timeTypes; }
         }
-        private List<TimeType> _timeTypes = new List<TimeType>(new TimeType[] {
+        [DataMember]
+        public List<TimeType> _timeTypes = new List<TimeType>(new TimeType[] {
             new TimeType{ Type = "departure", IsTimed = false, Text = AppResources.TimeTypeNow },
             new TimeType{ Type = "departure", IsTimed = true, Text = AppResources.TimeTypeDepartAt },
             new TimeType{ Type = "arrival", IsTimed = true, Text = AppResources.TimeTypeArriveAt },
         });
-        public TimeType SelectedTimeType
+        public int SelectedTimeTypeIndex
         {
-            get { return _selectedTimeType; }
-            set {Set(() => SelectedTimeType, ref _selectedTimeType, value); }
+            get { return _selectedTimeTypeIndex; }
+            set { Set(() => SelectedTimeTypeIndex, ref _selectedTimeTypeIndex, value); }
         }
         [DataMember]
-        public TimeType _selectedTimeType;
+        public int _selectedTimeTypeIndex;
+        private DerivedProperty<TimeType> SelectedTimeTypeProperty;
+        public TimeType SelectedTimeType
+        {
+            get { return SelectedTimeTypeProperty.Get(); }
+        }
         
-
         public bool UseBus
         {
             get { return _useBus; }
@@ -145,20 +157,26 @@ namespace Reitit
         {
             get { return _walkingSpeeds; }
         }
-        private List<Speed> _walkingSpeeds = new List<Speed>(new Speed[] {
+        [DataMember]
+        public List<Speed> _walkingSpeeds = new List<Speed>(new Speed[] {
             new Speed{ Value = 30, Text = AppResources.WalkSpeedSlow },
             new Speed{ Value = 70, Text = AppResources.WalkSpeedDefault },
             new Speed{ Value = 100, Text = AppResources.WalkSpeedFast },
             new Speed{ Value = 200, Text = AppResources.WalkSpeedRunning },
             new Speed{ Value = 300, Text = AppResources.WalkSpeedCycling },
         });
-        public Speed SelectedSpeed
+        public int SelectedSpeedIndex
         {
-            get { return _selectedSpeed; }
-            set { Set(() => SelectedSpeed, ref _selectedSpeed, value); }
+            get { return _selectedSpeedIndex; }
+            set { Set(() => SelectedSpeedIndex, ref _selectedSpeedIndex, value); }
         }
         [DataMember]
-        public Speed _selectedSpeed;
+        public int _selectedSpeedIndex;
+        private DerivedProperty<Speed> SelectedSpeedProperty;
+        public Speed SelectedSpeed
+        {
+            get { return SelectedSpeedProperty.Get(); }
+        }
 
         [DataContract]
         public class RouteType
@@ -172,19 +190,25 @@ namespace Reitit
         {
             get { return _routeTypes; }
         }
-        private List<RouteType> _routeTypes = new List<RouteType>(new RouteType[] {
+        [DataMember]
+        public List<RouteType> _routeTypes = new List<RouteType>(new RouteType[] {
             new RouteType{ Optimization = "default", Text = AppResources.RouteTypeDefault },
             new RouteType{ Optimization = "fastest", Text = AppResources.RouteTypeFastest },
             new RouteType{ Optimization = "least_transfers", Text = AppResources.RouteTypeTransfers },
             new RouteType{ Optimization = "least_walking", Text = AppResources.RouteTypeWalking },
         });
-        public RouteType SelectedRouteType
+        public int SelectedRouteTypeIndex
         {
-            get { return _selectedRouteType; }
-            set { Set(() => SelectedRouteType, ref _selectedRouteType, value); }
+            get { return _selectedRouteTypeIndex; }
+            set { Set(() => SelectedRouteTypeIndex, ref _selectedRouteTypeIndex, value); }
         }
         [DataMember]
-        public RouteType _selectedRouteType;
+        public int _selectedRouteTypeIndex;
+        private DerivedProperty<RouteType> SelectedRouteTypeProperty;
+        public RouteType SelectedRouteType
+        {
+            get { return SelectedRouteTypeProperty.Get(); }
+        }
 
         public int TransferMargin
         {

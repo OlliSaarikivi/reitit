@@ -103,7 +103,8 @@
                 <me:LocationPickerControl Value="{Binding To, Mode=TwoWay}"/>
 
                 <TextBlock Text="{Binding Path=LocalizedResources.RouteSearchTimeHeader, Source={StaticResource LocalizedStrings}}" Style="{StaticResource PhoneTextNormalStyle}" Margin="12,12,12,-6"/>
-                <toolkit:ListPicker x:Name="TimeTypePicker"  Margin="12,6,12,12" ItemsSource="{Binding TimeTypes}" SelectedItem="{Binding SelectedTimeType, Mode=TwoWay}" SizeChanged="ListPicker_SizeChanged">
+                <toolkit:ListPicker x:Name="TimeTypePicker"  Margin="12,6,12,12" ItemsSource="{Binding TimeTypes}"
+                                    SelectedIndex="{Binding SelectedTimeTypeIndex, Mode=TwoWay}" SizeChanged="ListPicker_SizeChanged">
                     <toolkit:ListPicker.ItemTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding Text}"/>
@@ -145,7 +146,8 @@
                 </Grid>
 
                 <TextBlock Text="{Binding Path=LocalizedResources.RouteSearchSpeedHeader, Source={StaticResource LocalizedStrings}}" Style="{StaticResource PhoneTextNormalStyle}" Margin="12,12,12,-6"/>
-                <toolkit:ListPicker x:Name="WalkSpeedPicker"  Margin="12,6,12,12" ItemsSource="{Binding WalkingSpeeds}" SelectedItem="{Binding SelectedSpeed, Mode=TwoWay}" SizeChanged="ListPicker_SizeChanged">
+                <toolkit:ListPicker x:Name="WalkSpeedPicker"  Margin="12,6,12,12" ItemsSource="{Binding WalkingSpeeds}"
+                                    SelectedIndex="{Binding SelectedSpeedIndex, Mode=TwoWay}" SizeChanged="ListPicker_SizeChanged">
                     <toolkit:ListPicker.ItemTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding Text}"/>
@@ -154,7 +156,8 @@
                 </toolkit:ListPicker>
 
                 <TextBlock Text="{Binding Path=LocalizedResources.RouteSearchTypeHeader, Source={StaticResource LocalizedStrings}}" Style="{StaticResource PhoneTextNormalStyle}" Margin="12,12,12,-6"/>
-                <toolkit:ListPicker x:Name="RouteTypePicker"  Margin="12,6,12,12" ItemsSource="{Binding RouteTypes}" SelectedItem="{Binding SelectedRouteType, Mode=TwoWay}" SizeChanged="ListPicker_SizeChanged">
+                <toolkit:ListPicker x:Name="RouteTypePicker"  Margin="12,6,12,12" ItemsSource="{Binding RouteTypes}"
+                                    SelectedIndex="{Binding SelectedRouteTypeIndex, Mode=TwoWay}" SizeChanged="ListPicker_SizeChanged">
                     <toolkit:ListPicker.ItemTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding Text}"/>

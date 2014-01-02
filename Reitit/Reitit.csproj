@@ -143,6 +143,7 @@
     <Compile Include="Utils\TiltPresenter.cs" />
     <Compile Include="Utils\Tombstoner.cs" />
     <Compile Include="Utils\TransformObservableCollection.cs" />
+    <Compile Include="Utils\ViewModelBase.cs" />
     <Compile Include="ViewModels\RouteSearchPageVM.cs" />
     <Compile Include="ViewModels\RoutesPageVM.cs" />
     <Compile Include="Views\RouteSearchPage.xaml.cs">

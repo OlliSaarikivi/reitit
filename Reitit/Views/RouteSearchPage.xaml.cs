@@ -16,6 +16,7 @@ namespace Reitit
         public RouteSearchPage()
         {
             InitializeComponent();
+            Tombstoners.Add(new ScrollViewerTombstoner(ContentScroll));
         }
 
         protected override object ConstructVM(NavigationEventArgs e)

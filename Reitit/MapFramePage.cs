@@ -23,7 +23,7 @@ namespace Reitit
             set { this.SetValue(MapHeightProperty, value); }
         }
 
-        public List<Tombstoner> Tombstoners
+        protected List<Tombstoner> Tombstoners
         {
             get
             {

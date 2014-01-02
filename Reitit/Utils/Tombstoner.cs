@@ -154,7 +154,7 @@ namespace Reitit
 
     public class ScrollViewerTombstoner : FrameworkElementTombstoner<ScrollViewer>
     {
-        ScrollViewerTombstoner(ScrollViewer viewer)
+        public ScrollViewerTombstoner(ScrollViewer viewer)
             : base(viewer)
         {
         }
@@ -167,8 +167,14 @@ namespace Reitit
 
         protected override void RestoreState(IDictionary<string, object> state)
         {
-            Element.ScrollToVerticalOffset((double)state["vertical"]);
-            Element.ScrollToHorizontalOffset((double)state["horizontal"]);
+            RoutedEventHandler loaded = null;
+            loaded = (s, e) =>
+            {
+                Element.ScrollToVerticalOffset((double)state["vertical"]);
+                Element.ScrollToHorizontalOffset((double)state["horizontal"]);
+                Element.Loaded -= loaded;
+            };
+            Element.Loaded += loaded;
         }
     }
 }
