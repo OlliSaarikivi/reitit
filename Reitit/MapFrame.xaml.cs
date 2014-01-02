@@ -28,6 +28,8 @@ namespace Reitit
 
             var content = Application.Current.Host.Content;
             _screen_height = (int)Math.Ceiling((double)(content.ActualHeight * content.ScaleFactor) / 100);
+
+            Overlay = new Grid();
         }
 
         protected override void OnContentChanged(object oldContent, object newContent)
@@ -77,14 +79,13 @@ namespace Reitit
             }
         }
 
-        private void Overlay_Loaded(object sender, RoutedEventArgs e)
-        {
-            Overlay = sender as Grid;
-        }
-
         private void Content_Loaded(object sender, RoutedEventArgs e)
         {
             Content2 = sender as Grid;
+            if (!Content2.Children.Contains(Overlay))
+            {
+                Content2.Children.Add(Overlay);
+            }
         }
     }
 }

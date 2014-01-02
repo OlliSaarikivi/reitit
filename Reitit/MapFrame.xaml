@@ -34,7 +34,6 @@
                                     HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                                     VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
                             </Grid>
-                            <Grid Loaded="Overlay_Loaded"/>
                         </Grid>
                     </ControlTemplate>
                 </Setter.Value>
