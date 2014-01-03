@@ -47,6 +47,33 @@ namespace Reitit
     }
 
     [DataContract]
+    public class RecentPickerLocation : ExtendedObservableObject, IPickerLocation
+    {
+        [DataMember]
+        public RecentLocation _location;
+
+        public string Name { get { return _location.Name; } }
+
+        public bool Selected
+        {
+            get { return _selected; }
+            set { Set(() => Selected, ref _selected, value); }
+        }
+        [DataMember]
+        public bool _selected = false;
+
+        public RecentPickerLocation(RecentLocation location)
+        {
+            _location = location;
+        }
+
+        public Task<ReittiCoordinate> GetCoordinates()
+        {
+            return Task.FromResult(_location.Coordinate);
+        }
+    }
+
+    [DataContract]
     public class MapLocation : ExtendedObservableObject, IPickerLocation
     {
         [DataMember]

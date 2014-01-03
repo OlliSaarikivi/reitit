@@ -20,6 +20,7 @@ namespace Reitit
         public Brush ForegroundBrush;
         public Brush AccentBrush;
 
+        public RecentManager Recent { get; private set; }
         public FavoritesManager Favorites { get; private set; }
         public IIndicatorManager IndicatorManager { get; private set; }
         public ModelCache ModelCache { get; private set; }
@@ -42,6 +43,7 @@ namespace Reitit
         {
             TiltEffect.TiltableItems.Add(typeof(TiltPresenter));
 
+            Recent = new RecentManager();
             Favorites = new FavoritesManager();
             IndicatorManager = new StackIndicatorManager();
             ModelCache = new ModelCache(AppConfiguration.ModelCacheSize);

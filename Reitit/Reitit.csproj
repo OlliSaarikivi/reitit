@@ -131,6 +131,9 @@
     <Compile Include="UserControls\TimePickerPopup.xaml.cs">
       <DependentUpon>TimePickerPopup.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UserControls\StatusOverlay.xaml.cs">
+      <DependentUpon>StatusOverlay.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Utils\AppConfiguration.cs" />
     <Compile Include="Utils\FavoritesManager.cs" />
     <Compile Include="Utils\IconManager.cs" />
@@ -138,6 +141,8 @@
     <Compile Include="Utils\ExtendedObservableObject.cs" />
     <Compile Include="Utils\FixedLongListSelector.cs" />
     <Compile Include="Utils\PhysicsConstants.cs" />
+    <Compile Include="Utils\RecentManager.cs" />
+    <Compile Include="Utils\RouteLoader.cs" />
     <Compile Include="Utils\SafeRaise.cs" />
     <Compile Include="Utils\Setting.cs" />
     <Compile Include="Utils\TiltPresenter.cs" />
@@ -216,6 +221,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="UserControls\StatusOverlay.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\RouteSearchPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -244,6 +253,7 @@
     <Content Include="Assets\AlignmentGrid.png" />
     <Content Include="Assets\AppBar\add.png" />
     <Content Include="Assets\AppBar\appbar.directions.png" />
+    <Content Include="Assets\AppBar\appbar.location.circle.png" />
     <Content Include="Assets\AppBar\back.png" />
     <Content Include="Assets\AppBar\basecircle.png" />
     <Content Include="Assets\AppBar\cancel.png" />

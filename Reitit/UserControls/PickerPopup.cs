@@ -155,6 +155,14 @@ namespace Reitit
         {
             Visibility = Visibility.Collapsed;
 
+            App.RootFrame.Navigating += (s, e) =>
+            {
+                if (_source != null && e.NavigationMode != NavigationMode.Back)
+                {
+                    Done(default(T), false);
+                }
+            };
+
             var planeProjection = new PlaneProjection();
             Projection = planeProjection;
 
@@ -230,8 +238,6 @@ namespace Reitit
             {
                 e.Cancel = true;
                 Done(default(T));
-                var page = App.RootFrame.Content as PhoneApplicationPage;
-                page.Focus();
             }
         }
 
@@ -246,7 +252,7 @@ namespace Reitit
             _openStoryboard.Begin();
         }
 
-        private void Close()
+        private void Close(bool animate)
         {
             if (_source == null)
             {
@@ -264,35 +270,29 @@ namespace Reitit
             page.IsHitTestVisible = _oldIsHitTestVisible;
             page.BackKeyPress -= BackKeyPress;
 
-            AnimateClose();
+            AnimateClose(animate);
         }
 
-        private void AnimateClose()
+        private void AnimateClose(bool animate)
         {
             _openStoryboard.Stop();
-            _closeStoryboard.Begin();
-        }
-
-        public void Done(T value)
-        {
-            if (_source != null)
+            if (animate)
             {
-                Close();
-                _source.SetResult(value);
-                _source = null;
+                _closeStoryboard.Begin();
             }
             else
             {
-                throw new Exception("Picking not in progress");
+                Visibility = Visibility.Collapsed;
+                App.RootFrame.Overlay.Children.Remove(this);
             }
         }
 
-        protected void Cancel()
+        public void Done(T value, bool animate = true)
         {
             if (_source != null)
             {
-                Close();
-                _source.SetCanceled();
+                Close(animate);
+                _source.SetResult(value);
                 _source = null;
             }
             else

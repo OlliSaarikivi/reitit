@@ -19,9 +19,6 @@ using GalaSoft.MvvmLight;
 namespace Reitit
 {
     [DataContract]
-    [KnownType(typeof(Stop))]
-    [KnownType(typeof(Address))]
-    [KnownType(typeof(Poi))]
     public class FavoriteLocation
     {
         [DataMember]
@@ -48,8 +45,7 @@ namespace Reitit
             }
         }
 
-        public ObservableCollection<FavoriteLocation> SortedLocations { get { return _sortedLocations; } }
-        private ObservableCollection<FavoriteLocation> _sortedLocations = new ObservableCollection<FavoriteLocation>();
+        public ObservableCollection<FavoriteLocation> SortedLocations { get; private set; }
 
         private Dictionary<int, FavoriteLocation> _locations;
 
@@ -57,7 +53,7 @@ namespace Reitit
         {
             _locations = LocationsSetting.Value;
 
-            SortedLocations.AddRange(from loc in _locations.Values
+            SortedLocations = new ObservableCollection<FavoriteLocation>(from loc in _locations.Values
                                      orderby loc.Name
                                      select loc);
         }
@@ -66,15 +62,15 @@ namespace Reitit
         {
             int id = GetUniqueId();
             _locations[id] = location;
-            int insertIndex = _sortedLocations.IndexOf(_sortedLocations.FirstOrDefault(loc => loc.Name.CompareTo(location.Name) >= 0));
-            insertIndex = insertIndex == -1 ? _sortedLocations.Count : insertIndex;
-            _sortedLocations.Insert(insertIndex, location);
+            int insertIndex = SortedLocations.IndexOf(SortedLocations.FirstOrDefault(loc => loc.Name.CompareTo(location.Name) >= 0));
+            insertIndex = insertIndex == -1 ? SortedLocations.Count : insertIndex;
+            SortedLocations.Insert(insertIndex, location);
             return id;
         }
 
         public void Remove(int id)
         {
-            _sortedLocations.Remove(_locations[id]);
+            SortedLocations.Remove(_locations[id]);
             _locations.Remove(id);
         }
 

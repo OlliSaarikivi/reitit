@@ -143,10 +143,10 @@
   <data name="RouteSearchTitle" xml:space="preserve">
     <value>FIND ROUTES</value>
   </data>
-  <data name="PickerCancelText" xml:space="preserve">
+  <data name="LocationPickerCancelText" xml:space="preserve">
     <value>cancel</value>
   </data>
-  <data name="PickerDoneText" xml:space="preserve">
+  <data name="LocationPickerDoneText" xml:space="preserve">
     <value>done</value>
   </data>
   <data name="TimePickerTitle" xml:space="preserve">
@@ -222,7 +222,7 @@
     <value>CHOOSE LOCATION</value>
   </data>
   <data name="LocationPickerNoResults" xml:space="preserve">
-    <value>We couldn't find a match. Try a different spelling or search for a nearby location.</value>
+    <value>We couldn't find a match. Try a different spelling or search for another location.</value>
   </data>
   <data name="LocationPickerSearchHint" xml:space="preserve">
     <value>search for places and addresses</value>
@@ -271,5 +271,11 @@
   </data>
   <data name="LocationPickerAddFavText" xml:space="preserve">
     <value>add to favorites</value>
+  </data>
+  <data name="LocationPickerMeText" xml:space="preserve">
+    <value>me</value>
+  </data>
+  <data name="RouteSearchOverlayText" xml:space="preserve">
+    <value>Loading</value>
   </data>
 </root>

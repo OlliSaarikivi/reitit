@@ -115,7 +115,34 @@ namespace Reitit.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to We couldn&apos;t find a match. Try a different spelling or search for a nearby location..
+        ///   Looks up a localized string similar to cancel.
+        /// </summary>
+        public static string LocationPickerCancelText {
+            get {
+                return ResourceManager.GetString("LocationPickerCancelText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to done.
+        /// </summary>
+        public static string LocationPickerDoneText {
+            get {
+                return ResourceManager.GetString("LocationPickerDoneText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to me.
+        /// </summary>
+        public static string LocationPickerMeText {
+            get {
+                return ResourceManager.GetString("LocationPickerMeText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to We couldn&apos;t find a match. Try a different spelling or search for another location..
         /// </summary>
         public static string LocationPickerNoResults {
             get {
@@ -250,24 +277,6 @@ namespace Reitit.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to cancel.
-        /// </summary>
-        public static string PickerCancelText {
-            get {
-                return ResourceManager.GetString("PickerCancelText", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to done.
-        /// </summary>
-        public static string PickerDoneText {
-            get {
-                return ResourceManager.GetString("PickerDoneText", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to LeftToRight.
         /// </summary>
         public static string ResourceFlowDirection {
@@ -345,6 +354,15 @@ namespace Reitit.Resources {
         public static string RouteSearchModesHeader {
             get {
                 return ResourceManager.GetString("RouteSearchModesHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Loading.
+        /// </summary>
+        public static string RouteSearchOverlayText {
+            get {
+                return ResourceManager.GetString("RouteSearchOverlayText", resourceCulture);
             }
         }
         

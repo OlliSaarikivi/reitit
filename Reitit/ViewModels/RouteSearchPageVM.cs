@@ -3,6 +3,7 @@ using GalaSoft.MvvmLight.Command;
 using Microsoft.Phone.Controls;
 using Oat;
 using Reitit.Resources;
+using ReittiAPI;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -73,9 +74,9 @@ namespace Reitit
             { 
                 return new RelayCommand(() =>
                 {
-                    var tmp = Time;
-                    Time = Date;
-                    Date = tmp;
+                    var tmp = From;
+                    From = To;
+                    To = tmp;
                 });
             }
         }
@@ -222,11 +223,56 @@ namespace Reitit
         {
             get
             {
-                return new RelayCommand(async () => await Search() );
+                return new RelayCommand(() => Search() );
             }
         }
-        private async Task Search()
+        private void Search()
         {
+            IEnumerable<string> transportTypes;
+            if (UseBus && UseMetro && UseTram && UseTrain)
+            {
+                transportTypes = new string[] { "all" };
+            }
+            else
+            {
+                var transportTypesList = new List<string>();
+                transportTypesList.Add("ferry");
+                if (UseBus)
+                {
+                    transportTypesList.Add("bus");
+                    transportTypesList.Add("service");
+                    transportTypesList.Add("uline");
+                }
+                if (UseMetro)
+                {
+                    transportTypesList.Add("metro");
+                }
+                if (UseTram)
+                {
+                    transportTypesList.Add("tram");
+                }
+                if (UseTrain)
+                {
+                    transportTypesList.Add("train");
+                }
+                transportTypes = transportTypesList;
+            }
+
+            var parameters = new RouteSearchParameters
+            {
+                DateTime = SelectedTimeType.IsTimed ? Date.AddHours(Time.Hour).AddMinutes(Time.Minute) : DateTime.Now,
+                Timetype = SelectedTimeType.Type,
+                Optimize = SelectedRouteType.Optimization,
+                ChangeMargin = TransferMargin,
+                WalkSpeed = SelectedSpeed.Value,
+                Detail = "full",
+                Show = 5,
+            };
+            parameters.TransportTypes.AddRange(transportTypes);
+
+            App.RootFrame.Navigate(new Uri(
+                string.Format("/Views/RoutesPage.xaml?loader={0}"),
+                UriKind.Relative));
         }
     }
 }

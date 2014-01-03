@@ -30,13 +30,26 @@ namespace Reitit
         {
             InitializeComponent();
 
-            DoneButton.Command = new RelayCommand(() =>
+            DoneButton.Command = new RelayCommand(async () =>
             {
-                Done(((LocationPickerPopupVM)DataContext).VisibleSelection);
+                var selection = ((LocationPickerPopupVM)DataContext).VisibleSelection;
+                if (((LocationPickerPopupVM)DataContext).SelectedPivotTag == ((LocationPickerPopupVM)DataContext).SearchTag)
+                {
+                    App.Current.Recent.Add(new RecentLocation
+                    {
+                        Name = selection.Name,
+                        Coordinate = await selection.GetCoordinates(), // Should complete synchronously
+                    });
+                }
+                Done(selection);
             });
             CancelButton.Command = new RelayCommand(() =>
             {
                 Done(null);
+            });
+            MeButton.Command = new RelayCommand(() =>
+            {
+                Done(MeLocation.Instance);
             });
             AddFavMenuItem.Command = new RelayCommand(async () =>
             {
@@ -57,7 +70,11 @@ namespace Reitit
 
             if (_searchBoxLoaded)
             {
-                SearchBox.Focus();
+                Dispatcher.BeginInvoke(async () =>
+                {
+                    await Task.Delay(30);
+                    SearchBox.Focus();
+                });
             }
             else
             {
@@ -89,17 +106,38 @@ namespace Reitit
         public DerivedProperty<bool> IsAddFavEnabledProperty;
         public bool IsAddFavEnabled { get { return IsAddFavEnabledProperty.Get(); } }
 
+        public DerivedProperty<bool> NoResultsProperty;
+        public bool NoResults { get { return NoResultsProperty.Get(); } }
+
         public LocationPickerPopupVM(LocationPickerPopup view)
         {
             _view = view;
 
             VisibleSelectionProperty = CreateDerivedProperty(() => VisibleSelection,
                 () => SelectedPivotTag == SearchTag ? (IPickerLocation)SelectedResult :
-                     (SelectedPivotTag == FavoritesTag ? SelectedFavorite : null));
-            _view.DoneButton.IsEnabled = VisibleSelection != null;
+                      SelectedPivotTag == FavoritesTag ? (IPickerLocation)SelectedFavorite :
+                      SelectedPivotTag == RecentTag ? (IPickerLocation)SelectedRecentLocation : null);
+
+            if (_view.Pivot.SelectedItem != null)
+            {
+                SelectedPivotTag = ((PivotItem)_view.Pivot.SelectedItem).Tag;
+            }
+            else
+            {
+                RoutedEventHandler pivotLoaded = null;
+                pivotLoaded = (s, e) =>
+                {
+                    SelectedPivotTag = ((PivotItem)_view.Pivot.SelectedItem).Tag;
+                    _view.Pivot.Loaded -= pivotLoaded;
+                };
+                _view.Pivot.Loaded += pivotLoaded;
+            }
 
             IsAddFavEnabledProperty = CreateDerivedProperty(() => IsAddFavEnabled,
                 () => SelectedPivotTag != FavoritesTag && VisibleSelection != null);
+
+            NoResultsProperty = CreateDerivedProperty(() => NoResults,
+                () => HasSearched && ResultLocationGroups.Count == 0);
 
             PropertyChanged += (s, e) =>
             {
@@ -133,13 +171,6 @@ namespace Reitit
         }
         private string _searchTerm = "";
 
-        public bool NoResultsVisible
-        {
-            get { return _noResultsVisible; }
-            set { Set(() => NoResultsVisible, ref _noResultsVisible, value); }
-        }
-        private bool _noResultsVisible = false;
-
         public object SelectedPivotTag
         {
             get { return _selectedPivotTag; }
@@ -162,6 +193,11 @@ namespace Reitit
             get { return _favoritesTag; }
         }
         private static object _favoritesTag = new object();
+        public object RecentTag
+        {
+            get { return _recentTag; }
+        }
+        private static object _recentTag = new object();
 
         public ObservableCollection<LocationGroup> ResultLocationGroups
         {
@@ -223,6 +259,44 @@ namespace Reitit
             }
         }
         private FavoritePickerLocation _selectedFavorite;
+
+
+
+
+        public TransformObservableCollection<RecentPickerLocation, RecentLocation> RecentLocations
+        {
+            get
+            {
+                return _recentLocations;
+            }
+        }
+        private TransformObservableCollection<RecentPickerLocation, RecentLocation> _recentLocations
+            = new TransformObservableCollection<RecentPickerLocation, RecentLocation>(App.Current.Recent.Locations, recent => new RecentPickerLocation(recent));
+
+        public RecentPickerLocation SelectedRecentLocation
+        {
+            get { return _selectedRecentLocation; }
+            set
+            {
+                if (_selectedRecentLocation != null)
+                {
+                    _selectedRecentLocation.Selected = false;
+                }
+                Set(() => SelectedRecentLocation, ref _selectedRecentLocation, value);
+                if (_selectedRecentLocation != null)
+                {
+                    _selectedRecentLocation.Selected = true;
+                }
+            }
+        }
+        private RecentPickerLocation _selectedRecentLocation;
+
+        public bool HasSearched
+        {
+            get { return _hasSearched; }
+            set { Set(() => HasSearched, ref _hasSearched, value); }
+        }
+        private bool _hasSearched = false;
 
         private CancellationTokenSource _searchTokenSource;
         public RelayCommand<KeyEventArgs> SearchCommand
@@ -310,6 +384,8 @@ namespace Reitit
 
                                 JumpingEnabled = ResultLocationGroups.Count > 1 && (from grp in ResultLocationGroups
                                                                                     select grp.Count).Sum() > 7;
+
+                                HasSearched = true;
 
                                 // Scroll to top
                                 _view.UpdateLayout();

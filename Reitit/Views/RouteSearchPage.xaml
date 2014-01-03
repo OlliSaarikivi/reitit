@@ -15,8 +15,8 @@
     Style="{StaticResource SlideTransitionPageStyle}"
     MapHeight="100"
     toolkit:TiltEffect.IsTiltEnabled="True">
-	<me:MapFramePage.Resources>
-		<Style x:Key="SwapButtonStyle" TargetType="Button">
+    <me:MapFramePage.Resources>
+        <Style x:Key="SwapButtonStyle" TargetType="Button">
 			<Setter Property="Background" Value="Transparent"/>
 			<Setter Property="BorderBrush" Value="{StaticResource PhoneForegroundBrush}"/>
 			<Setter Property="Foreground" Value="{StaticResource PhoneForegroundBrush}"/>
