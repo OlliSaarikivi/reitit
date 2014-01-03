@@ -349,5 +349,10 @@ namespace Reitit
                 return (distance / 1000).ToString("0.0") + "\u00A0km";
             }
         }
+
+        public static T LastElement<T>(this IList<T> list)
+        {
+            return list[list.Count - 1];
+        }
     }
 }
