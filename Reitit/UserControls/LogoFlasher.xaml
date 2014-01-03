@@ -1,0 +1,13 @@
+﻿<UserControl x:Class="Reitit.LogoFlasher"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:me="clr-namespace:Reitit"
+    FontFamily="{StaticResource PhoneFontFamilyNormal}"
+    FontSize="{StaticResource PhoneFontSizeNormal}"
+    Foreground="{StaticResource PhoneForegroundBrush}"
+    IsHitTestVisible="False">
+    
+    <Canvas Background="Transparent">
+        <me:LogoTitle Name="Logo" Canvas.Left="24" Canvas.Top="32" Text="{Binding Path=LocalizedResources.ApplicationTitle, Source={StaticResource LocalizedStrings}}"/>
+    </Canvas>
+</UserControl>

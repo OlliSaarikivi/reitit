@@ -119,6 +119,9 @@
     <Compile Include="UserControls\LocationPickerPopup.xaml.cs">
       <DependentUpon>LocationPickerPopup.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UserControls\LogoFlasher.xaml.cs">
+      <DependentUpon>LogoFlasher.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\LogoTitle.xaml.cs">
       <DependentUpon>LogoTitle.xaml</DependentUpon>
     </Compile>
@@ -206,6 +209,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UserControls\LocationPickerPopup.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\LogoFlasher.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
