@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Reitit.Utils
+namespace Reitit
 {
     [DataContract]
     public class RouteLoader : ViewModelBase

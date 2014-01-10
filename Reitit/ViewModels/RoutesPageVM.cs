@@ -15,7 +15,7 @@ namespace Reitit
         public ObservableCollection<CompoundRoute> Routes { get { return _routes; } }
         private ObservableCollection<CompoundRoute> _routes = new ObservableCollection<CompoundRoute>();
 
-        public RoutesPageVM(ReittiAPI.RouteSearchParameters searchParameters, List<CompoundRoute> routes)
+        public RoutesPageVM(RouteSearchParameters searchParameters, List<CompoundRoute> routes)
         {
             SearchParameters = searchParameters;
             Routes.AddRange(routes);

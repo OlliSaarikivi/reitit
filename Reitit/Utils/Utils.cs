@@ -354,5 +354,57 @@ namespace Reitit
         {
             return list[list.Count - 1];
         }
+
+        public static string FormatLineCode(string shortName, int? typeId)
+        {
+            string lineText = shortName;
+            if (typeId != null)
+            {
+                if (new int[] { 1, 21, 22 }.Contains(typeId.Value))
+                {
+                    lineText += ", Helsinki";
+                }
+                else if (new int[] { 3, 23 }.Contains(typeId.Value))
+                {
+                    lineText += ", Espoo";
+                }
+                else if (new int[] { 4, 24 }.Contains(typeId.Value))
+                {
+                    lineText += ", Vantaa";
+                }
+                else if (36 == typeId.Value)
+                {
+                    lineText += ", Kirkkonummi";
+                }
+                else if (39 == typeId.Value)
+                {
+                    lineText += ", Kerava";
+                }
+            }
+            return lineText;
+        }
+
+        private static string[] _defaultLanguagePreference = { "en", "fi", "sv", "slangi" };
+
+        public static string GetPreferredName(Dictionary<string, string> namesByLanguage)
+        {
+            string preferredName;
+
+            string currentLanguage = CultureInfo.CurrentCulture.TwoLetterISOLanguageName;
+            if (namesByLanguage.TryGetValue(currentLanguage, out preferredName))
+            {
+                return preferredName;
+            }
+
+            foreach (string language in _defaultLanguagePreference)
+            {
+                if (namesByLanguage.TryGetValue(language, out preferredName))
+                {
+                    return preferredName;
+                }
+            }
+
+            return null;
+        }
     }
 }

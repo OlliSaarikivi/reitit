@@ -14,7 +14,6 @@ namespace Reitit
     [DataContract]
     public class MainPageVM : ExtendedObservableObject
     {
-        
         public RelayCommand RouteCommand
         {
             get
@@ -26,6 +25,19 @@ namespace Reitit
         private void Route()
         {
             App.RootFrame.Navigate(new Uri("/Views/RouteSearchPage.xaml", UriKind.Relative));
+        }
+
+        public RelayCommand SearchCommand
+        {
+            get
+            {
+                return new RelayCommand(() => { Search(); });
+            }
+        }
+
+        private void Search()
+        {
+            App.RootFrame.Navigate(new Uri("/Views/SearchPage.xaml", UriKind.Relative));
         }
     }
 }

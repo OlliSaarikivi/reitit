@@ -154,6 +154,7 @@
     <Compile Include="Utils\ViewModelBase.cs" />
     <Compile Include="ViewModels\RouteSearchPageVM.cs" />
     <Compile Include="ViewModels\RoutesPageVM.cs" />
+    <Compile Include="ViewModels\SearchPageVM.cs" />
     <Compile Include="Views\RouteSearchPage.xaml.cs">
       <DependentUpon>RouteSearchPage.xaml</DependentUpon>
     </Compile>
@@ -173,6 +174,9 @@
     <Compile Include="Utils\Utils.cs" />
     <Compile Include="Views\RoutesPage.xaml.cs">
       <DependentUpon>RoutesPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SearchPage.xaml.cs">
+      <DependentUpon>SearchPage.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -245,6 +249,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\RoutesPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\SearchPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

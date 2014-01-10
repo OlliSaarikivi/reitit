@@ -19,6 +19,9 @@
             <bar:BindableApplicationBarButton Text="{Binding Path=LocalizedResources.RouteButtonText, Source={StaticResource LocalizedStrings}}"
                                               IconUri="/Assets/AppBar/appbar.directions.png"
                                               Command="{Binding RouteCommand}"/>
+            <bar:BindableApplicationBarButton Text="{Binding Path=LocalizedResources.SearchButtonText, Source={StaticResource LocalizedStrings}}"
+                                              IconUri="/Assets/AppBar/feature.search.png"
+                                              Command="{Binding SearchCommand}"/>
         </bar:BindableApplicationBar>
     </bar:Bindable.ApplicationBar>
 

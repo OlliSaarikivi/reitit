@@ -265,8 +265,6 @@ namespace Reitit
                 Optimize = SelectedRouteType.Optimization,
                 ChangeMargin = TransferMargin,
                 WalkSpeed = SelectedSpeed.Value,
-                Detail = "full",
-                Show = 5,
             };
             parameters.TransportTypes.AddRange(transportTypes);
 
