@@ -48,8 +48,8 @@ namespace ReittiAPI
             if (substrings.Length == 2)
             {
                 return new ReittiCoordinate(
-                    double.Parse(substrings[0], CultureInfo.InvariantCulture),
-                    double.Parse(substrings[1], CultureInfo.InvariantCulture));
+                    double.Parse(substrings[1], CultureInfo.InvariantCulture),
+                    double.Parse(substrings[0], CultureInfo.InvariantCulture));
             }
             throw new FormatException("Not enough parts");
         }

@@ -128,6 +128,9 @@
     <Compile Include="UserControls\PickerControl.cs" />
     <Compile Include="UserControls\PickerLocation.cs" />
     <Compile Include="UserControls\PickerPopup.cs" />
+    <Compile Include="UserControls\ReititMap.xaml.cs">
+      <DependentUpon>ReititMap.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\TimePickerControl.xaml.cs">
       <DependentUpon>TimePickerControl.xaml</DependentUpon>
     </Compile>
@@ -220,6 +223,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="UserControls\ReititMap.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UserControls\TimePickerControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -259,6 +266,7 @@
   <ItemGroup>
     <Content Include="Assets\AlignmentGrid.png" />
     <Content Include="Assets\AppBar\add.png" />
+    <Content Include="Assets\AppBar\appbar.arrow.right.png" />
     <Content Include="Assets\AppBar\appbar.directions.png" />
     <Content Include="Assets\AppBar\appbar.location.circle.png" />
     <Content Include="Assets\AppBar\back.png" />
@@ -266,7 +274,10 @@
     <Content Include="Assets\AppBar\cancel.png" />
     <Content Include="Assets\AppBar\check.png" />
     <Content Include="Assets\AppBar\close.png" />
+    <Content Include="Assets\AppBar\dark\appbar.refresh.counterclockwise.down.png" />
+    <Content Include="Assets\AppBar\dark\appbar.refresh.counterclockwise.up.png" />
     <Content Include="Assets\AppBar\delete.png" />
+    <Content Include="Assets\AppBar\down.png" />
     <Content Include="Assets\AppBar\download.png" />
     <Content Include="Assets\AppBar\edit.png" />
     <Content Include="Assets\AppBar\favs.addto.png" />
@@ -280,6 +291,8 @@
     <Content Include="Assets\AppBar\feature.settings.png" />
     <Content Include="Assets\AppBar\feature.video.png" />
     <Content Include="Assets\AppBar\folder.png" />
+    <Content Include="Assets\AppBar\light\appbar.refresh.counterclockwise.down.png" />
+    <Content Include="Assets\AppBar\light\appbar.refresh.counterclockwise.up.png" />
     <Content Include="Assets\AppBar\like.png" />
     <Content Include="Assets\AppBar\microphone.png" />
     <Content Include="Assets\AppBar\minus.png" />
@@ -291,12 +304,12 @@
     <Content Include="Assets\AppBar\save.png" />
     <Content Include="Assets\AppBar\share.png" />
     <Content Include="Assets\AppBar\stop.png" />
-    <Content Include="Assets\AppBar\Swap.png" />
     <Content Include="Assets\AppBar\sync.png" />
     <Content Include="Assets\AppBar\transport.ff.png" />
     <Content Include="Assets\AppBar\transport.pause.png" />
     <Content Include="Assets\AppBar\transport.play.png" />
     <Content Include="Assets\AppBar\transport.rew.png" />
+    <Content Include="Assets\AppBar\up.png" />
     <Content Include="Assets\AppBar\upload.png" />
     <Content Include="Assets\ApplicationIcon.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -326,6 +339,8 @@
     <Content Include="Assets\Wait.png" />
     <Content Include="Assets\Walk.png" />
     <Content Include="Toolkit.Content\ApplicationBar.Add.png" />
+    <Content Include="Toolkit.Content\ApplicationBar.Cancel.png" />
+    <Content Include="Toolkit.Content\ApplicationBar.Check.png" />
     <Content Include="Toolkit.Content\ApplicationBar.Delete.png" />
     <Content Include="Toolkit.Content\ApplicationBar.Select.png" />
   </ItemGroup>
@@ -348,6 +363,9 @@
   <ItemGroup>
     <Reference Include="BindableApplicationBar">
       <HintPath>..\packages\BindableApplicationBar.1.1.0.0\lib\wp8\BindableApplicationBar.dll</HintPath>
+    </Reference>
+    <Reference Include="Coding4Fun.Toolkit.Controls">
+      <HintPath>..\packages\Coding4Fun.Toolkit.Controls.2.0.7\lib\windowsphone8\Coding4Fun.Toolkit.Controls.dll</HintPath>
     </Reference>
     <Reference Include="GalaSoft.MvvmLight.Extras.WP8">
       <HintPath>..\packages\MvvmLightLibs.4.2.30.0\lib\wp8\GalaSoft.MvvmLight.Extras.WP8.dll</HintPath>

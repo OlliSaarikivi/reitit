@@ -5,7 +5,8 @@
     xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
     xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
     xmlns:maps="clr-namespace:Microsoft.Phone.Maps.Controls;assembly=Microsoft.Phone.Maps"
-    xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit">
+    xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
+    xmlns:me="clr-namespace:Reitit">
 
 	<phone:PhoneApplicationFrame.Resources>
         <Style x:Key="MapFrameStyle" TargetType="phone:PhoneApplicationFrame">
@@ -24,7 +25,6 @@
                     <ControlTemplate TargetType="phone:PhoneApplicationFrame">
                         <Grid x:Name="ClientArea" Background="{TemplateBinding Background}" HorizontalAlignment="{TemplateBinding HorizontalAlignment}" VerticalAlignment="{TemplateBinding VerticalAlignment}">
                             <Grid x:Name="Content" Loaded="Content_Loaded">
-                                <maps:Map Loaded="Map_Loaded"/>
                                 <ContentPresenter
                                     x:Name="FirstContentPresenter"
                                     HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"

@@ -19,6 +19,7 @@ using System.Collections.ObjectModel;
 using GalaSoft.MvvmLight.Messaging;
 using System.Windows.Media;
 using BindableApplicationBar;
+using Microsoft.Phone.Tasks;
 
 namespace Reitit
 {
@@ -47,9 +48,27 @@ namespace Reitit
             {
                 Done(null);
             });
-            MeButton.Command = new RelayCommand(() =>
+            MeMenuItem.Command = new RelayCommand(() =>
             {
+                Focus();
                 Done(MeLocation.Instance);
+            });
+            ChooseAddressMenuItem.Command = new RelayCommand(() =>
+            {
+                var chooser = new AddressChooserTask();
+                chooser.Completed += async (s, e) =>
+                {
+                    SuppressCloseOnNavigation = false;
+                    if (e.TaskResult == TaskResult.OK)
+                    {
+                        var vm = ((LocationPickerPopupVM)DataContext);
+                        var address = e.Address.Split(new[] {'\r', '\n'}, StringSplitOptions.RemoveEmptyEntries);
+                        vm.SearchTerm = string.Join("\n", address);
+                        await vm.Search();
+                    }
+                };
+                SuppressCloseOnNavigation = true;
+                chooser.Show();
             });
             AddFavMenuItem.Command = new RelayCommand(async () =>
             {
@@ -298,7 +317,6 @@ namespace Reitit
         }
         private bool _hasSearched = false;
 
-        private CancellationTokenSource _searchTokenSource;
         public RelayCommand<KeyEventArgs> SearchCommand
         {
             get
@@ -307,110 +325,117 @@ namespace Reitit
                 {
                     if (e.Key == Key.Enter)
                     {
-                        if (_searchTokenSource != null)
-                        {
-                            _searchTokenSource.Cancel();
-                        }
-                        _searchTokenSource = new CancellationTokenSource();
-                        try
-                        {
-                            await Search(_searchTokenSource.Token);
-                        }
-                        catch (OperationCanceledException) { }
+                        await Search();
                     }
                 });
             }
         }
 
-        private async Task Search(CancellationToken token)
+        private CancellationTokenSource _searchTokenSource;
+        public async Task Search()
         {
-            if (SearchTerm.Length < 3)
+            if (_searchTokenSource != null)
             {
-                MessageBox.Show(AppResources.LocationPickerShortSearchPrompt, AppResources.LocationPickerShortSearchPromptTitle, MessageBoxButton.OK);
+                _searchTokenSource.Cancel();
             }
-            else
+            _searchTokenSource = new CancellationTokenSource();
+            try
             {
-                bool hasWritten = false;
-                TextChangedEventHandler textChangedHandler = (s, e) =>
+                if (SearchTerm.Length < 3)
                 {
-                    hasWritten = true;
-                };
-                _view.SearchBox.TextChanged += textChangedHandler;
-                try
+                    MessageBox.Show(AppResources.LocationPickerShortSearchPrompt, AppResources.LocationPickerShortSearchPromptTitle, MessageBoxButton.OK);
+                }
+                else
                 {
-                    using (new TrayStatus(AppResources.LocationSearching))
+                    bool hasWritten = false;
+                    TextChangedEventHandler textChangedHandler = (s, e) =>
                     {
-                        if (Utils.GetIsNetworkAvailableAndWarn())
+                        hasWritten = true;
+                    };
+                    _view.SearchBox.TextChanged += textChangedHandler;
+                    try
+                    {
+                        using (new TrayStatus(AppResources.LocationSearching))
                         {
-                            try
+                            if (Utils.GetIsNetworkAvailableAndWarn())
                             {
-                                var result = await App.Current.ReittiClient.GeocodeAsync(SearchTerm.Trim(), cancellationToken: token);
-                                token.ThrowIfCancellationRequested();
+                                try
+                                {
+                                    var result = await App.Current.ReittiClient.GeocodeAsync(SearchTerm.Trim(), cancellationToken: _searchTokenSource.Token);
+                                    _searchTokenSource.Token.ThrowIfCancellationRequested();
 
-                                SelectedResult = null;
-                                ResultLocationGroups.Clear();
-                                if (result.Pois.Count > 0)
-                                {
-                                    var placeResults = new LocationGroup { Key = AppResources.LocationPickerPlacesHeader };
-                                    placeResults.AddRange(from loc in result.Pois
-                                                          select new ReittiLocation(loc));
-                                    ResultLocationGroups.Add(placeResults);
-                                }
-                                if (result.Addresses.Count + result.Streets.Count + result.OtherAddresses.Count > 0)
-                                {
-                                    var addressResults = new LocationGroup { Key = AppResources.LocationPickerAddressesHeader };
-                                    addressResults.AddRange(from loc in result.Addresses
-                                                            select new ReittiLocation(loc));
-                                    addressResults.AddRange(from loc in result.Streets
-                                                            select new ReittiLocation(loc));
-                                    addressResults.AddRange(from loc in result.OtherAddresses
-                                                            select new ReittiLocation(loc));
-                                    ResultLocationGroups.Add(addressResults);
-                                }
-                                if (result.ConnectedStopsList.Count > 0)
-                                {
-                                    var stopResults = new LocationGroup { Key = AppResources.LocationPickerStopsHeader };
-                                    stopResults.AddRange(from stops in result.ConnectedStopsList
-                                                         select new ReittiStopsLocation(stops));
-                                    ResultLocationGroups.Add(stopResults);
-                                }
-                                if (result.Others.Count > 0)
-                                {
-                                    var otherResults = new LocationGroup { Key = AppResources.LocationPickerOtherHeader };
-                                    otherResults.AddRange(from loc in result.Others
-                                                          select new ReittiLocation(loc));
-                                    ResultLocationGroups.Add(otherResults);
-                                }
+                                    SelectedResult = null;
+                                    ResultLocationGroups.Clear();
+                                    if (result.Pois.Count > 0)
+                                    {
+                                        var placeResults = new LocationGroup { Key = AppResources.LocationPickerPlacesHeader };
+                                        placeResults.AddRange(from loc in result.Pois
+                                                              select new ReittiLocation(loc));
+                                        ResultLocationGroups.Add(placeResults);
+                                    }
+                                    if (result.Addresses.Count + result.Streets.Count + result.OtherAddresses.Count > 0)
+                                    {
+                                        var addressResults = new LocationGroup { Key = AppResources.LocationPickerAddressesHeader };
+                                        addressResults.AddRange(from loc in result.Addresses
+                                                                select new ReittiLocation(loc));
+                                        addressResults.AddRange(from loc in result.Streets
+                                                                select new ReittiLocation(loc));
+                                        addressResults.AddRange(from loc in result.OtherAddresses
+                                                                select new ReittiLocation(loc));
+                                        ResultLocationGroups.Add(addressResults);
+                                    }
+                                    if (result.ConnectedStopsList.Count > 0)
+                                    {
+                                        var stopResults = new LocationGroup { Key = AppResources.LocationPickerStopsHeader };
+                                        stopResults.AddRange(from stops in result.ConnectedStopsList
+                                                             select new ReittiStopsLocation(stops));
+                                        ResultLocationGroups.Add(stopResults);
+                                    }
+                                    if (result.Others.Count > 0)
+                                    {
+                                        var otherResults = new LocationGroup { Key = AppResources.LocationPickerOtherHeader };
+                                        otherResults.AddRange(from loc in result.Others
+                                                              select new ReittiLocation(loc));
+                                        ResultLocationGroups.Add(otherResults);
+                                    }
 
-                                JumpingEnabled = ResultLocationGroups.Count > 1 && (from grp in ResultLocationGroups
-                                                                                    select grp.Count).Sum() > 7;
+                                    var resultsCount = (from grp in ResultLocationGroups
+                                                        select grp.Count).Sum();
+                                    JumpingEnabled = ResultLocationGroups.Count > 1 && resultsCount > 7;
 
-                                HasSearched = true;
+                                    if (resultsCount == 1)
+                                    {
+                                        SelectedResult = ResultLocationGroups[0][0];
+                                    }
 
-                                // Scroll to top
-                                _view.UpdateLayout();
-                                if (ResultLocationGroups.Count != 0)
-                                {
-                                    _view.SearchResultsSelector.ScrollTo(ResultLocationGroups[0]);
+                                    HasSearched = true;
+
+                                    // Scroll to top
+                                    _view.UpdateLayout();
+                                    if (ResultLocationGroups.Count != 0)
+                                    {
+                                        _view.SearchResultsSelector.ScrollTo(ResultLocationGroups[0]);
+                                    }
+                                    if (!hasWritten)
+                                    {
+                                        _view.Focus();
+                                    }
                                 }
-                                if (!hasWritten)
+                                catch (ReittiAPIException)
                                 {
-                                    _view.Focus();
+                                    _searchTokenSource.Token.ThrowIfCancellationRequested();
+                                    MessageBox.Show(AppResources.LocationPickerSearchFailed, AppResources.LocationPickerSearchFailedTitle, MessageBoxButton.OK);
                                 }
-                            }
-                            catch (ReittiAPIException)
-                            {
-                                token.ThrowIfCancellationRequested();
-                                MessageBox.Show(AppResources.LocationPickerSearchFailed, AppResources.LocationPickerSearchFailedTitle, MessageBoxButton.OK);
                             }
                         }
                     }
-                }
-                finally
-                {
-                    _view.SearchBox.TextChanged -= textChangedHandler;
+                    finally
+                    {
+                        _view.SearchBox.TextChanged -= textChangedHandler;
+                    }
                 }
             }
+            catch (OperationCanceledException) { }
         }
     }
 

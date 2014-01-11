@@ -4,6 +4,7 @@
              xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
              xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
              xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
+             xmlns:c4fc="clr-namespace:Coding4Fun.Toolkit.Controls.Converters;assembly=Coding4Fun.Toolkit.Controls"
              xmlns:me="clr-namespace:Reitit">
     <!--Application Resources-->
     <Application.Resources>
@@ -19,16 +20,57 @@
         <me:DatePickerConverter x:Key="DatePickerConverter"/>
         <me:TimePickerConverter x:Key="TimePickerConverter"/>
         <me:LocationPickerConverter x:Key="LocationPickerConverter"/>
-        <me:BooleanToVisibilityConverter x:Key="VisibilityConverter"/>
+        <me:VisibilityConverter x:Key="VisibilityConverter"/>
+        <me:NegVisibilityConverter x:Key="NegVisibilityConverter"/>
         <me:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
+        <me:NegNullToVisibilityConverter x:Key="NegNullToVisibilityConverter"/>
+        <me:NullToOpacityConverter x:Key="NullToOpacityConverter"/>
         <me:SelectedBrushConverter x:Key="SelectedBrushConverter"/>
         <me:NullIfFalseConverter x:Key="NullIfFalseConverter"/>
         <me:NegationConverter x:Key="NegationConverter"/>
         <me:NotNullConverter x:Key="NotNullConverter"/>
         <me:EqualConverter x:Key="EqualConverter"/>
         <me:ColorToOpacityConverter x:Key="ColorToOpacityConverter"/>
+        <me:ToUpperCaseConverter x:Key="ToUpperCaseConverter"/>
+
+        <c4fc:ThemedImageConverter x:Key="ThemedImageConverter"/>
 
         <me:FavoritesManager x:Key="Favorites"/>
+
+        <Style x:Key="LLSFloatingScrollbarStyle" TargetType="me:FixedLongListSelector">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{StaticResource PhoneForegroundBrush}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="me:FixedLongListSelector">
+                        <Grid Background="{TemplateBinding Background}">
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup x:Name="ScrollStates">
+                                    <VisualStateGroup.Transitions>
+                                        <VisualTransition GeneratedDuration="00:00:00.5"/>
+                                    </VisualStateGroup.Transitions>
+                                    <VisualState x:Name="Scrolling">
+                                        <Storyboard>
+                                            <DoubleAnimation Duration="0" To="1" Storyboard.TargetProperty="Opacity" Storyboard.TargetName="VerticalScrollBar"/>
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="NotScrolling"/>
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+                            <Grid Margin="{TemplateBinding Padding}">
+                                <ViewportControl x:Name="ViewportControl" HorizontalContentAlignment="Stretch" VerticalAlignment="Top"/>
+                                <ScrollBar x:Name="VerticalScrollBar" 
+                                           Grid.Column="1" 
+                                           Margin="4,0,-12,0" 
+                                           Opacity="0" 
+                                           Orientation="Vertical"
+                                           HorizontalAlignment="Right"/>
+                            </Grid>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
 
         <Storyboard x:Key="PopupOpenStoryboard">
             <DoubleAnimation
@@ -78,6 +120,60 @@
                         </toolkit:NavigationOutTransition.Backward>
                         <toolkit:NavigationOutTransition.Forward>
                             <toolkit:SlideTransition Mode="SlideDownFadeOut"/>
+                        </toolkit:NavigationOutTransition.Forward>
+                    </toolkit:NavigationOutTransition>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="SlideFlowStartTransitionPageStyle" TargetType="phone:PhoneApplicationPage">
+            <Setter Property="toolkit:TransitionService.NavigationInTransition">
+                <Setter.Value>
+                    <toolkit:NavigationInTransition>
+                        <toolkit:NavigationInTransition.Backward>
+                            <toolkit:SlideTransition Mode="SlideRightFadeIn"/>
+                        </toolkit:NavigationInTransition.Backward>
+                        <toolkit:NavigationInTransition.Forward>
+                            <toolkit:SlideTransition Mode="SlideUpFadeIn"/>
+                        </toolkit:NavigationInTransition.Forward>
+                    </toolkit:NavigationInTransition>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="toolkit:TransitionService.NavigationOutTransition">
+                <Setter.Value>
+                    <toolkit:NavigationOutTransition>
+                        <toolkit:NavigationOutTransition.Backward>
+                            <toolkit:SlideTransition Mode="SlideDownFadeOut"/>
+                        </toolkit:NavigationOutTransition.Backward>
+                        <toolkit:NavigationOutTransition.Forward>
+                            <toolkit:SlideTransition Mode="SlideLeftFadeOut"/>
+                        </toolkit:NavigationOutTransition.Forward>
+                    </toolkit:NavigationOutTransition>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="FlowTransitionPageStyle" TargetType="phone:PhoneApplicationPage">
+            <Setter Property="toolkit:TransitionService.NavigationInTransition">
+                <Setter.Value>
+                    <toolkit:NavigationInTransition>
+                        <toolkit:NavigationInTransition.Backward>
+                            <toolkit:SlideTransition Mode="SlideRightFadeIn"/>
+                        </toolkit:NavigationInTransition.Backward>
+                        <toolkit:NavigationInTransition.Forward>
+                            <toolkit:SlideTransition Mode="SlideLeftFadeIn"/>
+                        </toolkit:NavigationInTransition.Forward>
+                    </toolkit:NavigationInTransition>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="toolkit:TransitionService.NavigationOutTransition">
+                <Setter.Value>
+                    <toolkit:NavigationOutTransition>
+                        <toolkit:NavigationOutTransition.Backward>
+                            <toolkit:SlideTransition Mode="SlideRightFadeOut"/>
+                        </toolkit:NavigationOutTransition.Backward>
+                        <toolkit:NavigationOutTransition.Forward>
+                            <toolkit:SlideTransition Mode="SlideLeftFadeOut"/>
                         </toolkit:NavigationOutTransition.Forward>
                     </toolkit:NavigationOutTransition>
                 </Setter.Value>

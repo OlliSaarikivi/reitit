@@ -1,15 +1,10 @@
 ﻿<UserControl
-    Name="Root"
     x:Class="Reitit.ColorizedIconControl"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <Canvas Width="35" Height="35" Margin="0,0,0,-2" Background="Transparent" >
         <Rectangle Width="35" Height="35" Name="BacktroundRectangle" RadiusX="5" RadiusY="5" />
-        <Rectangle Width="35" Height="35" Fill="White" RadiusX="5" RadiusY="5" >
-            <Rectangle.OpacityMask>
-                <ImageBrush x:Name="Mask" Stretch="None" AlignmentX="Center" AlignmentY="Center" />
-            </Rectangle.OpacityMask>
-        </Rectangle>
+        <Rectangle Name="Rect" Width="35" Height="35" Fill="White" RadiusX="5" RadiusY="5" />
     </Canvas>
 </UserControl>

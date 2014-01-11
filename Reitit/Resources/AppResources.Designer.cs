@@ -124,6 +124,15 @@ namespace Reitit.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to use a contact&apos;s address.
+        /// </summary>
+        public static string LocationPickerChooseAddressText {
+            get {
+                return ResourceManager.GetString("LocationPickerChooseAddressText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to done.
         /// </summary>
         public static string LocationPickerDoneText {
@@ -133,7 +142,7 @@ namespace Reitit.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to me.
+        ///   Looks up a localized string similar to use my location.
         /// </summary>
         public static string LocationPickerMeText {
             get {
@@ -322,6 +331,33 @@ namespace Reitit.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Loading.
+        /// </summary>
+        public static string RouteLoaderLoadingStatus {
+            get {
+                return ResourceManager.GetString("RouteLoaderLoadingStatus", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Getting your location.
+        /// </summary>
+        public static string RouteLoaderLocatingStatus {
+            get {
+                return ResourceManager.GetString("RouteLoaderLocatingStatus", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to advanced.
+        /// </summary>
+        public static string RouteSearchAdvanced {
+            get {
+                return ResourceManager.GetString("RouteSearchAdvanced", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to search.
         /// </summary>
         public static string RouteSearchButtonText {
@@ -412,11 +448,38 @@ namespace Reitit.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Loading.
+        /// </summary>
+        public static string RoutesInitialLoading {
+            get {
+                return ResourceManager.GetString("RoutesInitialLoading", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to We couldn&apos;t find a match. Check that your route waypoints are within the Helsinki area or try altering your search parameters..
+        /// </summary>
+        public static string RoutesNoRoutesText {
+            get {
+                return ResourceManager.GetString("RoutesNoRoutesText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to ROUTES.
         /// </summary>
         public static string RoutesTitle {
             get {
                 return ResourceManager.GetString("RoutesTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to  TO .
+        /// </summary>
+        public static string RoutesTitleSeparator {
+            get {
+                return ResourceManager.GetString("RoutesTitleSeparator", resourceCulture);
             }
         }
         

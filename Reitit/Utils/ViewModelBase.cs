@@ -10,9 +10,12 @@ namespace Reitit
     [DataContract]
     public abstract class ViewModelBase : ExtendedObservableObject
     {
-        public ViewModelBase()
+        public ViewModelBase(bool init = true)
         {
-            Initialize();
+            if (init)
+            {
+                Initialize();
+            }
         }
 
         [OnDeserialized]
@@ -21,6 +24,6 @@ namespace Reitit
             Initialize();
         }
 
-        protected abstract void Initialize();
+        protected virtual void Initialize() { }
     }
 }

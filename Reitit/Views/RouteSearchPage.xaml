@@ -120,60 +120,67 @@
                     <me:DatePickerControl Grid.Column="1" Value="{Binding Date, Mode=TwoWay}"/>
                 </Grid>
 
-                <TextBlock Text="{Binding Path=LocalizedResources.RouteSearchModesHeader, Source={StaticResource LocalizedStrings}}" Style="{StaticResource PhoneTextNormalStyle}" Margin="12,12,12,-6"/>
-                <Grid Margin="12,0,12,0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-                    <CheckBox IsChecked="{Binding UseBus, Mode=TwoWay}" Grid.Column="0" Margin="-12,0,-12,0">
-                        <me:ColorizedIconControl Icon="/Assets/Bus.png" IconBackground="{StaticResource BusBrush}"/>
-                    </CheckBox>
-                    <CheckBox IsChecked="{Binding UseMetro, Mode=TwoWay}" Grid.Column="2" Margin="-12,0,-12,0">
-                        <me:ColorizedIconControl Icon="/Assets/Metro.png" IconBackground="{StaticResource MetroBrush}"/>
-                    </CheckBox>
-                    <CheckBox IsChecked="{Binding UseTram, Mode=TwoWay}" Grid.Column="4" Margin="-12,0,-12,0">
-                        <me:ColorizedIconControl Icon="/Assets/Tram.png" IconBackground="{StaticResource TramBrush}"/>
-                    </CheckBox>
-                    <CheckBox IsChecked="{Binding UseTrain, Mode=TwoWay}" Grid.Column="6" Margin="-12,0,-12,0">
-                        <me:ColorizedIconControl Icon="/Assets/Train.png" IconBackground="{StaticResource TrainBrush}"/>
-                    </CheckBox>
-                </Grid>
+                <!--<Button Name="AdvancedButton"
+                        Visibility="{Binding ShowAdvanced, Converter={StaticResource NegVisibilityConverter}}"
+                        Content="{Binding Path=LocalizedResources.RouteSearchAdvanced, Source={StaticResource LocalizedStrings}}"
+                        Command="{Binding ShowAdvancedCommand}"/>-->
+                
+                <!--<StackPanel Name="AdvancedPanel" Visibility="{Binding ShowAdvanced, Converter={StaticResource VisibilityConverter}, FallbackValue=Collapsed}">-->
+                    <TextBlock Text="{Binding Path=LocalizedResources.RouteSearchModesHeader, Source={StaticResource LocalizedStrings}}" Style="{StaticResource PhoneTextNormalStyle}" Margin="12,12,12,-6"/>
+                    <Grid Margin="12,0,12,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <CheckBox IsChecked="{Binding UseBus, Mode=TwoWay}" Grid.Column="0" Margin="-12,0,-12,0">
+                            <me:ColorizedIconControl Icon="/Assets/Bus.png" IconBackground="{StaticResource BusBrush}"/>
+                        </CheckBox>
+                        <CheckBox IsChecked="{Binding UseMetro, Mode=TwoWay}" Grid.Column="2" Margin="-12,0,-12,0">
+                            <me:ColorizedIconControl Icon="/Assets/Metro.png" IconBackground="{StaticResource MetroBrush}"/>
+                        </CheckBox>
+                        <CheckBox IsChecked="{Binding UseTram, Mode=TwoWay}" Grid.Column="4" Margin="-12,0,-12,0">
+                            <me:ColorizedIconControl Icon="/Assets/Tram.png" IconBackground="{StaticResource TramBrush}"/>
+                        </CheckBox>
+                        <CheckBox IsChecked="{Binding UseTrain, Mode=TwoWay}" Grid.Column="6" Margin="-12,0,-12,0">
+                            <me:ColorizedIconControl Icon="/Assets/Train.png" IconBackground="{StaticResource TrainBrush}"/>
+                        </CheckBox>
+                    </Grid>
 
-                <TextBlock Text="{Binding Path=LocalizedResources.RouteSearchSpeedHeader, Source={StaticResource LocalizedStrings}}" Style="{StaticResource PhoneTextNormalStyle}" Margin="12,12,12,-6"/>
-                <toolkit:ListPicker x:Name="WalkSpeedPicker"  Margin="12,6,12,12" ItemsSource="{Binding WalkingSpeeds}"
-                                    SelectedIndex="{Binding SelectedSpeedIndex, Mode=TwoWay}" SizeChanged="ListPicker_SizeChanged">
-                    <toolkit:ListPicker.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding Text}"/>
-                        </DataTemplate>
-                    </toolkit:ListPicker.ItemTemplate>
-                </toolkit:ListPicker>
+                    <TextBlock Text="{Binding Path=LocalizedResources.RouteSearchSpeedHeader, Source={StaticResource LocalizedStrings}}" Style="{StaticResource PhoneTextNormalStyle}" Margin="12,12,12,-6"/>
+                    <toolkit:ListPicker x:Name="WalkSpeedPicker"  Margin="12,6,12,12" ItemsSource="{Binding WalkingSpeeds}"
+                                        SelectedIndex="{Binding SelectedSpeedIndex, Mode=TwoWay}" SizeChanged="ListPicker_SizeChanged">
+                        <toolkit:ListPicker.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Text}"/>
+                            </DataTemplate>
+                        </toolkit:ListPicker.ItemTemplate>
+                    </toolkit:ListPicker>
 
-                <TextBlock Text="{Binding Path=LocalizedResources.RouteSearchTypeHeader, Source={StaticResource LocalizedStrings}}" Style="{StaticResource PhoneTextNormalStyle}" Margin="12,12,12,-6"/>
-                <toolkit:ListPicker x:Name="RouteTypePicker"  Margin="12,6,12,12" ItemsSource="{Binding RouteTypes}"
-                                    SelectedIndex="{Binding SelectedRouteTypeIndex, Mode=TwoWay}" SizeChanged="ListPicker_SizeChanged">
-                    <toolkit:ListPicker.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding Text}"/>
-                        </DataTemplate>
-                    </toolkit:ListPicker.ItemTemplate>
-                </toolkit:ListPicker>
+                    <TextBlock Text="{Binding Path=LocalizedResources.RouteSearchTypeHeader, Source={StaticResource LocalizedStrings}}" Style="{StaticResource PhoneTextNormalStyle}" Margin="12,12,12,-6"/>
+                    <toolkit:ListPicker x:Name="RouteTypePicker"  Margin="12,6,12,12" ItemsSource="{Binding RouteTypes}"
+                                        SelectedIndex="{Binding SelectedRouteTypeIndex, Mode=TwoWay}" SizeChanged="ListPicker_SizeChanged">
+                        <toolkit:ListPicker.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Text}"/>
+                            </DataTemplate>
+                        </toolkit:ListPicker.ItemTemplate>
+                    </toolkit:ListPicker>
 
-                <TextBlock Style="{StaticResource PhoneTextNormalStyle}" Margin="12,12,12,-6">
-                    <TextBlock.Inlines>
-                        <Run Text="{Binding Path=LocalizedResources.RouteSearchMarginHeader, Source={StaticResource LocalizedStrings}}"/>
-                        <Run Text=": "/>
-                        <Run Text="{Binding Path=Value, ElementName=MarginSlider}"/>
-                        <Run Text=" min"/>
-                    </TextBlock.Inlines>
-                </TextBlock>
-                <Slider Name="MarginSlider" ValueChanged="MarginSlider_ValueChanged" SmallChange="1" LargeChange="1" Minimum="0" Maximum="10" Value="{Binding TransferMargin, Mode=TwoWay}"/>
+                    <TextBlock Style="{StaticResource PhoneTextNormalStyle}" Margin="12,12,12,-6">
+                        <TextBlock.Inlines>
+                            <Run Text="{Binding Path=LocalizedResources.RouteSearchMarginHeader, Source={StaticResource LocalizedStrings}}"/>
+                            <Run Text=": "/>
+                            <Run Text="{Binding Path=Value, ElementName=MarginSlider}"/>
+                            <Run Text=" min"/>
+                        </TextBlock.Inlines>
+                    </TextBlock>
+                    <Slider Name="MarginSlider" ValueChanged="MarginSlider_ValueChanged" SmallChange="1" LargeChange="1" Minimum="0" Maximum="10" Value="{Binding TransferMargin, Mode=TwoWay}"/>
+                <!--</StackPanel>-->
             </StackPanel>
         </ScrollViewer>
     </Grid>
@@ -181,7 +188,7 @@
     <bar:Bindable.ApplicationBar>
         <bar:BindableApplicationBar BindableOpacity="0.999">
             <bar:BindableApplicationBarButton Text="{Binding Path=LocalizedResources.RouteSearchButtonText, Source={StaticResource LocalizedStrings}}"
-                                              IconUri="/Assets/AppBar/feature.search.png"
+                                              IconUri="/Assets/AppBar/appbar.arrow.right.png"
                                               Command="{Binding SearchCommand}"/>
         </bar:BindableApplicationBar>
     </bar:Bindable.ApplicationBar>

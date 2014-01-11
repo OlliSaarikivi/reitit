@@ -1,4 +1,5 @@
-﻿using Microsoft.Phone.Controls;
+﻿using GalaSoft.MvvmLight.Messaging;
+using Microsoft.Phone.Controls;
 using Microsoft.Phone.Maps.Controls;
 using Microsoft.Phone.Shell;
 using System;
@@ -93,6 +94,7 @@ namespace Reitit
                     stoner.TombstoneTo(State);
                 }
             }
+            Messenger.Default.Unregister(this);
         }
 
         protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
