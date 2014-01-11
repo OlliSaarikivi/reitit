@@ -85,6 +85,11 @@
                     </Grid.RowDefinitions>
                     <toolkit:PhoneTextBox Name="SearchBox" Grid.Row="0" Hint="{Binding Path=LocalizedResources.LocationPickerSearchHint, Source={StaticResource LocalizedStrings}}"
                                           Text="{Binding SearchTerm, Mode=TwoWay}" TextChanged="SearchBox_TextChanged">
+                        <toolkit:PhoneTextBox.InputScope>
+                            <InputScope>
+                                <InputScopeName NameValue="Maps"/>
+                            </InputScope>
+                        </toolkit:PhoneTextBox.InputScope>
                         <i:Interaction.Triggers>
                             <i:EventTrigger EventName="KeyDown">
                                 <mvvmcommands:EventToCommand Command="{Binding SearchCommand}" PassEventArgsToCommand="True"/>
@@ -111,6 +116,7 @@
                                         <TextBlock Text="{Binding Detail}"
                                                    Visibility="{Binding Detail, Converter={StaticResource NullToVisibilityConverter}}"
                                                    Style="{StaticResource PhoneTextSubtleStyle}"
+                                                   TextWrapping="Wrap"
                                                    Foreground="{Binding Selected, Converter={StaticResource SelectedBrushConverter}, ConverterParameter={StaticResource PhoneSubtleBrush}}"/>
                                     </StackPanel>
                                 </DataTemplate>

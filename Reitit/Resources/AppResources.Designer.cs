@@ -97,6 +97,15 @@ namespace Reitit.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to lines.
+        /// </summary>
+        public static string ListLinesHeader {
+            get {
+                return ResourceManager.GetString("ListLinesHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to add to favorites.
         /// </summary>
         public static string LocationPickerAddFavText {
@@ -237,15 +246,6 @@ namespace Reitit.Resources {
         public static string LocationPickerTitle {
             get {
                 return ResourceManager.GetString("LocationPickerTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Searching....
-        /// </summary>
-        public static string LocationSearching {
-            get {
-                return ResourceManager.GetString("LocationSearching", resourceCulture);
             }
         }
         
@@ -516,6 +516,69 @@ namespace Reitit.Resources {
         public static string RouteTypeWalking {
             get {
                 return ResourceManager.GetString("RouteTypeWalking", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to search.
+        /// </summary>
+        public static string SearchButtonText {
+            get {
+                return ResourceManager.GetString("SearchButtonText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A problem occured when trying to retrieve the results for your search. Try again or contact the app creator if the problem persists..
+        /// </summary>
+        public static string SearchFailed {
+            get {
+                return ResourceManager.GetString("SearchFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Couldn&apos;t retrieve search results.
+        /// </summary>
+        public static string SearchFailedTitle {
+            get {
+                return ResourceManager.GetString("SearchFailedTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to search for lines, places and addresses.
+        /// </summary>
+        public static string SearchHint {
+            get {
+                return ResourceManager.GetString("SearchHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Searching....
+        /// </summary>
+        public static string SearchingStatus {
+            get {
+                return ResourceManager.GetString("SearchingStatus", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to We couldn&apos;t find a match. Try a different spelling or change your search term..
+        /// </summary>
+        public static string SearchNoResults {
+            get {
+                return ResourceManager.GetString("SearchNoResults", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SEARCH.
+        /// </summary>
+        public static string SearchTitle {
+            get {
+                return ResourceManager.GetString("SearchTitle", resourceCulture);
             }
         }
         

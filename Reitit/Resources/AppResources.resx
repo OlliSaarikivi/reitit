@@ -245,7 +245,7 @@
   <data name="LocationPickerShortSearchPromptTitle" xml:space="preserve">
     <value>Search term too short</value>
   </data>
-  <data name="LocationSearching" xml:space="preserve">
+  <data name="SearchingStatus" xml:space="preserve">
     <value>Searching...</value>
   </data>
   <data name="NetworkUnavailableText" xml:space="preserve">
@@ -298,5 +298,26 @@
   </data>
   <data name="RouteSearchAdvanced" xml:space="preserve">
     <value>advanced</value>
+  </data>
+  <data name="SearchButtonText" xml:space="preserve">
+    <value>search</value>
+  </data>
+  <data name="SearchHint" xml:space="preserve">
+    <value>search for lines, places and addresses</value>
+  </data>
+  <data name="SearchNoResults" xml:space="preserve">
+    <value>We couldn't find a match. Try a different spelling or change your search term.</value>
+  </data>
+  <data name="SearchTitle" xml:space="preserve">
+    <value>SEARCH</value>
+  </data>
+  <data name="SearchFailed" xml:space="preserve">
+    <value>A problem occured when trying to retrieve the results for your search. Try again or contact the app creator if the problem persists.</value>
+  </data>
+  <data name="SearchFailedTitle" xml:space="preserve">
+    <value>Couldn't retrieve search results</value>
+  </data>
+  <data name="ListLinesHeader" xml:space="preserve">
+    <value>lines</value>
   </data>
 </root>
