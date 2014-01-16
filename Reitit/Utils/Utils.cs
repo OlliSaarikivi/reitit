@@ -79,21 +79,48 @@ namespace Reitit
             }) { }
     }
 
-    public class BooleanToVisibilityConverter : LambdaConverter<bool, Visibility, object>
+    public class VisibilityConverter : LambdaConverter<bool, Visibility, object>
     {
-        public BooleanToVisibilityConverter()
+        public VisibilityConverter()
             : base((b, p, culture) =>
             {
                 return b ? Visibility.Visible : Visibility.Collapsed;
             }) { }
     }
 
+    public class NegVisibilityConverter : LambdaConverter<bool, Visibility, object>
+    {
+        public NegVisibilityConverter()
+            : base((b, p, culture) =>
+            {
+                return b ? Visibility.Collapsed : Visibility.Visible;
+            }) { }
+    }
+    
     public class NullToVisibilityConverter : LambdaConverter<object, Visibility, object>
     {
         public NullToVisibilityConverter()
             : base((o, p, culture) =>
             {
-                return o !=  null ? Visibility.Visible : Visibility.Collapsed;
+                return o != null ? Visibility.Visible : Visibility.Collapsed;
+            }) { }
+    }
+
+    public class NegNullToVisibilityConverter : LambdaConverter<object, Visibility, object>
+    {
+        public NegNullToVisibilityConverter()
+            : base((o, p, culture) =>
+            {
+                return o == null ? Visibility.Visible : Visibility.Collapsed;
+            }) { }
+    }
+
+    public class NullToOpacityConverter : LambdaConverter<object, double, object>
+    {
+        public NullToOpacityConverter()
+            : base((o, p, culture) =>
+            {
+                return o != null ? 1 : 0;
             }) { }
     }
 
@@ -157,6 +184,15 @@ namespace Reitit
             : base((c, p, culture) =>
             {
                 return (double)c.A / byte.MaxValue;
+            }) { }
+    }
+
+    public class ToUpperCaseConverter : LambdaConverter<string, string, object>
+    {
+        public ToUpperCaseConverter()
+            : base((s, p, culture) =>
+            {
+                return s.ToUpper();
             }) { }
     }
 
@@ -347,6 +383,18 @@ namespace Reitit
             else
             {
                 return (distance / 1000).ToString("0.0") + "\u00A0km";
+            }
+        }
+
+        public static string FormatDistanceConserveSpace(double distance)
+        {
+            if (distance < 1000)
+            {
+                return distance.ToString("0") + "\u2006m";
+            }
+            else
+            {
+                return (distance / 1000).ToString("0.0") + "\u2006km";
             }
         }
 

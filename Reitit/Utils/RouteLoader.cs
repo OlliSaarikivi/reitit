@@ -1,4 +1,5 @@
-﻿using ReittiAPI;
+﻿using Reitit.Resources;
+using ReittiAPI;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -7,14 +8,39 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace Reitit
 {
     [DataContract]
-    public class RouteLoader : ViewModelBase
+    public class RouteLoader : ExtendedObservableObject
     {
         private Task _initialLoad, _loadPrevious, _loadNext;
         private CancellationTokenSource _cancellationSource;
+
+        public string InitialStatus
+        {
+            get { return _initialStatus; }
+            set { Set(() => InitialStatus, ref _initialStatus, value); }
+        }
+        private string _initialStatus;
+
+        public string PreviousStatus
+        {
+            get { return _previousStatus; }
+            set { Set(() => PreviousStatus, ref _previousStatus, value); }
+        }
+        private string _previousStatus;
+
+        public string NextStatus
+        {
+            get { return _nextStatus; }
+            set { Set(() => NextStatus, ref _nextStatus, value); }
+        }
+        private string _nextStatus;
+
+        public string From { get { return _parameters.From.Name; } }
+        public string To { get { return _parameters.To.Name; } }
 
         [DataMember]
         public ReittiCoordinate _cachedFrom, _cachedTo;
@@ -24,14 +50,21 @@ namespace Reitit
 
         public ObservableCollection<CompoundRoute> LoadedRoutes { get { return _loadedRoutes; } }
         [DataMember]
-        public ObservableCollection<CompoundRoute> _loadedRoutes;
+        public ObservableCollection<CompoundRoute> _loadedRoutes = new ObservableCollection<CompoundRoute>();
 
         public RouteLoader(RouteSearchParameters parameters)
         {
             _parameters = parameters;
+            Initialize();
         }
 
-        protected override void Initialize()
+        [OnDeserialized]
+        public void OnDeserialized(StreamingContext context)
+        {
+            Initialize();
+        }
+
+        private void Initialize()
         {
             _cancellationSource = new CancellationTokenSource();
             if (LoadedRoutes.Count == 0)
@@ -48,8 +81,11 @@ namespace Reitit
         {
             try
             {
-                var routes = await LoadRoutes(_cancellationSource.Token);
-                LoadedRoutes.AddRange(routes);
+                var routes = await LoadRoutes(_cancellationSource.Token, s => 
+                {
+                    Deployment.Current.Dispatcher.BeginInvoke(() => InitialStatus = s);
+                });
+                Deployment.Current.Dispatcher.BeginInvoke(() => LoadedRoutes.AddRange(routes));
             }
             catch (OperationCanceledException)
             { }
@@ -84,7 +120,7 @@ namespace Reitit
 
             var firstArrival = LoadedRoutes[0].Routes.LastElement().Legs.LastElement().Locs.LastElement().ArrTime;
 
-            var routes = await LoadRoutes(_cancellationSource.Token, firstArrival - TimeSpan.FromMinutes(1), "arrival");
+            var routes = await LoadRoutes(_cancellationSource.Token, s => PreviousStatus = s, firstArrival - TimeSpan.FromMinutes(1), "arrival");
             for (int i = routes.Count - 1; i >= 0; --i)
             {
                 LoadedRoutes.Insert(0, routes[i]);
@@ -120,34 +156,44 @@ namespace Reitit
 
             var lastDeparture = LoadedRoutes.LastElement().Routes[0].Legs[0].Locs[0].DepTime;
 
-            var routes = await LoadRoutes(_cancellationSource.Token, lastDeparture + TimeSpan.FromMinutes(1), "departure");
+            var routes = await LoadRoutes(_cancellationSource.Token, s => NextStatus = s, lastDeparture + TimeSpan.FromMinutes(1), "departure");
             LoadedRoutes.AddRange(routes);
         }
 
-        private async Task<List<CompoundRoute>> LoadRoutes(CancellationToken token, DateTime? dateTime = null, string timetype = null)
+        private async Task<List<CompoundRoute>> LoadRoutes(CancellationToken token, Action<string> updateStatus, DateTime? dateTime = null, string timetype = null)
         {
             if (_cachedFrom == null)
             {
+                updateStatus(AppResources.RouteLoaderLocatingStatus);
                 _cachedFrom = await _parameters.From.GetCoordinates();
             }
             if (_cachedTo == null)
             {
+                updateStatus(AppResources.RouteLoaderLocatingStatus);
                 _cachedTo = await _parameters.To.GetCoordinates();
             }
-            var routes = await App.Current.ReittiClient.RouteAsync(
-                _cachedFrom,
-                _cachedTo,
-                dateTime: dateTime ?? _parameters.DateTime,
-                timetype: timetype ?? _parameters.Timetype,
-                transportTypes: _parameters.TransportTypes,
-                optimize: _parameters.Optimize,
-                changeMargin: _parameters.ChangeMargin,
-                walkSpeed: _parameters.WalkSpeed,
-                detail: "full",
-                show: 5,
-                cancellationToken: token);
-            token.ThrowIfCancellationRequested();
-            return routes;
+            updateStatus(AppResources.RouteLoaderLoadingStatus);
+            try
+            {
+                var routes = await App.Current.ReittiClient.RouteAsync(
+                    _cachedFrom,
+                    _cachedTo,
+                    dateTime: dateTime ?? _parameters.DateTime,
+                    timetype: timetype ?? _parameters.Timetype,
+                    transportTypes: _parameters.TransportTypes,
+                    optimize: _parameters.Optimize,
+                    changeMargin: _parameters.ChangeMargin,
+                    walkSpeed: _parameters.WalkSpeed,
+                    detail: "full",
+                    show: 5,
+                    cancellationToken: token);
+                token.ThrowIfCancellationRequested();
+                return routes;
+            }
+            finally
+            {
+                updateStatus(null);
+            }
         }
     }
 

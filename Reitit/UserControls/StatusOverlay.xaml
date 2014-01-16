@@ -5,7 +5,7 @@
     FontSize="{StaticResource PhoneFontSizeNormal}"
     Foreground="{StaticResource PhoneForegroundBrush}">
 
-    <Grid Name="Root" Background="{StaticResource PhoneSemitransparentBrush}">
+    <Grid Name="Root">
         <StackPanel VerticalAlignment="Center">
             <ProgressBar IsIndeterminate="False" Margin="0"/>
             <TextBlock Name="Status" TextWrapping="Wrap" Style="{StaticResource PhoneTextNormalStyle}" TextAlignment="Center" Margin="{StaticResource PhoneVerticalMargin}"/>

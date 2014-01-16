@@ -24,6 +24,6 @@ namespace Reitit
             Initialize();
         }
 
-        protected abstract void Initialize();
+        protected virtual void Initialize() { }
     }
 }

@@ -273,10 +273,31 @@
     <value>add to favorites</value>
   </data>
   <data name="LocationPickerMeText" xml:space="preserve">
-    <value>me</value>
+    <value>use my location</value>
   </data>
   <data name="RouteSearchOverlayText" xml:space="preserve">
     <value>Loading</value>
+  </data>
+  <data name="RouteLoaderLoadingStatus" xml:space="preserve">
+    <value>Loading</value>
+  </data>
+  <data name="RouteLoaderLocatingStatus" xml:space="preserve">
+    <value>Getting your location</value>
+  </data>
+  <data name="RoutesInitialLoading" xml:space="preserve">
+    <value>Loading</value>
+  </data>
+  <data name="RoutesNoRoutesText" xml:space="preserve">
+    <value>We couldn't find a match. Check that your route waypoints are within the Helsinki area or try altering your search parameters.</value>
+  </data>
+  <data name="LocationPickerChooseAddressText" xml:space="preserve">
+    <value>use a contact's address</value>
+  </data>
+  <data name="RoutesTitleSeparator" xml:space="preserve">
+    <value> TO </value>
+  </data>
+  <data name="RouteSearchAdvanced" xml:space="preserve">
+    <value>advanced</value>
   </data>
   <data name="SearchButtonText" xml:space="preserve">
     <value>search</value>

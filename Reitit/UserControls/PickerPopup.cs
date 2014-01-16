@@ -144,6 +144,8 @@ namespace Reitit
         private Color _oldSTForegroundColor;
         private Color _oldSTBackgroundColor;
 
+        public bool SuppressCloseOnNavigation { get; set; }
+
         public static readonly DependencyProperty ApplicationBarProperty = DependencyProperty.Register("ApplicationBar", typeof(BindableApplicationBar.BindableApplicationBar), typeof(PickerPopup<T>), new PropertyMetadata(null));
         public BindableApplicationBar.BindableApplicationBar ApplicationBar
         {
@@ -157,9 +159,12 @@ namespace Reitit
 
             App.RootFrame.Navigating += (s, e) =>
             {
-                if (_source != null && e.NavigationMode != NavigationMode.Back)
+                if (!SuppressCloseOnNavigation)
                 {
-                    Done(default(T), false);
+                    if (_source != null && e.NavigationMode != NavigationMode.Back)
+                    {
+                        Done(default(T), false);
+                    }
                 }
             };
 

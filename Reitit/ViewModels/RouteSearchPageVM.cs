@@ -1,5 +1,6 @@
 ﻿using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
+using GalaSoft.MvvmLight.Messaging;
 using Microsoft.Phone.Controls;
 using Oat;
 using Reitit.Resources;
@@ -34,7 +35,22 @@ namespace Reitit
             SelectedRouteTypeProperty = CreateDerivedProperty(
                 () => SelectedRouteType,
                 () => RouteTypes[SelectedRouteTypeIndex]);
+            SearchPossibleProperty = CreateDerivedProperty(
+                () => SearchPossible,
+                () => From != null && To != null);
+
+            _searchCommand = new RelayCommand(() => Search(), () => SearchPossible);
+            PropertyChanged += (s, e) =>
+            {
+                if (e.PropertyName == "SearchPossible")
+                {
+                    _searchCommand.RaiseCanExecuteChanged();
+                }
+            };
         }
+
+        private DerivedProperty<bool> SearchPossibleProperty;
+        public bool SearchPossible { get { return SearchPossibleProperty.Get(); } }
 
         public IPickerLocation From
         {
@@ -219,13 +235,35 @@ namespace Reitit
         [DataMember]
         public int _transferMargin;
 
+        //public bool ShowAdvanced
+        //{
+        //    get { return _showAdvanced; }
+        //    set { Set(() => ShowAdvanced, ref _showAdvanced, value); }
+        //}
+        //[DataMember]
+        //public bool _showAdvanced;
+
+        //public RelayCommand ShowAdvancedCommand
+        //{
+        //    get
+        //    {
+        //        return new RelayCommand(() =>
+        //        {
+        //            ShowAdvanced = true;
+        //            Messenger.Default.Send(new AnimateAdvanced());
+        //        });
+        //    }
+        //}
+
         public RelayCommand SearchCommand
         {
             get
             {
-                return new RelayCommand(() => Search() );
+                return _searchCommand;
             }
         }
+        private RelayCommand _searchCommand;
+
         private void Search()
         {
             IEnumerable<string> transportTypes;
@@ -260,6 +298,8 @@ namespace Reitit
 
             var parameters = new RouteSearchParameters
             {
+                From = From,
+                To = To,
                 DateTime = SelectedTimeType.IsTimed ? Date.AddHours(Time.Hour).AddMinutes(Time.Minute) : DateTime.Now,
                 Timetype = SelectedTimeType.Type,
                 Optimize = SelectedRouteType.Optimization,
@@ -268,8 +308,11 @@ namespace Reitit
             };
             parameters.TransportTypes.AddRange(transportTypes);
 
+            var loader = new RouteLoader(parameters);
+            int loaderId = App.Current.Parameters.AddParam(loader);
+
             App.RootFrame.Navigate(new Uri(
-                string.Format("/Views/RoutesPage.xaml?loader={0}"),
+                string.Format("/Views/RoutesPage.xaml?loader={0}", loaderId),
                 UriKind.Relative));
         }
     }

@@ -12,7 +12,7 @@ using System.Windows.Navigation;
 namespace Reitit
 {
     [DataContract]
-    public class MainPageVM : ExtendedObservableObject
+    public class MainPageVM : ViewModelBase
     {
         public RelayCommand RouteCommand
         {

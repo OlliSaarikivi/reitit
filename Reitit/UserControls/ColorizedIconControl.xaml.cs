@@ -38,11 +38,14 @@ namespace Reitit
         }
         private static void IconChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var me = d as ColorizedIconControl;
-            if (me != null)
+            var me = (ColorizedIconControl)d;
+            me.Rect.OpacityMask = new ImageBrush
             {
-                me.Mask.ImageSource = e.NewValue as ImageSource;
-            }
+                ImageSource = e.NewValue as ImageSource,
+                Stretch = Stretch.None,
+                AlignmentX = AlignmentX.Center,
+                AlignmentY = AlignmentY.Center,
+            };
         }
 
         public ColorizedIconControl()

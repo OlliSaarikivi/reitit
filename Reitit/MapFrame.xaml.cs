@@ -14,9 +14,8 @@ namespace Reitit
 {
     public partial class MapFrame : TransitionFrame
     {
-        private readonly int _screen_height;
 
-        public Map Map { get; private set; }
+        public ReititMap Map { get; private set; }
 
         public Grid Content2 { get; private set; }
 
@@ -26,10 +25,8 @@ namespace Reitit
         {
             InitializeComponent();
 
-            var content = Application.Current.Host.Content;
-            _screen_height = (int)Math.Ceiling((double)(content.ActualHeight * content.ScaleFactor) / 100);
-
             Overlay = new Grid();
+            Map = new ReititMap();
         }
 
         protected override void OnContentChanged(object oldContent, object newContent)
@@ -47,7 +44,7 @@ namespace Reitit
             {
                 VerticalContentAlignment = VerticalAlignment.Bottom;
                 page.SizeChanged += ContentSizeChanged;
-                UpdateMapTransform(page.ActualHeight);
+                Map.UpdateMapTransform(page.ActualHeight);
             }
             else
             {
@@ -57,25 +54,16 @@ namespace Reitit
 
         private void ContentSizeChanged(object sender, SizeChangedEventArgs e)
         {
-            UpdateMapTransform((sender as FrameworkElement).ActualHeight);
-        }
-
-        private void UpdateMapTransform(double contentHeight)
-        {
-            if (Map != null)
-            {
-                Map.TransformCenter = new Point(0.5, 1 - (double)(_screen_height + contentHeight) / (2 * _screen_height));
-                Map.SetView(Map.Center.Copy().DisplaceFrom(Map.Center), Map.ZoomLevel, MapAnimationKind.None);
-            }
+            Map.UpdateMapTransform((sender as FrameworkElement).ActualHeight);
         }
 
         private void Map_Loaded(object sender, RoutedEventArgs e)
         {
-            Map = sender as Map;
+            Map = sender as ReititMap;
             var content = Content as FrameworkElement;
             if (content != null)
             {
-                UpdateMapTransform(content.ActualHeight);
+                Map.UpdateMapTransform(content.ActualHeight);
             }
         }
 
@@ -84,6 +72,7 @@ namespace Reitit
             Content2 = sender as Grid;
             if (!Content2.Children.Contains(Overlay))
             {
+                Content2.Children.Insert(0, Map);
                 Content2.Children.Add(Overlay);
             }
         }

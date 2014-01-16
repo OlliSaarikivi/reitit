@@ -46,10 +46,11 @@
             <bar:BindableApplicationBarButton Name="CancelButton"
                                               Text="{Binding Path=LocalizedResources.LocationPickerCancelText, Source={StaticResource LocalizedStrings}}"
                                               IconUri="/Assets/AppBar/cancel.png"/>
-            <bar:BindableApplicationBarButton Name="MeButton"
-                                              Text="{Binding Path=LocalizedResources.LocationPickerMeText, Source={StaticResource LocalizedStrings}}"
-                                              IconUri="/Assets/AppBar/appbar.location.circle.png"/>
             <bar:BindableApplicationBar.MenuItems>
+                <bar:BindableApplicationBarMenuItem Name="MeMenuItem"
+                                                    Text="{Binding Path=LocalizedResources.LocationPickerMeText, Source={StaticResource LocalizedStrings}}"/>
+                <bar:BindableApplicationBarMenuItem Name="ChooseAddressMenuItem"
+                                                    Text="{Binding Path=LocalizedResources.LocationPickerChooseAddressText, Source={StaticResource LocalizedStrings}}"/>
                 <bar:BindableApplicationBarMenuItem Name="AddFavMenuItem"
                                                     Text="{Binding Path=LocalizedResources.LocationPickerAddFavText, Source={StaticResource LocalizedStrings}}"/>
             </bar:BindableApplicationBar.MenuItems>
@@ -96,7 +97,8 @@
                         </i:Interaction.Triggers>
                     </toolkit:PhoneTextBox>
                     <Grid Grid.Row="1">
-                        <me:FixedLongListSelector Name="SearchResultsSelector" 
+                        <me:FixedLongListSelector Name="SearchResultsSelector"
+                                                  Style="{StaticResource LLSFloatingScrollbarStyle}"
                                                   ItemsSource="{Binding ResultLocationGroups}"
                                                   LayoutMode="List"
                                                   IsGroupingEnabled="True"
@@ -106,7 +108,7 @@
                             <me:FixedLongListSelector.ItemTemplate>
                                 <DataTemplate>
                                     <StackPanel Margin="0,6,0,6">
-                                        <TextBlock Text="{Binding Name}" 
+                                        <TextBlock Text="{Binding LongName}" 
                                                    Margin="12,0,12,0" 
                                                    FontSize="{StaticResource PhoneFontSizeLarge}"
                                                    TextWrapping="Wrap"
@@ -140,6 +142,7 @@
             </phone:PivotItem>-->
             <phone:PivotItem Name="FavoritesPivotItem" Header="favorites" Tag="{Binding FavoritesTag}">
                 <me:FixedLongListSelector Name="FavoritesSelector"
+                                          Style="{StaticResource LLSFloatingScrollbarStyle}"
                                           ItemsSource="{Binding Favorites}"
                                           IsGroupingEnabled="False"
                                           Margin="0,0,-12,0"
@@ -159,6 +162,7 @@
             </phone:PivotItem>
             <phone:PivotItem Name="RecentPivotItem" Header="recent" Tag="{Binding RecentTag}">
                 <me:FixedLongListSelector Name="RecentSelector"
+                                          Style="{StaticResource LLSFloatingScrollbarStyle}"
                                           ItemsSource="{Binding RecentLocations}"
                                           IsGroupingEnabled="False"
                                           Margin="0,0,-12,0"

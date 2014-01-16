@@ -1,36 +1,122 @@
 ﻿<me:MapFramePage
-    x:Class="Reitit.Views.RoutesPage"
+    x:Class="Reitit.RoutesPage"
+    Name="ThisPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
     xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
     xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
+    xmlns:bar="clr-namespace:BindableApplicationBar;assembly=BindableApplicationBar"
+    xmlns:c4f="clr-namespace:Coding4Fun.Toolkit.Controls;assembly=Coding4Fun.Toolkit.Controls"
     xmlns:me="clr-namespace:Reitit"
     FontFamily="{StaticResource PhoneFontFamilyNormal}"
     FontSize="{StaticResource PhoneFontSizeNormal}"
     Foreground="{StaticResource PhoneForegroundBrush}"
     SupportedOrientations="Portrait" Orientation="Portrait"
-    Style="{StaticResource SlideTransitionPageStyle}"
     MapHeight="100"
-    toolkit:TiltEffect.IsTiltEnabled="True">
+    toolkit:TiltEffect.IsTiltEnabled="True"
+    Style="{StaticResource SlideTransitionPageStyle}">
 
-    <Grid x:Name="LayoutRoot" Background="{StaticResource PhoneBackgroundBrush}">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <!--<RowDefinition Height="72"/>-->
-        </Grid.RowDefinitions>
+	<Grid x:Name="LayoutRoot" Background="{StaticResource PhoneBackgroundBrush}">
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="*"/>
+			<!--<RowDefinition Height="72"/>-->
+		</Grid.RowDefinitions>
 
-        <me:LogoTitle Grid.Row="0" Text="{Binding Path=LocalizedResources.RoutesTitle, Source={StaticResource LocalizedStrings}}" Margin="24,17,0,28"/>
+        <TextBlock Foreground="{StaticResource PhoneAccentBrush}" Grid.Row="0" Margin="24,17,0,28" FontSize="{StaticResource PhoneFontSizeMedium}" FontFamily="{StaticResource PhoneFontFamilySemiBold}">
+            <TextBlock.Inlines>
+                <Run Text="{Binding Loader.From, Converter={StaticResource ToUpperCaseConverter}}"/>
+                <Run Text="{Binding Path=LocalizedResources.RoutesTitleSeparator, Source={StaticResource LocalizedStrings}}"/>
+                <Run Text="{Binding Loader.To, Converter={StaticResource ToUpperCaseConverter}}"/>
+            </TextBlock.Inlines>
+        </TextBlock>
 
-        <phone:LongListSelector Grid.Row="1" Margin="12,0,0,0">
-            <phone:LongListSelector.ItemTemplate>
-                <DataTemplate>
-                    <me:ExpandingRouteControl Route="{Binding}"/>
-                </DataTemplate>
-            </phone:LongListSelector.ItemTemplate>
-        </phone:LongListSelector>
-        
-    </Grid>
+		<!--<me:FixedLongListSelector x:Name="RoutesLLS"
+                                  Style="{StaticResource LLSFloatingScrollbarStyle}"
+			                      toolkit:TiltEffect.SuppressTilt="True" 
+			                      Grid.Row="1" ItemsSource="{Binding RouteVMs}" 
+			                      SelectedItem="{Binding SelectedRoute, Mode=TwoWay}" IsGroupingEnabled="False">
+			<me:FixedLongListSelector.ItemTemplate>
+				<DataTemplate>
+					<me:ExpandingRouteControl Margin="24,0,24,0"
+						From="{Binding DataContext.Loader.From, ElementName=ThisPage}"
+						To="{Binding DataContext.Loader.To, ElementName=ThisPage}"
+						Route="{Binding Route}" Expanded="{Binding Selected}"/>
+				</DataTemplate>
+			</me:FixedLongListSelector.ItemTemplate>
+			<me:FixedLongListSelector.ListHeader>
+				<StackPanel Margin="0,6,0,6" Visibility="{Binding Loader.InitialStatus, Converter={StaticResource NegNullToVisibilityConverter}}">
+					<c4f:RoundButton Command="{Binding PreviousCommand}">
+						<Image Width="48" Height="48"
+							Source="{Binding ConverterParameter={StaticResource PhoneBackgroundColor}, Converter={StaticResource ThemedImageConverter}}"
+							DataContext="/Assets/AppBar/{0}/appbar.refresh.counterclockwise.up.png"/>
+					</c4f:RoundButton>
+					<ProgressBar IsIndeterminate="{Binding Loader.PreviousStatus, Converter={StaticResource NotNullConverter}}"
+						Opacity="{Binding Loader.PreviousStatus, Converter={StaticResource NullToOpacityConverter}}"
+						Margin="0,-6,0,6"/>
+				</StackPanel>
+			</me:FixedLongListSelector.ListHeader>
+			<me:FixedLongListSelector.ListFooter>
+				<StackPanel Margin="0,6,0,6" Visibility="{Binding Loader.InitialStatus, Converter={StaticResource NegNullToVisibilityConverter}}">
+					<ProgressBar IsIndeterminate="{Binding Loader.NextStatus, Converter={StaticResource NotNullConverter}}"
+						Opacity="{Binding Loader.NextStatus, Converter={StaticResource NullToOpacityConverter}}"
+						Margin="0,-6,0,6"/>
+					<c4f:RoundButton Command="{Binding NextCommand}">
+						<Image Width="48" Height="48"
+							Source="{Binding ConverterParameter={StaticResource PhoneBackgroundColor}, Converter={StaticResource ThemedImageConverter}}"
+							DataContext="/Assets/AppBar/{0}/appbar.refresh.counterclockwise.down.png"/>
+					</c4f:RoundButton>
+				</StackPanel>
+			</me:FixedLongListSelector.ListFooter>
+		</me:FixedLongListSelector>-->
 
+        <ScrollViewer Grid.Row="1" Name="Scroll" VerticalScrollBarVisibility="Auto" ManipulationStarted="Scroll_ManipulationStarted">
+            <StackPanel Name="Panel">
+                <StackPanel Margin="0,6,0,6" Visibility="{Binding Loader.InitialStatus, Converter={StaticResource NegNullToVisibilityConverter}}">
+                    <c4f:RoundButton Command="{Binding PreviousCommand}">
+                        <Image Width="48" Height="48"
+							Source="{Binding ConverterParameter={StaticResource PhoneBackgroundColor}, Converter={StaticResource ThemedImageConverter}}"
+							DataContext="/Assets/AppBar/{0}/appbar.refresh.counterclockwise.up.png"/>
+                    </c4f:RoundButton>
+                    <ProgressBar IsIndeterminate="{Binding Loader.PreviousStatus, Converter={StaticResource NotNullConverter}}"
+						Opacity="{Binding Loader.PreviousStatus, Converter={StaticResource NullToOpacityConverter}}"
+						Margin="0,-6,0,6"/>
+                </StackPanel>
+                <ListBox Name="RoutesListBox"
+                         HorizontalContentAlignment="Stretch"
+                         toolkit:TiltEffect.SuppressTilt="True"
+                         ItemsSource="{Binding RouteVMs}"
+                         SelectedItem="{Binding SelectedRoute, Mode=TwoWay}"
+                         ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                         ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <me:ExpandingRouteControl Margin="24,0,24,0"
+                                                      HorizontalAlignment="Stretch"
+						                              From="{Binding DataContext.Loader.From, ElementName=ThisPage}"
+						                              To="{Binding DataContext.Loader.To, ElementName=ThisPage}"
+						                              Route="{Binding Route}" Expanded="{Binding Selected}"/>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+                <StackPanel Name="Footer" Margin="0,6,0,6" Visibility="{Binding Loader.InitialStatus, Converter={StaticResource NegNullToVisibilityConverter}}">
+                    <ProgressBar IsIndeterminate="{Binding Loader.NextStatus, Converter={StaticResource NotNullConverter}}"
+						Opacity="{Binding Loader.NextStatus, Converter={StaticResource NullToOpacityConverter}}"
+						Margin="0,-6,0,6"/>
+                    <c4f:RoundButton Command="{Binding NextCommand}">
+                        <Image Width="48" Height="48"
+							Source="{Binding ConverterParameter={StaticResource PhoneBackgroundColor}, Converter={StaticResource ThemedImageConverter}}"
+							DataContext="/Assets/AppBar/{0}/appbar.refresh.counterclockwise.down.png"/>
+                    </c4f:RoundButton>
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
+
+		<StackPanel Grid.Row="1" Visibility="{Binding Loader.InitialStatus, Converter={StaticResource NullToVisibilityConverter}}" VerticalAlignment="Center">
+			<ProgressBar IsIndeterminate="True" Margin="-12,0,-12,0"/>
+			<TextBlock x:Name="Status" TextWrapping="Wrap" Style="{StaticResource PhoneTextNormalStyle}" TextAlignment="Center" Margin="{StaticResource PhoneVerticalMargin}"
+				Text="{Binding Loader.InitialStatus}"/>
+		</StackPanel>
+	</Grid>
 </me:MapFramePage>

@@ -104,6 +104,7 @@ namespace Reitit
     public abstract class ReittiLocationBase : ExtendedObservableObject, IPickerLocation
     {
         public abstract string Name { get; }
+        public abstract string LongName { get; }
         public abstract Task<ReittiCoordinate> GetCoordinates();
         public abstract string Detail { get; }
         public bool Selected
@@ -115,6 +116,9 @@ namespace Reitit
         public bool _selected = false;
     }
 
+    [KnownType(typeof(Poi))]
+    [KnownType(typeof(Address))]
+    [KnownType(typeof(Stop))]
     [DataContract]
     public class ReittiLocation : ReittiLocationBase
     {
@@ -122,6 +126,7 @@ namespace Reitit
         public Location _location;
 
         public override string Name { get { return _location.Name; } }
+        public override string LongName { get { return _location.LongName; } }
         public override string Detail { get { return null; } }
 
         public ReittiLocation(Location location)
@@ -142,6 +147,7 @@ namespace Reitit
         public ConnectedStops _stops;
 
         public override string Name { get { return _stops.Name; } }
+        public override string LongName { get { return _stops.Name; } }
         public override string Detail { get { return _stops.DisplayCode; } }
 
         public ReittiStopsLocation(ConnectedStops stops)
