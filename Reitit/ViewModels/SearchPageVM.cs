@@ -20,13 +20,13 @@ using System.Windows.Media;
 
 namespace Reitit
 {
-    enum SearchResultType
+    public enum SearchResultType
     {
         Stops, Location, Line
     }
 
     [DataContract]
-    class SearchResultVM : ViewModelBase
+    public class SearchResultVM : ViewModelBase
     {
         public Brush IconBackground { get; set; }
         public ImageSource Icon { get; set; }

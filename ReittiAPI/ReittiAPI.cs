@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Text;
 using System.Device.Location;
 using System.Collections.Generic;
@@ -778,6 +779,92 @@ namespace ReittiAPI
                     });
                 }
                 return routeResults;
+            }
+            catch (HttpRequestException e)
+            {
+                throw new ReittiAPIException(ReittiAPIExceptionKind.HttpRequestException, e.Message, e);
+            }
+            catch (Exception e)
+            {
+                throw new ReittiAPIException(ReittiAPIExceptionKind.ParseException, "Could not parse server response. Please contact the app creator.", e);
+            }
+        }
+
+        public enum ProfilePreference
+        {
+            Default, Tarmac, Gravel, Shortest
+        }
+
+        public async Task<CyclingRoute> CyclingRouteAsync(
+            ReittiCoordinate from,
+            ReittiCoordinate to,
+            List<ReittiCoordinate> vias = null,
+            ProfilePreference? profile = null,
+            bool elevation = false,
+            CancellationToken? cancellationToken = null)
+        {
+            string addressLang = GetAddressLang();
+            string poiLang = GetPoiLang();
+
+            var query = GetCommonParameters(addressLang, poiLang, poiSpecific: false);
+            query.Append("&request=cycling");
+
+            query.Append("&from=").Append(from);
+
+            query.Append("&to=").Append(to);
+
+            if (vias != null)
+            {
+                if (vias.Count > 5)
+                {
+                    throw new ArgumentException("There can be a maximum of 5 via points");
+                }
+                query.Append("&via=").AppendList(from via in vias select via.ToString());
+            }
+
+            if (profile != null)
+            {
+                query.Append("&profile=");
+                switch (profile)
+                {
+                    case ProfilePreference.Default:
+                        query.Append("kleroweighted");
+                        break;
+                    case ProfilePreference.Gravel:
+                        query.Append("klerosand");
+                        break;
+                    case ProfilePreference.Shortest:
+                        query.Append("klerosand");
+                        break;
+                    case ProfilePreference.Tarmac:
+                        query.Append("klerotarmac");
+                        break;
+                    default:
+                        throw new Exception("Unexpected ProfilePreference value");
+                }
+            }
+
+            if (elevation)
+            {
+                query.Append("&elevation=1");
+            }
+
+            var uriBuilder = new UriBuilder(BaseUri);
+            uriBuilder.Query = query.ToString();
+
+            try
+            {
+                string response;
+                if (cancellationToken.HasValue)
+                {
+                    response = await (await _client.GetAsync(uriBuilder.Uri, cancellationToken.Value)).Content.ReadAsStringAsync();
+                    cancellationToken.Value.ThrowIfCancellationRequested();
+                }
+                else
+                {
+                    response = await _client.GetStringAsync(uriBuilder.Uri);
+                }
+                return new CyclingRoute(JToken.Parse(response));
             }
             catch (HttpRequestException e)
             {

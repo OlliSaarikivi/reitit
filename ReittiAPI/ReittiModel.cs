@@ -735,4 +735,101 @@ namespace ReittiAPI
         [DataMember]
         public string Name;
     }
+
+    [DataContract]
+    public class CyclingRoute
+    {
+        [DataMember]
+        public double Length;
+        [DataMember]
+        public CyclingLeg[] Legs;
+
+        public CyclingRoute(JToken token)
+        {
+            Length = token.Value<double>("length");
+
+            JArray legTokens = token["path"] as JArray;
+            if (legTokens != null)
+            {
+                Legs = new CyclingLeg[legTokens.Count];
+                for (int i = 0; i < Legs.Length; ++i)
+                {
+                    Legs[i] = new CyclingLeg(legTokens[i]);
+                }
+            }
+        }
+    }
+
+    public enum SurfaceType
+    {
+        Gravel, Tarmac, Unknown
+    }
+
+    public enum PassType
+    {
+        Underpass, Overpass, None
+    }
+
+    [DataContract]
+    public class CyclingLeg
+    {
+        [DataMember]
+        public double Length;
+        [DataMember]
+        public string AreaName;
+        [DataMember]
+        public SurfaceType SurfaceType = SurfaceType.Unknown;
+        [DataMember]
+        public ReittiCoordinate[] Shape;
+        [DataMember]
+        public PassType PassType = PassType.None;
+
+        public CyclingLeg(JToken token)
+        {
+            Length = token.Value<double>("length");
+
+            AreaName = token.Value<string>("name");
+
+            string surfaceTypeString = token.Value<string>("type");
+            switch (surfaceTypeString)
+            {
+                case "gravel":
+                    SurfaceType = SurfaceType.Gravel;
+                    break;
+                case "tarmac":
+                    SurfaceType = SurfaceType.Tarmac;
+                    break;
+            }
+
+            JArray shapeTokens = token["points"] as JArray;
+            if (shapeTokens != null)
+            {
+                Shape = new ReittiCoordinate[shapeTokens.Count];
+                for (int i = 0; i < Shape.Length; ++i)
+                {
+                    var shapeToken = shapeTokens[i];
+                    double x = shapeToken.Value<double>("x");
+                    double y = shapeToken.Value<double>("y");
+                    var zToken = shapeToken["z"];
+                    double? z = zToken != null ? (double?)zToken : null;
+                    var coordinate = new ReittiCoordinate(y, x, z);
+                    Shape[i] = coordinate;
+                }
+            }
+
+            var passTypeToken = token["passtype"];
+            if (passTypeToken != null)
+            {
+                switch ((string)passTypeToken)
+                {
+                    case "underpass":
+                        PassType = PassType.Underpass;
+                        break;
+                    case "overpass":
+                        PassType = PassType.Overpass;
+                        break;
+                }
+            }
+        }
+    }
 }

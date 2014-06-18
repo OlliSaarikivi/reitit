@@ -355,7 +355,7 @@ namespace Reitit
                     _view.SearchBox.TextChanged += textChangedHandler;
                     try
                     {
-                        using (new TrayStatus(AppResources.LocationSearching))
+                        using (new TrayStatus(AppResources.SearchingStatus))
                         {
                             if (Utils.GetIsNetworkAvailableAndWarn())
                             {
