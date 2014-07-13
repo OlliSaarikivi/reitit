@@ -1,10 +1,7 @@
 ﻿using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
-using Microsoft.Phone.Controls;
-using Oat;
-using Reitit.Resources;
-using ReittiAPI;
+using Reitit.API;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -113,9 +110,9 @@ namespace Reitit
         }
         [DataMember]
         public List<TimeType> _timeTypes = new List<TimeType>(new TimeType[] {
-            new TimeType{ Type = "departure", IsTimed = false, Text = AppResources.TimeTypeNow },
-            new TimeType{ Type = "departure", IsTimed = true, Text = AppResources.TimeTypeDepartAt },
-            new TimeType{ Type = "arrival", IsTimed = true, Text = AppResources.TimeTypeArriveAt },
+            new TimeType{ Type = "departure", IsTimed = false, Text = Utils.GetString("TimeTypeNow") },
+            new TimeType{ Type = "departure", IsTimed = true, Text = Utils.GetString("TimeTypeDepartAt") },
+            new TimeType{ Type = "arrival", IsTimed = true, Text = Utils.GetString("TimeTypeArriveAt") },
         });
         public int SelectedTimeTypeIndex
         {
@@ -176,11 +173,11 @@ namespace Reitit
         }
         [DataMember]
         public List<Speed> _walkingSpeeds = new List<Speed>(new Speed[] {
-            new Speed{ Value = 30, Text = AppResources.WalkSpeedSlow },
-            new Speed{ Value = 70, Text = AppResources.WalkSpeedDefault },
-            new Speed{ Value = 100, Text = AppResources.WalkSpeedFast },
-            new Speed{ Value = 200, Text = AppResources.WalkSpeedRunning },
-            new Speed{ Value = 300, Text = AppResources.WalkSpeedCycling },
+            new Speed{ Value = 30, Text = Utils.GetString("WalkSpeedSlow") },
+            new Speed{ Value = 70, Text = Utils.GetString("WalkSpeedDefault") },
+            new Speed{ Value = 100, Text = Utils.GetString("WalkSpeedFast") },
+            new Speed{ Value = 200, Text = Utils.GetString("WalkSpeedRunning") },
+            new Speed{ Value = 300, Text = Utils.GetString("WalkSpeedCycling") },
         });
         public int SelectedSpeedIndex
         {
@@ -209,10 +206,10 @@ namespace Reitit
         }
         [DataMember]
         public List<RouteType> _routeTypes = new List<RouteType>(new RouteType[] {
-            new RouteType{ Optimization = "default", Text = AppResources.RouteTypeDefault },
-            new RouteType{ Optimization = "fastest", Text = AppResources.RouteTypeFastest },
-            new RouteType{ Optimization = "least_transfers", Text = AppResources.RouteTypeTransfers },
-            new RouteType{ Optimization = "least_walking", Text = AppResources.RouteTypeWalking },
+            new RouteType{ Optimization = "default", Text = Utils.GetString("RouteTypeDefault") },
+            new RouteType{ Optimization = "fastest", Text = Utils.GetString("RouteTypeFastest") },
+            new RouteType{ Optimization = "least_transfers", Text = Utils.GetString("RouteTypeTransfers") },
+            new RouteType{ Optimization = "least_walking", Text = Utils.GetString("RouteTypeWalking") },
         });
         public int SelectedRouteTypeIndex
         {
@@ -309,11 +306,7 @@ namespace Reitit
             parameters.TransportTypes.AddRange(transportTypes);
 
             var loader = new RouteLoader(parameters);
-            int loaderId = App.Current.Parameters.AddParam(loader);
-
-            App.RootFrame.Navigate(new Uri(
-                string.Format("/Views/RoutesPage.xaml?loader={0}", loaderId),
-                UriKind.Relative));
+            Utils.Navigate(typeof(RoutesPage), loader);
         }
     }
 }

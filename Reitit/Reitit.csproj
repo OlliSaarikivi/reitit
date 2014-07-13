@@ -1,420 +1,289 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>10.0.20506</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{D9CD84DE-8A84-4188-B359-8352B20F5ECA}</ProjectGuid>
-    <ProjectTypeGuids>{C089C8C0-30E0-4E22-80C0-CE093F111A43};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
-    <OutputType>Library</OutputType>
+    <ProjectGuid>{0E93ACE5-D1F4-4B57-B2BF-4440C0B2B02A}</ProjectGuid>
+    <OutputType>AppContainerExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Reitit</RootNamespace>
     <AssemblyName>Reitit</AssemblyName>
-    <TargetFrameworkIdentifier>WindowsPhone</TargetFrameworkIdentifier>
-    <TargetFrameworkVersion>v8.0</TargetFrameworkVersion>
-    <SilverlightVersion>$(TargetFrameworkVersion)</SilverlightVersion>
-    <SilverlightApplication>true</SilverlightApplication>
-    <SupportedCultures>
-    </SupportedCultures>
-    <XapOutputs>true</XapOutputs>
-    <GenerateSilverlightManifest>true</GenerateSilverlightManifest>
-    <XapFilename>Reitit_$(Configuration)_$(Platform).xap</XapFilename>
-    <SilverlightManifestTemplate>Properties\AppManifest.xml</SilverlightManifestTemplate>
-    <SilverlightAppEntry>Reitit.App</SilverlightAppEntry>
-    <ValidateXaml>true</ValidateXaml>
-    <MinimumVisualStudioVersion>11.0</MinimumVisualStudioVersion>
-    <ThrowErrorsInValidation>true</ThrowErrorsInValidation>
-    <ExpressionBlendVersion>12.0.41002.1</ExpressionBlendVersion>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <TargetPlatformVersion>8.1</TargetPlatformVersion>
+    <MinimumVisualStudioVersion>12</MinimumVisualStudioVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{76F1466A-8B6D-4E39-A767-685A06062A39};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>Bin\Debug</OutputPath>
-    <DefineConstants>DEBUG;TRACE;SILVERLIGHT;WINDOWS_PHONE</DefineConstants>
-    <NoStdLib>true</NoStdLib>
-    <NoConfig>true</NoConfig>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_PHONE_APP</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>Bin\Release</OutputPath>
-    <DefineConstants>TRACE;SILVERLIGHT;WINDOWS_PHONE</DefineConstants>
-    <NoStdLib>true</NoStdLib>
-    <NoConfig>true</NoConfig>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_PHONE_APP</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
     <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\ARM\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_PHONE_APP</DefineConstants>
+    <NoWarn>;2008</NoWarn>
     <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>Bin\x86\Debug</OutputPath>
-    <DefineConstants>DEBUG;TRACE;SILVERLIGHT;WINDOWS_PHONE</DefineConstants>
-    <NoStdLib>true</NoStdLib>
-    <NoConfig>true</NoConfig>
+    <PlatformTarget>ARM</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
     <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <DebugType>pdbonly</DebugType>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|ARM'">
+    <OutputPath>bin\ARM\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_PHONE_APP</DefineConstants>
     <Optimize>true</Optimize>
-    <OutputPath>Bin\x86\Release</OutputPath>
-    <DefineConstants>TRACE;SILVERLIGHT;WINDOWS_PHONE</DefineConstants>
-    <NoStdLib>true</NoStdLib>
-    <NoConfig>true</NoConfig>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>ARM</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
     <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|ARM' ">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_PHONE_APP</DefineConstants>
+    <NoWarn>;2008</NoWarn>
     <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>Bin\ARM\Debug</OutputPath>
-    <DefineConstants>DEBUG;TRACE;SILVERLIGHT;WINDOWS_PHONE</DefineConstants>
-    <NoStdLib>true</NoStdLib>
-    <NoConfig>true</NoConfig>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
     <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|ARM' ">
-    <DebugType>pdbonly</DebugType>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_PHONE_APP</DefineConstants>
     <Optimize>true</Optimize>
-    <OutputPath>Bin\ARM\Release</OutputPath>
-    <DefineConstants>TRACE;SILVERLIGHT;WINDOWS_PHONE</DefineConstants>
-    <NoStdLib>true</NoStdLib>
-    <NoConfig>true</NoConfig>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
     <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="LocalizedStrings.cs" />
-    <Compile Include="MapFramePage.cs" />
-    <Compile Include="UserControls\ColorizedIconControl.xaml.cs">
-      <DependentUpon>ColorizedIconControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UserControls\DataSource.cs" />
-    <Compile Include="UserControls\DatePickerControl.xaml.cs">
-      <DependentUpon>DatePickerControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UserControls\DatePickerPopup.xaml.cs">
-      <DependentUpon>DatePickerPopup.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UserControls\DateTimeWrapper.cs" />
+    <Compile Include="API\ModelCache.cs" />
+    <Compile Include="API\PoikkeusinfoAPI.cs" />
+    <Compile Include="API\PoikkeusinfoModel.cs" />
+    <Compile Include="API\ReittiAPI.cs" />
+    <Compile Include="API\ReittiCoordinate.cs" />
+    <Compile Include="API\ReittiModel.cs" />
+    <Compile Include="API\RouteSearchResult.cs" />
+    <Compile Include="API\RouteSearchResults.cs" />
+    <Compile Include="API\Utils.cs" />
+    <Compile Include="Misc\NavigateAction.cs" />
     <Compile Include="UserControls\ExpandingRouteControl.xaml.cs">
       <DependentUpon>ExpandingRouteControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UserControls\FavIcon.xaml.cs">
-      <DependentUpon>FavIcon.xaml</DependentUpon>
+    <Compile Include="UserControls\ColorizedIconControl.xaml.cs">
+      <DependentUpon>ColorizedIconControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UserControls\LocationPickerControl.xaml.cs">
-      <DependentUpon>LocationPickerControl.xaml</DependentUpon>
+    <Compile Include="Common\HostingNavigationHelper.cs" />
+    <Compile Include="Common\NavigationHelper.cs" />
+    <Compile Include="Common\ObservableDictionary.cs" />
+    <Compile Include="Common\SuspensionManager.cs" />
+    <Compile Include="DataModel\SampleDataSource.cs" />
+    <Compile Include="Pages\HubPage.xaml.cs">
+      <DependentUpon>HubPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UserControls\LocationPickerPopup.xaml.cs">
-      <DependentUpon>LocationPickerPopup.xaml</DependentUpon>
+    <Compile Include="Pages\ItemPage.xaml.cs">
+      <DependentUpon>ItemPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UserControls\LogoFlasher.xaml.cs">
-      <DependentUpon>LogoFlasher.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="Misc\AppConfiguration.cs" />
+    <Compile Include="Misc\Converters.cs" />
+    <Compile Include="Misc\DerivedProperty.cs" />
+    <Compile Include="Misc\EasyGeolocator.cs" />
+    <Compile Include="Misc\ExtendedObservableObject.cs" />
+    <Compile Include="Misc\FavoritesManager.cs" />
+    <Compile Include="Misc\IconManager.cs" />
+    <Compile Include="Misc\IIndicatorManager.cs" />
+    <Compile Include="Pages\MapContentPage.cs" />
+    <Compile Include="Pages\PageBase.cs" />
+    <Compile Include="Misc\PickerLocation.cs" />
+    <Compile Include="Misc\RecentManager.cs" />
+    <Compile Include="Misc\RouteLoader.cs" />
+    <Compile Include="Misc\Setting.cs" />
+    <Compile Include="Misc\StackIndicatorManager.cs" />
+    <Compile Include="Misc\Tombstoners.cs" />
+    <Compile Include="Misc\TransformObservableCollection.cs" />
+    <Compile Include="Misc\TrayStatus.cs" />
+    <Compile Include="Misc\Utils.cs" />
     <Compile Include="UserControls\LogoTitle.xaml.cs">
       <DependentUpon>LogoTitle.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UserControls\PickerControl.cs" />
-    <Compile Include="UserControls\PickerLocation.cs" />
-    <Compile Include="UserControls\PickerPopup.cs" />
+    <Compile Include="ViewModels\HubPageVM.cs" />
+    <Compile Include="ViewModels\ViewModelBase.cs" />
+    <Compile Include="Pages\MapPage.xaml.cs">
+      <DependentUpon>MapPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\RouteSearchPage.xaml.cs">
+      <DependentUpon>RouteSearchPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\RoutesPage.xaml.cs">
+      <DependentUpon>RoutesPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\SearchPage.xaml.cs">
+      <DependentUpon>SearchPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Pages\SectionPage.xaml.cs">
+      <DependentUpon>SectionPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Strings\en-US\OldResources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>OldResources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\LocationPicker.xaml.cs">
+      <DependentUpon>LocationPicker.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\ReititMap.xaml.cs">
       <DependentUpon>ReititMap.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UserControls\TimePickerControl.xaml.cs">
-      <DependentUpon>TimePickerControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UserControls\TimePickerPopup.xaml.cs">
-      <DependentUpon>TimePickerPopup.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UserControls\StatusOverlay.xaml.cs">
-      <DependentUpon>StatusOverlay.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Utils\AppConfiguration.cs" />
-    <Compile Include="Utils\FavoritesManager.cs" />
-    <Compile Include="Utils\IconManager.cs" />
-    <Compile Include="Utils\ParameterCache.cs" />
-    <Compile Include="Utils\ExtendedObservableObject.cs" />
-    <Compile Include="Utils\FixedLongListSelector.cs" />
-    <Compile Include="Utils\PhysicsConstants.cs" />
-    <Compile Include="Utils\RecentManager.cs" />
-    <Compile Include="Utils\RouteLoader.cs" />
-    <Compile Include="Utils\SafeRaise.cs" />
-    <Compile Include="Utils\Setting.cs" />
-    <Compile Include="Utils\TiltPresenter.cs" />
-    <Compile Include="Utils\Tombstoner.cs" />
-    <Compile Include="Utils\TransformObservableCollection.cs" />
-    <Compile Include="Utils\ViewModelBase.cs" />
+    <Compile Include="UserControls\ReititMapVM.cs" />
     <Compile Include="ViewModels\RouteSearchPageVM.cs" />
     <Compile Include="ViewModels\RoutesPageVM.cs" />
     <Compile Include="ViewModels\SearchPageVM.cs" />
-    <Compile Include="Views\RouteSearchPage.xaml.cs">
-      <DependentUpon>RouteSearchPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="ViewModels\MainPageVM.cs" />
-    <Compile Include="Views\MainPage.xaml.cs">
-      <DependentUpon>MainPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="MapFrame.xaml.cs">
-      <DependentUpon>MapFrame.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Resources\AppResources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>AppResources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Utils\Utils.cs" />
-    <Compile Include="Views\RoutesPage.xaml.cs">
-      <DependentUpon>RoutesPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\SearchPage.xaml.cs">
-      <DependentUpon>SearchPage.xaml</DependentUpon>
-    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <AppxManifest Include="Package.appxmanifest">
+      <SubType>Designer</SubType>
+    </AppxManifest>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Assets\DarkGray.png" />
+    <Content Include="Assets\LightGray.png" />
+    <Content Include="Assets\MediumGray.png" />
+    <Content Include="Assets\HubBackground.theme-dark.png" />
+    <Content Include="Assets\HubBackground.theme-light.png" />
+    <Content Include="Assets\Logo.scale-240.png" />
+    <Content Include="Assets\SmallLogo.scale-240.png" />
+    <Content Include="Assets\SplashScreen.scale-240.png" />
+    <Content Include="Assets\Square71x71Logo.scale-240.png" />
+    <Content Include="Assets\StoreLogo.scale-240.png" />
+    <Content Include="Assets\WideLogo.scale-240.png" />
+    <Content Include="Common\ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
-      <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="Themes\Generic.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="UserControls\ColorizedIconControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="UserControls\DatePickerControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UserControls\DatePickerPopup.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="DataModel\SampleData.json" />
+    <PRIResource Include="Strings\en-US\Resources.resw" />
+  </ItemGroup>
+  <ItemGroup>
     <Page Include="UserControls\ExpandingRouteControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UserControls\FavIcon.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="UserControls\LocationPickerControl.xaml">
+    <Page Include="UserControls\ColorizedIconControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UserControls\LocationPickerPopup.xaml">
+    <Page Include="Pages\HubPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UserControls\LogoFlasher.xaml">
+    <Page Include="Pages\ItemPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\MapPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Pages\RouteSearchPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Pages\RoutesPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Pages\SearchPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\SectionPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\LocationPicker.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="UserControls\LogoTitle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UserControls\ReititMap.xaml">
-      <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UserControls\TimePickerControl.xaml">
       <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UserControls\TimePickerPopup.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UserControls\StatusOverlay.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\RouteSearchPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\MainPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="MapFrame.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\RoutesPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\SearchPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="Properties\AppManifest.xml" />
-    <None Include="Properties\WMAppManifest.xml">
-      <SubType>Designer</SubType>
+    <None Include="Strings\en-US\OldResources.resx">
+      <LastGenOutput>Resources1.Designer.cs</LastGenOutput>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Assets\AlignmentGrid.png" />
-    <Content Include="Assets\AppBar\add.png" />
-    <Content Include="Assets\AppBar\appbar.arrow.right.png" />
-    <Content Include="Assets\AppBar\appbar.directions.png" />
-    <Content Include="Assets\AppBar\appbar.location.circle.png" />
-    <Content Include="Assets\AppBar\back.png" />
-    <Content Include="Assets\AppBar\basecircle.png" />
-    <Content Include="Assets\AppBar\cancel.png" />
-    <Content Include="Assets\AppBar\check.png" />
-    <Content Include="Assets\AppBar\close.png" />
-    <Content Include="Assets\AppBar\dark\appbar.refresh.counterclockwise.down.png" />
-    <Content Include="Assets\AppBar\dark\appbar.refresh.counterclockwise.up.png" />
-    <Content Include="Assets\AppBar\delete.png" />
-    <Content Include="Assets\AppBar\down.png" />
-    <Content Include="Assets\AppBar\download.png" />
-    <Content Include="Assets\AppBar\edit.png" />
-    <Content Include="Assets\AppBar\favs.addto.png" />
-    <Content Include="Assets\AppBar\favs.png" />
-    <Content Include="Assets\AppBar\feature.alarm.png" />
-    <Content Include="Assets\AppBar\feature.calendar.png" />
-    <Content Include="Assets\AppBar\feature.camera.png" />
-    <Content Include="Assets\AppBar\feature.email.png" />
-    <Content Include="Assets\AppBar\feature.phone.png" />
-    <Content Include="Assets\AppBar\feature.search.png" />
-    <Content Include="Assets\AppBar\feature.settings.png" />
-    <Content Include="Assets\AppBar\feature.video.png" />
-    <Content Include="Assets\AppBar\folder.png" />
-    <Content Include="Assets\AppBar\light\appbar.refresh.counterclockwise.down.png" />
-    <Content Include="Assets\AppBar\light\appbar.refresh.counterclockwise.up.png" />
-    <Content Include="Assets\AppBar\like.png" />
-    <Content Include="Assets\AppBar\microphone.png" />
-    <Content Include="Assets\AppBar\minus.png" />
-    <Content Include="Assets\AppBar\new.png" />
-    <Content Include="Assets\AppBar\next.png" />
-    <Content Include="Assets\AppBar\overflowdots.png" />
-    <Content Include="Assets\AppBar\questionmark.png" />
-    <Content Include="Assets\AppBar\refresh.png" />
-    <Content Include="Assets\AppBar\save.png" />
-    <Content Include="Assets\AppBar\share.png" />
-    <Content Include="Assets\AppBar\stop.png" />
-    <Content Include="Assets\AppBar\sync.png" />
-    <Content Include="Assets\AppBar\transport.ff.png" />
-    <Content Include="Assets\AppBar\transport.pause.png" />
-    <Content Include="Assets\AppBar\transport.play.png" />
-    <Content Include="Assets\AppBar\transport.rew.png" />
-    <Content Include="Assets\AppBar\up.png" />
-    <Content Include="Assets\AppBar\upload.png" />
-    <Content Include="Assets\ApplicationIcon.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Bus.png" />
-    <Content Include="Assets\Ferry.png" />
-    <Content Include="Assets\LogoSmall.png" />
-    <Content Include="Assets\Metro.png" />
-    <Content Include="Assets\Swap.png" />
-    <Content Include="Assets\Tiles\FlipCycleTileLarge.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Tiles\FlipCycleTileMedium.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Tiles\FlipCycleTileSmall.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Tiles\IconicTileMediumLarge.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Tiles\IconicTileSmall.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Train.png" />
-    <Content Include="Assets\Tram.png" />
-    <Content Include="Assets\Wait.png" />
-    <Content Include="Assets\Walk.png" />
-    <Content Include="Toolkit.Content\ApplicationBar.Add.png" />
-    <Content Include="Toolkit.Content\ApplicationBar.Cancel.png" />
-    <Content Include="Toolkit.Content\ApplicationBar.Check.png" />
-    <Content Include="Toolkit.Content\ApplicationBar.Delete.png" />
-    <Content Include="Toolkit.Content\ApplicationBar.Select.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\AppResources.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>AppResources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Oat\Oat.csproj">
-      <Project>{5F69E482-A09E-40A3-8784-B5A9DFC9965C}</Project>
-      <Name>Oat</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ReittiAPI\ReittiAPI.csproj">
-      <Project>{0D70774C-84B8-476A-B691-962B54E0E0BA}</Project>
-      <Name>ReittiAPI</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="BindableApplicationBar">
-      <HintPath>..\packages\BindableApplicationBar.1.1.0.0\lib\wp8\BindableApplicationBar.dll</HintPath>
+    <Reference Include="GalaSoft.MvvmLight">
+      <HintPath>..\packages\MvvmLightLibs.4.4.32.1\lib\wpa81\GalaSoft.MvvmLight.dll</HintPath>
     </Reference>
-    <Reference Include="Coding4Fun.Toolkit.Controls">
-      <HintPath>..\packages\Coding4Fun.Toolkit.Controls.2.0.7\lib\windowsphone8\Coding4Fun.Toolkit.Controls.dll</HintPath>
+    <Reference Include="GalaSoft.MvvmLight.Extras">
+      <HintPath>..\packages\MvvmLightLibs.4.4.32.1\lib\wpa81\GalaSoft.MvvmLight.Extras.dll</HintPath>
     </Reference>
-    <Reference Include="GalaSoft.MvvmLight.Extras.WP8">
-      <HintPath>..\packages\MvvmLightLibs.4.2.30.0\lib\wp8\GalaSoft.MvvmLight.Extras.WP8.dll</HintPath>
-    </Reference>
-    <Reference Include="GalaSoft.MvvmLight.WP8">
-      <HintPath>..\packages\MvvmLightLibs.4.2.30.0\lib\wp8\GalaSoft.MvvmLight.WP8.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Phone.Controls, Version=8.0.0.0, Culture=neutral, PublicKeyToken=24eec0d8c86cda1e, processorArchitecture=MSIL" />
-    <Reference Include="Microsoft.Phone.Controls.Toolkit, Version=8.0.1.0, Culture=neutral, PublicKeyToken=b772ad94eb9ca604, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\WPtoolkit.4.2013.08.16\lib\wp8\Microsoft.Phone.Controls.Toolkit.dll</HintPath>
+    <Reference Include="GalaSoft.MvvmLight.Platform">
+      <HintPath>..\packages\MvvmLightLibs.4.4.32.1\lib\wpa81\GalaSoft.MvvmLight.Platform.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Practices.ServiceLocation">
-      <HintPath>..\packages\MvvmLightLibs.4.2.30.0\lib\wp8\Microsoft.Practices.ServiceLocation.dll</HintPath>
+      <HintPath>..\packages\MvvmLightLibs.4.4.32.1\lib\wpa81\Microsoft.Practices.ServiceLocation.dll</HintPath>
     </Reference>
-    <Reference Include="System.Net.Http">
-      <HintPath>..\packages\Microsoft.Net.Http.2.2.18\lib\sl4-windowsphone71\System.Net.Http.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Net.Http.Extensions">
-      <HintPath>..\packages\Microsoft.Net.Http.2.2.18\lib\sl4-windowsphone71\System.Net.Http.Extensions.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Net.Http.Primitives">
-      <HintPath>..\packages\Microsoft.Net.Http.2.2.18\lib\sl4-windowsphone71\System.Net.Http.Primitives.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Windows.Interactivity, Version=3.9.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Expression.Blend.Sdk.1.0.2\lib\wp8\System.Windows.Interactivity.dll</HintPath>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.6.0.3\lib\portable-net45+wp80+win8+wpa81\Newtonsoft.Json.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <Import Project="$(MSBuildExtensionsPath)\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).$(TargetFrameworkVersion).Overrides.targets" />
-  <Import Project="$(MSBuildExtensionsPath)\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
+  <ItemGroup>
+    <SDKReference Include="BehaviorsXamlSDKManaged, Version=12.0">
+      <Name>Behaviors SDK %28XAML%29</Name>
+    </SDKReference>
+  </ItemGroup>
+  <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">
+    <VisualStudioVersion>12.0</VisualStudioVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(TargetPlatformIdentifier)' == '' ">
+    <TargetPlatformIdentifier>WindowsPhoneApp</TargetPlatformIdentifier>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>
   <Target Name="AfterBuild">
   </Target>
   -->
-  <ProjectExtensions />
-  <Import Project="..\packages\Microsoft.Bcl.Build.1.0.13\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.13\tools\Microsoft.Bcl.Build.targets')" />
-  <Target Name="EnsureBclBuildImported" BeforeTargets="BeforeBuild" Condition="'$(BclBuildImported)' == ''">
-    <Error Condition="!Exists('..\packages\Microsoft.Bcl.Build.1.0.13\tools\Microsoft.Bcl.Build.targets')" Text="This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=317567." HelpKeyword="BCLBUILD2001" />
-    <Error Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.13\tools\Microsoft.Bcl.Build.targets')" Text="The build restored NuGet packages. Build the project again to include these packages in the build. For more information, see http://go.microsoft.com/fwlink/?LinkID=317568." HelpKeyword="BCLBUILD2002" />
-  </Target>
 </Project>

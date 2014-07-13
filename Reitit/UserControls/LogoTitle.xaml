@@ -1,14 +1,27 @@
-﻿<UserControl x:Class="Reitit.LogoTitle"
+﻿<UserControl
+    x:Name="ThisControl"
+    x:Class="Reitit.LogoTitle"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:me="clr-namespace:Reitit">
+    xmlns:local="using:Reitit"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="100"
+    d:DesignWidth="100">
 
     <StackPanel Margin="0,0,0,0" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top">
-        <TextBlock Name="TextBlock" VerticalAlignment="Center" Margin="0" FontSize="{StaticResource PhoneFontSizeMedium}" FontFamily="{StaticResource PhoneFontFamilySemiBold}" />
-        <Rectangle Width="52" Height="29" Margin="0,-1,0,-10" Fill="{StaticResource PhoneAccentBrush}" HorizontalAlignment="Left" VerticalAlignment="Top">
-            <Rectangle.OpacityMask>
-                <ImageBrush ImageSource="/Assets/LogoSmall.png" />
-            </Rectangle.OpacityMask>
-        </Rectangle>
+        <TextBlock VerticalAlignment="Center"
+                   Margin="0"
+                   Style="{ThemeResource TitleTextBlockStyle}"
+                   Text="{Binding Title, ElementName=ThisControl}"/>
+        <Viewbox Height="29" Margin="0,-6.5,0,0">
+            <Canvas Width="19.5" Height="10.875">
+                <Path Width="9.79722" Height="9.94416" Canvas.Left="9.20278" Canvas.Top="0.499999" Stretch="Fill" Fill="{ThemeResource PhoneAccentBrush}" Data="F1 M 10.1578,2.29943L 13.6965,4.47947L 14.8959,0.499999L 17.2006,1.92887L 15.1675,5.14067L 19,6.66697L 17.955,8.55476L 14.5063,6.61161L 12.98,10.4442L 11.0922,9.39912L 13.0353,5.95041L 9.20278,4.42412L 10.1578,2.29943 Z "/>
+                <Path Width="3.29438" Height="2.3169" Canvas.Left="7.82123" Canvas.Top="6.24668" Stretch="Fill" Fill="{ThemeResource PhoneAccentBrush}" Data="F1 M 7.82123,7.40315L 10.6394,6.24668L 11.1156,7.40711L 8.29742,8.56358L 7.82123,7.40315 Z "/>
+                <Path Width="3.21568" Height="1.75605" Canvas.Left="4.12717" Canvas.Top="7.66763" Stretch="Fill" Fill="{ThemeResource PhoneAccentBrush}" Data="F1 M 4.12717,8.18776L 7.12868,7.66763L 7.34285,8.90354L 4.34134,9.42368L 4.12717,8.18776 Z "/>
+                <Path Width="3.06382" Height="1.29764" Canvas.Left="0.346589" Canvas.Top="8.2052" Stretch="Fill" Fill="{ThemeResource PhoneAccentBrush}" Data="F1 M 0.364472,8.2052L 3.41041,8.24863L 3.39252,9.50284L 0.346589,9.45941L 0.364472,8.2052 Z "/>
+            </Canvas>
+        </Viewbox>
     </StackPanel>
 </UserControl>

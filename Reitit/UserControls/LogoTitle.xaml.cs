@@ -1,35 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Net;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Navigation;
-using Microsoft.Phone.Controls;
-using Microsoft.Phone.Shell;
+using System.Runtime.InteropServices.WindowsRuntime;
+using Windows.Foundation;
+using Windows.Foundation.Collections;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Controls.Primitives;
+using Windows.UI.Xaml.Data;
+using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Navigation;
 
 namespace Reitit
 {
-    public partial class LogoTitle : UserControl
+    public sealed partial class LogoTitle : UserControl
     {
-        public static readonly DependencyProperty TextProperty = DependencyProperty.Register("Text", typeof(string), typeof(LogoTitle), new PropertyMetadata(null, TextChanged));
-        public string Text
+        public string Title
         {
-            get { return (string)this.GetValue(TextProperty); }
-            set { this.SetValue(TextProperty, value); } 
+            get { return (string)GetValue(TitleProperty); }
+            set { SetValue(TitleProperty, value); }
         }
-        private static void TextChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var me = d as LogoTitle;
-            if (me != null)
-            {
-                me.TextBlock.Text = e.NewValue as string;
-            }
-        }
+
+        public static readonly DependencyProperty TitleProperty =
+            DependencyProperty.Register("Title", typeof(string), typeof(LogoTitle), new PropertyMetadata(null));
 
         public LogoTitle()
         {
-            InitializeComponent();
+            this.InitializeComponent();
         }
     }
 }

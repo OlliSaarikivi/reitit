@@ -1,9 +1,7 @@
 ﻿using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
-using Oat;
-using Reitit.Resources;
-using ReittiAPI;
+using Reitit.API;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -13,10 +11,10 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
-using System.Windows.Media;
+using Windows.System;
+using Windows.UI.Core;
+using Windows.UI.Popups;
+using Windows.UI.Xaml.Media;
 
 namespace Reitit
 {
@@ -116,7 +114,6 @@ namespace Reitit
 
         private void ResultClicked(SearchResultVM value)
         {
-            MessageBox.Show("Click!");
         }
 
         public ObservableCollection<SearchResultGroup> ResultGroups
@@ -149,7 +146,7 @@ namespace Reitit
             {
                 return new RelayCommand<KeyEventArgs>(async (e) =>
                 {
-                    if (e.Key == Key.Enter)
+                    if (e.VirtualKey == VirtualKey.Enter)
                     {
                         if (_searchTokenSource != null)
                         {
@@ -181,9 +178,8 @@ namespace Reitit
             {
                 try
                 {
-                    using (new TrayStatus(AppResources.SearchingStatus))
-                    {
-                        if (Utils.GetIsNetworkAvailableAndWarn())
+                    await Utils.UsingStatus(Utils.GetString("SearchingStatus"), async () => {
+                        if (await Utils.GetIsNetworkAvailableAndWarn())
                         {
                             try
                             {
@@ -196,7 +192,7 @@ namespace Reitit
                                 SelectedResult = null;
                                 ResultGroups.Clear();
 
-                                var lineResultsGroup = new SearchResultGroup { Key = AppResources.ListLinesHeader };
+                                var lineResultsGroup = new SearchResultGroup { Key = Utils.GetString("ListLinesHeader") };
                                 lineResultsGroup.AddRange(from line in lineResults
                                                           select new SearchResultVM(line));
                                 if (lineResultsGroup.Count > 0)
@@ -217,21 +213,21 @@ namespace Reitit
                                         }
                                         stopsList.Add(connectedStops);
                                     }
-                                    var stopResults = new SearchResultGroup { Key = AppResources.LocationPickerStopsHeader };
+                                    var stopResults = new SearchResultGroup { Key = Utils.GetString("LocationPickerStopsHeader") };
                                     stopResults.AddRange(from entry in connectedStopsByName
                                                          select new SearchResultVM(entry.Key, entry.Value));
                                     ResultGroups.Add(stopResults);
                                 }
                                 if (geocodeResults.Pois.Count > 0)
                                 {
-                                    var placeResults = new SearchResultGroup { Key = AppResources.LocationPickerPlacesHeader };
+                                    var placeResults = new SearchResultGroup { Key = Utils.GetString("LocationPickerPlacesHeader") };
                                     placeResults.AddRange(from loc in geocodeResults.Pois
                                                           select new SearchResultVM(loc));
                                     ResultGroups.Add(placeResults);
                                 }
                                 if (geocodeResults.Addresses.Count + geocodeResults.Streets.Count + geocodeResults.OtherAddresses.Count > 0)
                                 {
-                                    var addressResults = new SearchResultGroup { Key = AppResources.LocationPickerAddressesHeader };
+                                    var addressResults = new SearchResultGroup { Key = Utils.GetString("LocationPickerAddressesHeader") };
                                     addressResults.AddRange(from loc in geocodeResults.Addresses
                                                             select new SearchResultVM(loc));
                                     addressResults.AddRange(from loc in geocodeResults.Streets
@@ -242,7 +238,7 @@ namespace Reitit
                                 }
                                 if (geocodeResults.Others.Count > 0)
                                 {
-                                    var otherResults = new SearchResultGroup { Key = AppResources.LocationPickerOtherHeader };
+                                    var otherResults = new SearchResultGroup { Key = Utils.GetString("LocationPickerOtherHeader") };
                                     otherResults.AddRange(from loc in geocodeResults.Others
                                                           select new SearchResultVM(loc));
                                     ResultGroups.Add(otherResults);
@@ -263,10 +259,11 @@ namespace Reitit
                             catch (ReittiAPIException)
                             {
                                 token.ThrowIfCancellationRequested();
-                                MessageBox.Show(AppResources.SearchFailed, AppResources.SearchFailedTitle, MessageBoxButton.OK);
+                                var dialog = new MessageDialog(Utils.GetString("SearchFailed"), Utils.GetString("SearchFailedTitle"));
+                                dialog.ShowAsync();
                             }
                         }
-                    }
+                    });
                 }
                 finally
                 {

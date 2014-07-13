@@ -1,28 +1,22 @@
-﻿<UserControl x:Class="Reitit.ReititMap"
+﻿<UserControl
+    x:Class="Reitit.ReititMap"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:maps="clr-namespace:Microsoft.Phone.Maps.Controls;assembly=Microsoft.Phone.Maps"
-    xmlns:toolkit="clr-namespace:Microsoft.Phone.Maps.Toolkit;assembly=Microsoft.Phone.Controls.Toolkit"
-    FontFamily="{StaticResource PhoneFontFamilyNormal}"
-    FontSize="{StaticResource PhoneFontSizeNormal}"
-    Foreground="{StaticResource PhoneForegroundBrush}">
-    
-    <Grid x:Name="LayoutRoot">
-        <maps:Map Name="Map" PedestrianFeaturesEnabled="True" LandmarksEnabled="True">
-            <toolkit:MapExtensions.Children>
-                <toolkit:MapItemsControl ItemsSource="{Binding Routes}">
-                    <toolkit:MapItemsControl>
+    xmlns:local="using:Reitit"
+    xmlns:maps="using:Windows.UI.Xaml.Controls.Maps"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="300"
+    d:DesignWidth="400">
 
-                    </toolkit:MapItemsControl>
-                    <toolkit:MapItemsControl>
-                        <toolkit:MapItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                
-                            </DataTemplate>
-                        </toolkit:MapItemsControl.ItemTemplate>
-                    </toolkit:MapItemsControl>
-                </toolkit:MapItemsControl>
-            </toolkit:MapExtensions.Children>
-        </maps:Map>
+    <Grid x:Name="LayoutRoot">
+        <maps:MapControl Name="Map"
+                         MapServiceToken="0P_qoDX1pOS_G_mb4IYWqA"
+                         PedestrianFeaturesVisible="True"
+                         LandmarksVisible="True">
+            
+        </maps:MapControl>
+
     </Grid>
 </UserControl>

@@ -1,225 +1,36 @@
-﻿<Application x:Class="Reitit.App"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
-             xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
-             xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
-             xmlns:c4fc="clr-namespace:Coding4Fun.Toolkit.Controls.Converters;assembly=Coding4Fun.Toolkit.Controls"
-             xmlns:me="clr-namespace:Reitit">
-    <!--Application Resources-->
+﻿<Application
+    x:Class="Reitit.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Reitit">
+
     <Application.Resources>
-        <local:LocalizedStrings xmlns:local="clr-namespace:Reitit" x:Key="LocalizedStrings" />
-        
-        <SolidColorBrush x:Key="TrainBrush" Color="#E9001A"/>
-        <SolidColorBrush x:Key="FerryBrush" Color="#5A5CD8"/>
-        <SolidColorBrush x:Key="TramBrush" Color="#00AF2E"/>
-        <SolidColorBrush x:Key="MetroBrush" Color="#EE3E0C"/>
-        <SolidColorBrush x:Key="BusBrush" Color="#193695"/>
-        <SolidColorBrush x:Key="WalkBrush" Color="#0063FF"/>
+        <ResourceDictionary>
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Default">
+                    <ImageBrush x:Key="HubBackgroundImageBrush" ImageSource="Assets/HubBackground.png"/>
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="HighContrast">
+                    <ImageBrush x:Key="HubBackgroundImageBrush" ImageSource="{x:Null}"/>
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
+            
+            <local:DatePickerConverter x:Key="DatePickerConverter"/>
+            <local:TimePickerConverter x:Key="TimePickerConverter"/>
+            <local:LocationPickerConverter x:Key="LocationPickerConverter"/>
+            <local:VisibilityConverter x:Key="VisibilityConverter"/>
+            <local:NegVisibilityConverter x:Key="NegVisibilityConverter"/>
+            <local:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
+            <local:NegNullToVisibilityConverter x:Key="NegNullToVisibilityConverter"/>
+            <local:NullToOpacityConverter x:Key="NullToOpacityConverter"/>
+            <local:SelectedBrushConverter x:Key="SelectedBrushConverter"/>
+            <local:NullIfFalseConverter x:Key="NullIfFalseConverter"/>
+            <local:NegationConverter x:Key="NegationConverter"/>
+            <local:NotNullConverter x:Key="NotNullConverter"/>
+            <local:EqualConverter x:Key="EqualConverter"/>
+            <local:ColorToOpacityConverter x:Key="ColorToOpacityConverter"/>
+            <local:ToUpperCaseConverter x:Key="ToUpperCaseConverter"/>
 
-        <me:DatePickerConverter x:Key="DatePickerConverter"/>
-        <me:TimePickerConverter x:Key="TimePickerConverter"/>
-        <me:LocationPickerConverter x:Key="LocationPickerConverter"/>
-        <me:VisibilityConverter x:Key="VisibilityConverter"/>
-        <me:NegVisibilityConverter x:Key="NegVisibilityConverter"/>
-        <me:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
-        <me:NegNullToVisibilityConverter x:Key="NegNullToVisibilityConverter"/>
-        <me:NullToOpacityConverter x:Key="NullToOpacityConverter"/>
-        <me:SelectedBrushConverter x:Key="SelectedBrushConverter"/>
-        <me:NullIfFalseConverter x:Key="NullIfFalseConverter"/>
-        <me:NegationConverter x:Key="NegationConverter"/>
-        <me:NotNullConverter x:Key="NotNullConverter"/>
-        <me:EqualConverter x:Key="EqualConverter"/>
-        <me:ColorToOpacityConverter x:Key="ColorToOpacityConverter"/>
-        <me:ToUpperCaseConverter x:Key="ToUpperCaseConverter"/>
-
-        <c4fc:ThemedImageConverter x:Key="ThemedImageConverter"/>
-
-        <me:FavoritesManager x:Key="Favorites"/>
-
-        <Style x:Key="LLSFloatingScrollbarStyle" TargetType="me:FixedLongListSelector">
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="Foreground" Value="{StaticResource PhoneForegroundBrush}"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="me:FixedLongListSelector">
-                        <Grid Background="{TemplateBinding Background}">
-                            <VisualStateManager.VisualStateGroups>
-                                <VisualStateGroup x:Name="ScrollStates">
-                                    <VisualStateGroup.Transitions>
-                                        <VisualTransition GeneratedDuration="00:00:00.5"/>
-                                    </VisualStateGroup.Transitions>
-                                    <VisualState x:Name="Scrolling">
-                                        <Storyboard>
-                                            <DoubleAnimation Duration="0" To="1" Storyboard.TargetProperty="Opacity" Storyboard.TargetName="VerticalScrollBar"/>
-                                        </Storyboard>
-                                    </VisualState>
-                                    <VisualState x:Name="NotScrolling"/>
-                                </VisualStateGroup>
-                            </VisualStateManager.VisualStateGroups>
-                            <Grid Margin="{TemplateBinding Padding}">
-                                <ViewportControl x:Name="ViewportControl" HorizontalContentAlignment="Stretch" VerticalAlignment="Top"/>
-                                <ScrollBar x:Name="VerticalScrollBar" 
-                                           Grid.Column="1" 
-                                           Margin="4,0,-12,0" 
-                                           Opacity="0" 
-                                           Orientation="Vertical"
-                                           HorizontalAlignment="Right"/>
-                            </Grid>
-                        </Grid>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <Storyboard x:Key="PopupOpenStoryboard">
-            <DoubleAnimation
-                            Storyboard.TargetName="PlaneProjection"
-                            Storyboard.TargetProperty="RotationX"
-                            From="-30"
-                            To="0"
-                            Duration="0:0:0.1"/>
-            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ThisPopup" Storyboard.TargetProperty="Visibility">
-                <DiscreteObjectKeyFrame KeyTime="0:0:0" Value="Visible"/>
-            </ObjectAnimationUsingKeyFrames>
-        </Storyboard>
-
-        <Storyboard x:Key="PopupCloseStoryboard">
-            <DoubleAnimation
-                            Storyboard.TargetName="PlaneProjection"
-                            Storyboard.TargetProperty="RotationX"
-                            To="90"
-                            Duration="0:0:0.2">
-                <DoubleAnimation.EasingFunction>
-                    <ExponentialEase EasingMode="EaseIn"/>
-                </DoubleAnimation.EasingFunction>
-            </DoubleAnimation>
-            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ThisPopup" Storyboard.TargetProperty="Visibility">
-                <DiscreteObjectKeyFrame KeyTime="0:0:0.2" Value="Collapsed"/>
-            </ObjectAnimationUsingKeyFrames>
-        </Storyboard>
-
-        <Style x:Key="SlideTransitionPageStyle" TargetType="phone:PhoneApplicationPage">
-            <Setter Property="toolkit:TransitionService.NavigationInTransition">
-                <Setter.Value>
-                    <toolkit:NavigationInTransition>
-                        <toolkit:NavigationInTransition.Backward>
-                            <toolkit:SlideTransition Mode="SlideUpFadeIn"/>
-                        </toolkit:NavigationInTransition.Backward>
-                        <toolkit:NavigationInTransition.Forward>
-                            <toolkit:SlideTransition Mode="SlideUpFadeIn"/>
-                        </toolkit:NavigationInTransition.Forward>
-                    </toolkit:NavigationInTransition>
-                </Setter.Value>
-            </Setter>
-            <Setter Property="toolkit:TransitionService.NavigationOutTransition">
-                <Setter.Value>
-                    <toolkit:NavigationOutTransition>
-                        <toolkit:NavigationOutTransition.Backward>
-                            <toolkit:SlideTransition Mode="SlideDownFadeOut"/>
-                        </toolkit:NavigationOutTransition.Backward>
-                        <toolkit:NavigationOutTransition.Forward>
-                            <toolkit:SlideTransition Mode="SlideDownFadeOut"/>
-                        </toolkit:NavigationOutTransition.Forward>
-                    </toolkit:NavigationOutTransition>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <Style x:Key="SlideFlowStartTransitionPageStyle" TargetType="phone:PhoneApplicationPage">
-            <Setter Property="toolkit:TransitionService.NavigationInTransition">
-                <Setter.Value>
-                    <toolkit:NavigationInTransition>
-                        <toolkit:NavigationInTransition.Backward>
-                            <toolkit:SlideTransition Mode="SlideRightFadeIn"/>
-                        </toolkit:NavigationInTransition.Backward>
-                        <toolkit:NavigationInTransition.Forward>
-                            <toolkit:SlideTransition Mode="SlideUpFadeIn"/>
-                        </toolkit:NavigationInTransition.Forward>
-                    </toolkit:NavigationInTransition>
-                </Setter.Value>
-            </Setter>
-            <Setter Property="toolkit:TransitionService.NavigationOutTransition">
-                <Setter.Value>
-                    <toolkit:NavigationOutTransition>
-                        <toolkit:NavigationOutTransition.Backward>
-                            <toolkit:SlideTransition Mode="SlideDownFadeOut"/>
-                        </toolkit:NavigationOutTransition.Backward>
-                        <toolkit:NavigationOutTransition.Forward>
-                            <toolkit:SlideTransition Mode="SlideLeftFadeOut"/>
-                        </toolkit:NavigationOutTransition.Forward>
-                    </toolkit:NavigationOutTransition>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <Style x:Key="FlowTransitionPageStyle" TargetType="phone:PhoneApplicationPage">
-            <Setter Property="toolkit:TransitionService.NavigationInTransition">
-                <Setter.Value>
-                    <toolkit:NavigationInTransition>
-                        <toolkit:NavigationInTransition.Backward>
-                            <toolkit:SlideTransition Mode="SlideRightFadeIn"/>
-                        </toolkit:NavigationInTransition.Backward>
-                        <toolkit:NavigationInTransition.Forward>
-                            <toolkit:SlideTransition Mode="SlideLeftFadeIn"/>
-                        </toolkit:NavigationInTransition.Forward>
-                    </toolkit:NavigationInTransition>
-                </Setter.Value>
-            </Setter>
-            <Setter Property="toolkit:TransitionService.NavigationOutTransition">
-                <Setter.Value>
-                    <toolkit:NavigationOutTransition>
-                        <toolkit:NavigationOutTransition.Backward>
-                            <toolkit:SlideTransition Mode="SlideRightFadeOut"/>
-                        </toolkit:NavigationOutTransition.Backward>
-                        <toolkit:NavigationOutTransition.Forward>
-                            <toolkit:SlideTransition Mode="SlideLeftFadeOut"/>
-                        </toolkit:NavigationOutTransition.Forward>
-                    </toolkit:NavigationOutTransition>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <Style x:Key="TurnstileTransitionPageStyle" TargetType="phone:PhoneApplicationPage">
-            <Setter Property="toolkit:TransitionService.NavigationInTransition">
-                <Setter.Value>
-                    <toolkit:NavigationInTransition>
-                        <toolkit:NavigationInTransition.Backward>
-                            <toolkit:TurnstileTransition Mode="BackwardIn"/>
-                        </toolkit:NavigationInTransition.Backward>
-                        <toolkit:NavigationInTransition.Forward>
-                            <toolkit:TurnstileTransition Mode="ForwardIn"/>
-                        </toolkit:NavigationInTransition.Forward>
-                    </toolkit:NavigationInTransition>
-                </Setter.Value>
-            </Setter>
-            <Setter Property="toolkit:TransitionService.NavigationOutTransition">
-                <Setter.Value>
-                    <toolkit:NavigationOutTransition>
-                        <toolkit:NavigationOutTransition.Backward>
-                            <toolkit:TurnstileTransition Mode="BackwardOut"/>
-                        </toolkit:NavigationOutTransition.Backward>
-                        <toolkit:NavigationOutTransition.Forward>
-                            <toolkit:TurnstileTransition Mode="ForwardOut"/>
-                        </toolkit:NavigationOutTransition.Forward>
-                    </toolkit:NavigationOutTransition>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <Style x:Key="RoutingCoordinatePickerDefault" TargetType="Button">
-            <Setter Property="Background" Value="{StaticResource PhoneTextBoxBrush}"/>
-            <Setter Property="Height" Value="72"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Foreground" Value="{StaticResource PhoneTextBoxForegroundBrush}"/>
-            <Setter Property="HorizontalContentAlignment" Value="Left"/>
-            <Setter Property="FontFamily" Value="{StaticResource PhoneFontFamilyNormal}"/>
-            <Setter Property="FontSize" Value="{StaticResource PhoneFontSizeMediumLarge}"/>
-        </Style>
-        
+        </ResourceDictionary>
     </Application.Resources>
-    <Application.ApplicationLifetimeObjects>
-        <!--Required object that handles lifetime events for the application-->
-        <shell:PhoneApplicationService Launching="Application_Launching" Closing="Application_Closing" Activated="Application_Activated" Deactivated="Application_Deactivated" />
-    </Application.ApplicationLifetimeObjects>
 </Application>

@@ -1,8 +1,7 @@
 ﻿using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
-using Oat;
-using ReittiAPI;
+using Reitit.API;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

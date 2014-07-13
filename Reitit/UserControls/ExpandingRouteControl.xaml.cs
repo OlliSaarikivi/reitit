@@ -1,19 +1,24 @@
-﻿using System;
+﻿using Reitit.API;
+using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using System.Linq;
-using System.Net;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Navigation;
-using Microsoft.Phone.Controls;
-using Microsoft.Phone.Shell;
-using ReittiAPI;
-using System.Windows.Media;
-using Shapes = System.Windows.Shapes;
-using GalaSoft.MvvmLight;
-using System.Windows.Data;
-using Reitit.Resources;
-using System.Windows.Media.Animation;
+using System.Runtime.InteropServices.WindowsRuntime;
+using Windows.Foundation;
+using Windows.Foundation.Collections;
+using Windows.UI;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Controls.Primitives;
+using Windows.UI.Xaml.Data;
+using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Animation;
+using Windows.UI.Xaml.Navigation;
+using Shapes = Windows.UI.Xaml.Shapes;
+
+// The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
 namespace Reitit
 {
@@ -118,7 +123,7 @@ namespace Reitit
             _tinyFontSize = 16;
 
             var textBlock = new TextBlock { FontSize = _largeFontSize };
-            textBlock.Text = DateTimeWrapper.CurrentCultureUsesTwentyFourHourClock() ? "88:88" : "12:88 AM";
+            textBlock.Text = Utils.CurrentCultureUsesTwentyFourHourClock() ? "88:88" : "12:88 AM";
             _timeStringMaxLength = textBlock.ActualWidth;
         }
 
@@ -131,8 +136,7 @@ namespace Reitit
         {
             Root = new Grid();
             Content = Root;
-            var rootTilt = new TiltPresenter();
-            TiltEffect.SetSuppressTilt(rootTilt, false);
+            var rootTilt = new ListViewItem();
             Root.Children.Add(rootTilt);
             MinimizedRoot = new Grid();
             PopulateMinimzied(route);
@@ -164,19 +168,19 @@ namespace Reitit
             fadeExpIn.To = 1;
             fadeExpIn.Duration = dur;
             fadeExpIn.EasingFunction = fadeEase;
-            Storyboard.SetTargetProperty(fadeExpIn, new PropertyPath("Opacity"));
+            Storyboard.SetTargetProperty(fadeExpIn, "Opacity");
             Storyboard.SetTarget(fadeExpIn, ExpandedRoot);
             var maximizeExp = new DoubleAnimation();
             maximizeExp.To = 1;
             maximizeExp.Duration = dur;
             maximizeExp.EasingFunction = fadeEase;
-            Storyboard.SetTargetProperty(maximizeExp, new PropertyPath("ScaleY"));
+            Storyboard.SetTargetProperty(maximizeExp, "ScaleY");
             Storyboard.SetTarget(maximizeExp, ExpandTransform);
             var fadeMinOut = new DoubleAnimation();
             fadeMinOut.To = 0;
             fadeMinOut.Duration = dur;
             fadeMinOut.EasingFunction = fadeEase;
-            Storyboard.SetTargetProperty(fadeMinOut, new PropertyPath("Opacity"));
+            Storyboard.SetTargetProperty(fadeMinOut, "Opacity");
             Storyboard.SetTarget(fadeMinOut, MinimizedRoot);
 
             _maximizeBoard = new Storyboard();
@@ -188,19 +192,19 @@ namespace Reitit
             fadeMinIn.To = 1;
             fadeMinIn.Duration = dur;
             fadeMinIn.EasingFunction = fadeEase;
-            Storyboard.SetTargetProperty(fadeMinIn, new PropertyPath("Opacity"));
+            Storyboard.SetTargetProperty(fadeMinIn, "Opacity");
             Storyboard.SetTarget(fadeMinIn, MinimizedRoot);
             var minimizeExp = new DoubleAnimation();
             minimizeExp.To = 0.51;
             minimizeExp.Duration = dur;
             minimizeExp.EasingFunction = fadeEase;
-            Storyboard.SetTargetProperty(minimizeExp, new PropertyPath("ScaleY"));
+            Storyboard.SetTargetProperty(minimizeExp, "ScaleY");
             Storyboard.SetTarget(minimizeExp, ExpandTransform);
             var fadeExpOut = new DoubleAnimation();
             fadeExpOut.To = 0;
             fadeExpOut.Duration = dur;
             fadeExpOut.EasingFunction = fadeEase;
-            Storyboard.SetTargetProperty(fadeExpOut, new PropertyPath("Opacity"));
+            Storyboard.SetTargetProperty(fadeExpOut, "Opacity");
             Storyboard.SetTarget(fadeExpOut, ExpandedRoot);
 
             _minimizeBoard = new Storyboard();
@@ -217,7 +221,7 @@ namespace Reitit
 
             { // Add departure time
                 var loc = route.Routes[0].Legs[0].Locs[0];
-                string timeString = loc.DepTime.ToShortTimeString();
+                string timeString = Utils.ToShortTimeString(loc.DepTime);
                 var textBlock = new TextBlock
                 {
                     Text = timeString,
@@ -231,7 +235,7 @@ namespace Reitit
 
             { // Add arrival time
                 var loc = route.Routes.LastElement().Legs.LastElement().Locs.LastElement();
-                string timeString = loc.ArrTime.ToShortTimeString();
+                string timeString = Utils.ToShortTimeString(loc.ArrTime);
                 var textBlock = new TextBlock
                 {
                     Text = timeString,
@@ -243,7 +247,7 @@ namespace Reitit
                 MinimizedRoot.Children.Add(textBlock);
             }
 
-            var vehiclesStack = new WrapPanel
+            var vehiclesStack = new WrapGrid
             {
                 Orientation = Orientation.Horizontal
             };
@@ -305,7 +309,7 @@ namespace Reitit
             ExpandedRoot.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
             ExpandedRoot.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
             ExpandedRoot.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-            
+
             int row = -1;
             int locationNum = 1;
             foreach (var partRoute in route.Routes)
@@ -392,11 +396,11 @@ namespace Reitit
                     var loc = leg.Locs[0];
                     if (arrival)
                     {
-                        timeString = loc.ArrTime.ToShortTimeString();
+                        timeString = Utils.ToShortTimeString(loc.ArrTime);
                     }
                     else
                     {
-                        timeString = loc.DepTime.ToShortTimeString();
+                        timeString = Utils.ToShortTimeString(loc.DepTime);
                     }
                     waitDuration = loc.DepTime - loc.ArrTime;
                 }
@@ -405,11 +409,11 @@ namespace Reitit
                     var loc = leg.Locs[leg.Locs.Length - 1];
                     if (arrival)
                     {
-                        timeString = loc.ArrTime.ToShortTimeString();
+                        timeString = Utils.ToShortTimeString(loc.ArrTime);
                     }
                     else
                     {
-                        timeString = loc.DepTime.ToShortTimeString();
+                        timeString = Utils.ToShortTimeString(loc.DepTime);
                     }
                     waitDuration = loc.DepTime - loc.ArrTime;
                 }
@@ -494,11 +498,13 @@ namespace Reitit
 
             if (isFirst || isLast)
             {
-                var binding = new Binding(isFirst ? "From" : "To");
-                binding.Converter = new DefaultIfNullConverter();
-                binding.ConverterParameter = location.Name;
-                binding.Source = this;
-                binding.Mode = BindingMode.OneWay;
+                var binding = new Binding {
+                    Path = new PropertyPath(isFirst ? "From" : "To"),
+                    Converter = new DefaultIfNullConverter(),
+                    ConverterParameter = location.Name,
+                    Source = this,
+                    Mode = BindingMode.OneWay,
+                };
                 BindingOperations.SetBinding(locationName, TextBlock.TextProperty, binding);
             }
             else
@@ -517,11 +523,11 @@ namespace Reitit
 
             if (waitTime.TotalHours < 1)
             {
-                waitText = waitTime.ToString(AppResources.RouteControlMinutesWaitFormat);
+                waitText = waitTime.ToString(Utils.GetString("RouteControlMinutesWaitFormat"));
             }
             else
             {
-                waitText = waitTime.ToString(AppResources.RouteControlHoursWaitFormat);
+                waitText = waitTime.ToString(Utils.GetString("RouteControlHoursWaitFormat"));
             }
 
             var lengthTextBlock = new TextBlock
@@ -574,11 +580,10 @@ namespace Reitit
             else
             {
 
-                var tilt = new TiltPresenter
+                var tilt = new ListViewItem
                 {
 
                 };
-                TiltEffect.SetSuppressTilt(tilt, false);
 
                 var detailsStack = new StackPanel
                 {
@@ -611,26 +616,26 @@ namespace Reitit
                 }
 
                 var modeTextBlock = new TextBlock
-                 {
-                     Text = mode,
-                     Foreground = foreground,
-                     VerticalAlignment = VerticalAlignment.Bottom,
-                     FontSize = _largeFontSize,
-                     Margin = new Thickness(12, 0, 0, 0),
-                     TextWrapping = TextWrapping.Wrap,
-                 };
+                {
+                    Text = mode,
+                    Foreground = foreground,
+                    VerticalAlignment = VerticalAlignment.Bottom,
+                    FontSize = _largeFontSize,
+                    Margin = new Thickness(12, 0, 0, 0),
+                    TextWrapping = TextWrapping.Wrap,
+                };
                 detailsStack.Children.Add(modeTextBlock);
 
                 var stopsStack = new StackPanel
                 {
-                    Margin = new Thickness(0,0,0,6)
+                    Margin = new Thickness(0, 0, 0, 6)
                 };
 
                 for (int i = 1; i < leg.Locs.Length - 1; i += 1)
                 {
                     var loc = leg.Locs[i];
 
-                    string stopText = loc.DepTime.ToShortTimeString() + " " + loc.Name;
+                    string stopText = Utils.ToShortTimeString(loc.DepTime) + " " + loc.Name;
 
                     var stopTextBlock = new TextBlock
                     {

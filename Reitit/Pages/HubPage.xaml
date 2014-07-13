@@ -1,0 +1,43 @@
+﻿<local:PageBase
+    x:Class="Reitit.HubPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:i="using:Microsoft.Xaml.Interactivity"
+    xmlns:core="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:local="using:Reitit"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Page.Resources>
+        <DataTemplate x:Key="HubSectionHeaderTemplate">
+            <TextBlock Margin="0,0,0,-9.5" Text="{Binding}"/>
+        </DataTemplate>
+    </Page.Resources>
+
+    <Grid x:Name="LayoutRoot">
+        <Hub x:Name="Hub" x:Uid="Hub" Header="Reitit">
+            <HubSection x:Uid="MenuSection">
+                <DataTemplate>
+                    <ListView
+                        ItemsSource="{Binding MenuItems}"
+                        IsItemClickEnabled="True"
+                        ContinuumNavigationTransitionInfo.ExitElementContainer="True">
+                        <i:Interaction.Behaviors>
+                            <core:EventTriggerBehavior EventName="ItemClick">
+                                <core:InvokeCommandAction Command="{Binding MenuItemClickedCommand}"/>
+                            </core:EventTriggerBehavior>
+                        </i:Interaction.Behaviors>
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Margin="0,0,0,27.5">
+                                    <TextBlock Text="{Binding Title}" Style="{ThemeResource ListViewItemTextBlockStyle}" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </DataTemplate>
+            </HubSection>
+        </Hub>
+    </Grid>
+</local:PageBase>
