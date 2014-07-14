@@ -42,11 +42,6 @@ namespace Reitit
             this.InitializeComponent();
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
         private void PickerFlyout_Opening(object sender, object e)
         {
 

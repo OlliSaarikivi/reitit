@@ -91,7 +91,9 @@
     <Compile Include="API\RouteSearchResult.cs" />
     <Compile Include="API\RouteSearchResults.cs" />
     <Compile Include="API\Utils.cs" />
+    <Compile Include="Misc\ITrie.cs" />
     <Compile Include="Misc\NavigateAction.cs" />
+    <Compile Include="Misc\Trie.cs" />
     <Compile Include="UserControls\ExpandingRouteControl.xaml.cs">
       <DependentUpon>ExpandingRouteControl.xaml</DependentUpon>
     </Compile>
@@ -128,6 +130,7 @@
     <Compile Include="Misc\TransformObservableCollection.cs" />
     <Compile Include="Misc\TrayStatus.cs" />
     <Compile Include="Misc\Utils.cs" />
+    <Compile Include="UserControls\LocationPickerFlyoutVM.cs" />
     <Compile Include="UserControls\LogoTitle.xaml.cs">
       <DependentUpon>LogoTitle.xaml</DependentUpon>
     </Compile>

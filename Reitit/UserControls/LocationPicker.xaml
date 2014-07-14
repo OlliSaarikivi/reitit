@@ -17,7 +17,6 @@
                    Text="{Binding Header, ElementName=ThisControl}"/>
         <Button Background="Transparent"
                 HorizontalAlignment="Stretch"
-                Click="Button_Click"
                 MinHeight="{ThemeResource ComboBoxItemMinHeightThemeSize}"
                 Padding="6.5,0,0,-4.5">
             <ContentPresenter x:Name="ContentPresenter" Margin="0,2.5,0,0" MinHeight="31">
@@ -29,77 +28,65 @@
                        FontSize="{ThemeResource ContentControlFontSize}"/>
             </ContentPresenter>
             <Button.Flyout>
-                <PickerFlyout x:Name="ThisFlyout"
+                <PickerFlyout x:Name="Flyout"
                               ConfirmationButtonsVisible="True"
                               Opening="PickerFlyout_Opening"
                               Closed="PickerFlyout_Closed">
-                    <Pivot x:Name="Pivot"
-                           x:Uid="LocationPickerPivot">
-                        <i:Interaction.Behaviors>
-                            <core:EventTriggerBehavior EventName="SelectionChanged">
-                                <core:InvokeCommandAction Command="{Binding PivotChangedCommand}"/>
-                            </core:EventTriggerBehavior>
-                        </i:Interaction.Behaviors>
-                        <Pivot.Items>
-                        <PivotItem x:Name="FindPivotItem" Header="find" Tag="{Binding SearchTag}">
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="*"/>
-                                </Grid.RowDefinitions>
-                                <AutoSuggestBox x:Uid="LocationPickerSearchBox"
-                                                Name="SearchBox"
-                                                Grid.Row="0"
-                                                TextChanged="SearchBox_TextChanged"
-                                                Text="{Binding SearchTerm, Mode=TwoWay}">
-                                    <i:Interaction.Behaviors>
-                                        <core:EventTriggerBehavior EventName="KeyDown">
-                                            <core:InvokeCommandAction Command="{Binding SearchCommand}"/>
-                                        </core:EventTriggerBehavior>
-                                    </i:Interaction.Behaviors>
-                                </AutoSuggestBox>
-                                <Grid Grid.Row="1">
-                                    <SemanticZoom>
-                                        <SemanticZoom.ZoomedInView>
-                                            <ListView SelectedItem="{Binding SelectedResult, Mode=TwoWay}" Margin="0,0,0,80">
-                                                <!--<ListView.ItemsSource>
-                                                    <CollectionViewSource Source="{Binding ResultLocationGroups}" IsSourceGrouped="True"/>
-                                                </ListView.ItemsSource>-->
-                                                <ListView.ItemTemplate>
-                                                    <DataTemplate>
-                                                        <StackPanel>
-                                                            <TextBlock Text="{Binding LongName}" 
-                                                                        Style="{ThemeResource ListViewItemTextBlockStyle}"
-                                                                        TextWrapping="Wrap"
-                                                                        Foreground="{Binding Selected, Converter={StaticResource SelectedBrushConverter}}"/>
-                                                            <TextBlock Text="{Binding Detail}"
-                                                                        Visibility="{Binding Detail, Converter={StaticResource NullToVisibilityConverter}}"
-                                                                        Style="{ThemeResource ListViewItemSubheaderTextBlockStyle}"
-                                                                        TextWrapping="Wrap"
-                                                                        Foreground="{Binding Selected, Converter={StaticResource SelectedBrushConverter}, ConverterParameter={ThemeResource ApplicationSecondaryForegroundThemeBrush}}"/>
-                                                        </StackPanel>
-                                                    </DataTemplate>
-                                                </ListView.ItemTemplate>
-                                                <ListView.HeaderTemplate>
-                                                    <DataTemplate>
-                                                        <TextBlock Text="{Binding Key}"
-                                                                    Foreground="{Binding Path=DataContext.JumpingEnabled, ElementName=ThisPopup, Converter={StaticResource SelectedBrushConverter}, ConverterParameter={ThemeResource ApplicationSecondaryForegroundThemeBrush}}"
-                                                                    Style="{ThemeResource GroupHeaderTextBlockStyle}"/>
-                                                    </DataTemplate>
-                                                </ListView.HeaderTemplate>
-                                            </ListView>
-                                        </SemanticZoom.ZoomedInView>
-                                        <SemanticZoom.ZoomedOutView>
-                                            <ListView>
-                                            </ListView>
-                                        </SemanticZoom.ZoomedOutView>
-                                    </SemanticZoom>
-                                    <TextBlock x:Uid="LocationPickerNoResults"
-                                                Style="{ThemeResource ListViewEmptyStaticTextBlockStyle}"
-                                                Visibility="{Binding NoResults, Converter={StaticResource VisibilityConverter}}"/>
-                                </Grid>
-                            </Grid>
-                        </PivotItem>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <AutoSuggestBox x:Uid="LocationPickerSearchBox"
+                                            Name="SearchBox"
+                                            Grid.Row="0"
+                                            Text="{Binding SearchTerm, Mode=TwoWay}">
+                            <i:Interaction.Behaviors>
+                                <core:EventTriggerBehavior EventName="KeyDown">
+                                    <core:InvokeCommandAction Command="{Binding SearchCommand}"/>
+                                </core:EventTriggerBehavior>
+                            </i:Interaction.Behaviors>
+                        </AutoSuggestBox>
+                        <Grid Grid.Row="1">
+                            <SemanticZoom>
+                                <SemanticZoom.ZoomedInView>
+                                    <ListView ItemsSource="{Binding ResultLocationGroupsSource}" SelectedItem="{Binding SelectedResult, Mode=TwoWay}"
+                                              Margin="0,0,0,80">
+                                        <ListView.ItemTemplate>
+                                            <DataTemplate>
+                                                <StackPanel>
+                                                    <TextBlock Text="{Binding LongName}" 
+                                                                    Style="{ThemeResource ListViewItemTextBlockStyle}"
+                                                                    TextWrapping="Wrap"
+                                                                    Foreground="{Binding Selected, Converter={StaticResource SelectedBrushConverter}}"/>
+                                                    <TextBlock Text="{Binding Detail}"
+                                                                    Visibility="{Binding Detail, Converter={StaticResource NullToVisibilityConverter}}"
+                                                                    Style="{ThemeResource ListViewItemSubheaderTextBlockStyle}"
+                                                                    TextWrapping="Wrap"
+                                                                    Foreground="{Binding Selected, Converter={StaticResource SelectedBrushConverter}, ConverterParameter={ThemeResource ApplicationSecondaryForegroundThemeBrush}}"/>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </ListView.ItemTemplate>
+                                        <ListView.HeaderTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Key}"
+                                                                Foreground="{Binding Path=DataContext.JumpingEnabled, ElementName=ThisPopup, Converter={StaticResource SelectedBrushConverter}, ConverterParameter={ThemeResource ApplicationSecondaryForegroundThemeBrush}}"
+                                                                Style="{ThemeResource GroupHeaderTextBlockStyle}"/>
+                                            </DataTemplate>
+                                        </ListView.HeaderTemplate>
+                                    </ListView>
+                                </SemanticZoom.ZoomedInView>
+                                <SemanticZoom.ZoomedOutView>
+                                    <ListView>
+                                    </ListView>
+                                </SemanticZoom.ZoomedOutView>
+                            </SemanticZoom>
+                            <TextBlock x:Uid="LocationPickerNoResults"
+                                            Style="{ThemeResource ListViewEmptyStaticTextBlockStyle}"
+                                            Visibility="{Binding NoResults, Converter={StaticResource VisibilityConverter}}"/>
+                        </Grid>
+                    </Grid>
+                    <!--</PivotItem>
                         <PivotItem x:Name="FavoritesPivotItem" Tag="{Binding FavoritesTag}">
                             <ListView ItemsSource="{Binding Favorites}"
                                         SelectedItem="{Binding SelectedFavorite, Mode=TwoWay}">
@@ -127,9 +114,7 @@
                                     </DataTemplate>
                                 </ListView.ItemTemplate>
                             </ListView>
-                        </PivotItem>
-                        </Pivot.Items>
-                    </Pivot>
+                        </PivotItem>-->
                 </PickerFlyout>
             </Button.Flyout>
         </Button>
