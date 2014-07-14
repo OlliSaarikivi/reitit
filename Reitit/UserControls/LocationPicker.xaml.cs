@@ -54,7 +54,6 @@ namespace Reitit
 
         private void SearchBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
         {
-
         }
     }
 }

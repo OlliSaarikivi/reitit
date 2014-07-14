@@ -49,7 +49,7 @@ namespace Reitit
             return list[list.Count - 1];
         }
 
-        private static ResourceLoader _loader = new Windows.ApplicationModel.Resources.ResourceLoader();
+        private static ResourceLoader _loader = new ResourceLoader();
         public static string GetString(string key)
         {
             return _loader.GetString(key);

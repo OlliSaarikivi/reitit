@@ -120,6 +120,12 @@
   <data name="FavoritesPivotItem.Header" xml:space="preserve">
     <value>favorites</value>
   </data>
+  <data name="FlyoutCancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="FlyoutDone" xml:space="preserve">
+    <value>Done</value>
+  </data>
   <data name="FromPicker.Header" xml:space="preserve">
     <value>From</value>
   </data>

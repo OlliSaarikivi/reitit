@@ -10,6 +10,10 @@
     
     <UserControl.Resources>
         <local:LocationPickerConverter x:Key="LocationPickerConverter"/>
+        <CommandBar x:Key="FlyoutAppBar">
+            <AppBarButton x:Uid="FlyoutDone" Icon="Accept"/>
+            <AppBarButton x:Uid="FlyoutCancel" Icon="Cancel"/>
+        </CommandBar>
     </UserControl.Resources>
 
     <StackPanel HorizontalAlignment="Stretch">
@@ -28,10 +32,10 @@
                        FontSize="{ThemeResource ContentControlFontSize}"/>
             </ContentPresenter>
             <Button.Flyout>
-                <PickerFlyout x:Name="Flyout"
-                              ConfirmationButtonsVisible="True"
-                              Opening="PickerFlyout_Opening"
-                              Closed="PickerFlyout_Closed">
+                <Flyout x:Name="Flyout"
+                        Placement="Full"
+                        Opening="PickerFlyout_Opening"
+                        Closed="PickerFlyout_Closed">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
@@ -115,7 +119,7 @@
                                 </ListView.ItemTemplate>
                             </ListView>
                         </PivotItem>-->
-                </PickerFlyout>
+                </Flyout>
             </Button.Flyout>
         </Button>
     </StackPanel>
