@@ -91,6 +91,12 @@
     <Compile Include="API\RouteSearchResult.cs" />
     <Compile Include="API\RouteSearchResults.cs" />
     <Compile Include="API\Utils.cs" />
+    <Compile Include="UserControls\MessageDialogContent.xaml.cs">
+      <DependentUpon>MessageDialogContent.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\MessageFlyoutContent.xaml.cs">
+      <DependentUpon>MessageFlyoutContent.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Misc\ITrie.cs" />
     <Compile Include="Misc\NavigateAction.cs" />
     <Compile Include="Misc\PickerLocationItemTemplateSelector.cs" />
@@ -199,6 +205,14 @@
     <PRIResource Include="Strings\en-US\Resources.resw" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="UserControls\MessageDialogContent.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UserControls\MessageFlyoutContent.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UserControls\ExpandingRouteControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

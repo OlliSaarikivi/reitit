@@ -17,56 +17,22 @@ namespace Reitit
     }
 
     [DataContract]
-    public class FavoritePickerLocation : ExtendedObservableObject, IPickerLocation
+    public class MeLocation : IPickerLocation
     {
-        [DataMember]
-        public FavoriteLocation _location;
+        public static MeLocation Instance { get { return _instance; } }
+        private static MeLocation _instance = new MeLocation();
 
-        public string Name { get { return _location.Name; } }
+        private MeLocation() { }
 
-        public bool Selected
+        public string Name { get { return Utils.GetString("MyLocationText"); } }
+        public string Detail { get { return null; } }
+        public async Task<ReittiCoordinate> GetCoordinates()
         {
-            get { return _selected; }
-            set { Set(() => Selected, ref _selected, value); }
-        }
-        [DataMember]
-        public bool _selected = false;
-
-        public FavoritePickerLocation(FavoriteLocation location)
-        {
-            _location = location;
-        }
-
-        public Task<ReittiCoordinate> GetCoordinates()
-        {
-            return Task.FromResult(_location.Coordinate);
-        }
-    }
-
-    [DataContract]
-    public class RecentPickerLocation : ExtendedObservableObject, IPickerLocation
-    {
-        [DataMember]
-        public RecentLocation _location;
-
-        public string Name { get { return _location.Name; } }
-
-        public bool Selected
-        {
-            get { return _selected; }
-            set { Set(() => Selected, ref _selected, value); }
-        }
-        [DataMember]
-        public bool _selected = false;
-
-        public RecentPickerLocation(RecentLocation location)
-        {
-            _location = location;
-        }
-
-        public Task<ReittiCoordinate> GetCoordinates()
-        {
-            return Task.FromResult(_location.Coordinate);
+            var locator = new Geolocator
+            {
+                DesiredAccuracy = PositionAccuracy.High
+            };
+            return (ReittiCoordinate)(await locator.GetGeopositionAsync(TimeSpan.Zero, TimeSpan.FromSeconds(15))).Coordinate;
         }
     }
 
@@ -98,13 +64,73 @@ namespace Reitit
     }
 
     [DataContract]
-    public abstract class ReittiLocationBase : ExtendedObservableObject, IPickerLocation
+    public abstract class SelectableLocation : ExtendedObservableObject, IPickerLocation
     {
         public abstract string Name { get; }
-        public abstract string LongName { get; }
         public abstract Task<ReittiCoordinate> GetCoordinates();
+        public abstract bool Selected { get; set; }
+    }
+
+    [DataContract]
+    public class FavoritePickerLocation : SelectableLocation
+    {
+        [DataMember]
+        public FavoriteLocation _location;
+
+        public override string Name { get { return _location.Name; } }
+
+        public override bool Selected
+        {
+            get { return _selected; }
+            set { Set(() => Selected, ref _selected, value); }
+        }
+        [DataMember]
+        public bool _selected = false;
+
+        public FavoritePickerLocation(FavoriteLocation location)
+        {
+            _location = location;
+        }
+
+        public override Task<ReittiCoordinate> GetCoordinates()
+        {
+            return Task.FromResult(_location.Coordinate);
+        }
+    }
+
+    [DataContract]
+    public class RecentPickerLocation : SelectableLocation
+    {
+        [DataMember]
+        public RecentLocation _location;
+
+        public override string Name { get { return _location.Name; } }
+
+        public override bool Selected
+        {
+            get { return _selected; }
+            set { Set(() => Selected, ref _selected, value); }
+        }
+        [DataMember]
+        public bool _selected = false;
+
+        public RecentPickerLocation(RecentLocation location)
+        {
+            _location = location;
+        }
+
+        public override Task<ReittiCoordinate> GetCoordinates()
+        {
+            return Task.FromResult(_location.Coordinate);
+        }
+    }
+
+    [DataContract]
+    public abstract class ReittiLocationBase : SelectableLocation
+    {
+        public abstract string LongName { get; }
         public abstract string Detail { get; }
-        public bool Selected
+        public override bool Selected
         {
             get { return _selected; }
             set { Set(() => Selected, ref _selected, value); }
@@ -124,7 +150,7 @@ namespace Reitit
 
         public override string Name { get { return _location.Name; } }
         public override string LongName { get { return _location.LongName; } }
-        public override string Detail { get { return null; } }
+        public override string Detail { get { return Utils.GetPreferredName(_location.CitiesByLang); } }
 
         public ReittiLocation(Location location)
         {
@@ -155,26 +181,6 @@ namespace Reitit
         public override Task<ReittiCoordinate> GetCoordinates()
         {
             return Task.FromResult(_stops.Center);
-        }
-    }
-
-    [DataContract]
-    public class MeLocation : IPickerLocation
-    {
-        public static MeLocation Instance { get { return _instance; } }
-        private static MeLocation _instance = new MeLocation();
-
-        private MeLocation() { }
-
-        public string Name { get { return Utils.GetString("MyLocationText"); } }
-        public string Detail { get { return null; } }
-        public async Task<ReittiCoordinate> GetCoordinates()
-        {
-            var locator = new Geolocator
-            {
-                DesiredAccuracy = PositionAccuracy.High
-            };
-            return (ReittiCoordinate)(await locator.GetGeopositionAsync(TimeSpan.Zero, TimeSpan.FromSeconds(15))).Coordinate;
         }
     }
 }

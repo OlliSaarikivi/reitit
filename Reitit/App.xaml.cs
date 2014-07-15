@@ -31,6 +31,8 @@ namespace Reitit
         public IIndicatorManager IndicatorManager { get; private set; }
         public ModelCache ModelCache { get; private set; }
         public ReittiAPIClient ReittiClient { get; private set; }
+        public FavoritesManager Favorites { get; private set; }
+        public RecentManager Recent { get; private set; }
 
         private TransitionCollection transitions;
 
@@ -46,6 +48,8 @@ namespace Reitit
             IndicatorManager = new StackIndicatorManager();
             ModelCache = new ModelCache(AppConfiguration.ModelCacheSize);
             ReittiClient = new ReittiAPIClient(AppConfiguration.ReittiAPIUser, AppConfiguration.ReittiAPIPass);
+            Favorites = new FavoritesManager();
+            Recent = new RecentManager();
         }
 
         /// <summary>

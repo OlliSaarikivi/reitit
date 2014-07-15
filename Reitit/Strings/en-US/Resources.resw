@@ -120,12 +120,6 @@
   <data name="FavoritesPivotItem.Header" xml:space="preserve">
     <value>favorites</value>
   </data>
-  <data name="FlyoutCancel" xml:space="preserve">
-    <value>Cancel</value>
-  </data>
-  <data name="FlyoutDone" xml:space="preserve">
-    <value>Done</value>
-  </data>
   <data name="FromPicker.Header" xml:space="preserve">
     <value>From</value>
   </data>
@@ -153,6 +147,9 @@
   <data name="LocationPickerAddFav.Label" xml:space="preserve">
     <value>add to favorites</value>
   </data>
+  <data name="LocationPickerAddressesHeader" xml:space="preserve">
+    <value>addresses</value>
+  </data>
   <data name="LocationPickerCancel.Label" xml:space="preserve">
     <value>cancel</value>
   </data>
@@ -162,20 +159,59 @@
   <data name="LocationPickerDone.Label" xml:space="preserve">
     <value>done</value>
   </data>
+  <data name="LocationPickerFlyoutTitle.Text" xml:space="preserve">
+    <value>CHOOSE LOCATION</value>
+  </data>
   <data name="LocationPickerMe.Label" xml:space="preserve">
     <value>use my location</value>
   </data>
   <data name="LocationPickerNoResults.Text" xml:space="preserve">
     <value>We couldn't find a match. Try a different spelling or search for another location.</value>
   </data>
+  <data name="LocationPickerOtherHeader" xml:space="preserve">
+    <value>other</value>
+  </data>
   <data name="LocationPickerPivot.Title" xml:space="preserve">
     <value>CHOOSE LOCATION</value>
+  </data>
+  <data name="LocationPickerPlacesHeader" xml:space="preserve">
+    <value>places</value>
   </data>
   <data name="LocationPickerSearchBox.PlaceholderText" xml:space="preserve">
     <value>search for places and addresses</value>
   </data>
+  <data name="LocationPickerSearchFailed" xml:space="preserve">
+    <value>A problem occured when trying to retrieve the results for your search from the server. Try again or contact the app creator if the problem persists.</value>
+  </data>
+  <data name="LocationPickerSearchFailedTitle" xml:space="preserve">
+    <value>Couldn't retrieve locations</value>
+  </data>
+  <data name="LocationPickerShortSearchMessage" xml:space="preserve">
+    <value>Please type at least 3 characters.</value>
+  </data>
+  <data name="LocationPickerShortSearchMessageTitle" xml:space="preserve">
+    <value>Search term too short</value>
+  </data>
+  <data name="LocationPickerStopsHeader" xml:space="preserve">
+    <value>stops</value>
+  </data>
+  <data name="MessageDialogOK" xml:space="preserve">
+    <value>ok</value>
+  </data>
   <data name="NavigationFailedExceptionMessage" xml:space="preserve">
     <value>Navigation failed.</value>
+  </data>
+  <data name="NetworkUnavailableText" xml:space="preserve">
+    <value>Make sure flight mode is turned off and check your mobile data or Wifi connection.</value>
+  </data>
+  <data name="NetworkUnavailableTitle" xml:space="preserve">
+    <value>Can't connect to the Internet</value>
+  </data>
+  <data name="PickerCancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="PickerDone" xml:space="preserve">
+    <value>Done</value>
   </data>
   <data name="RecentPivotItem.Header" xml:space="preserve">
     <value>recent</value>
@@ -213,6 +249,9 @@
   <data name="RouteTypeWalking" xml:space="preserve">
     <value>least walking</value>
   </data>
+  <data name="SearchingStatus" xml:space="preserve">
+    <value>Searching...</value>
+  </data>
   <data name="SearchNoResults.Text" xml:space="preserve">
     <value>We couldn't find a match. Try a different spelling or change your search term.</value>
   </data>
@@ -234,7 +273,7 @@
   <data name="TimeTypesBox.Header" xml:space="preserve">
     <value>Time</value>
   </data>
-  <data name="ToPicker.Header" xml:space="preserve">
+  <data name="ToPickerHeader.Text" xml:space="preserve">
     <value>To</value>
   </data>
   <data name="WalkSpeedBox.Header" xml:space="preserve">
@@ -254,5 +293,8 @@
   </data>
   <data name="WalkSpeedSlow" xml:space="preserve">
     <value>slow 30 m/min</value>
+  </data>
+  <data name="LocationPickerPlaceholder.Text" xml:space="preserve">
+    <value>choose location</value>
   </data>
 </root>

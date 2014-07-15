@@ -15,6 +15,8 @@ using Windows.UI.Xaml.Media;
 using System.Reflection;
 using Windows.UI.Xaml;
 using GalaSoft.MvvmLight.Messaging;
+using Windows.UI.Xaml.Controls.Primitives;
+using GalaSoft.MvvmLight.Command;
 
 namespace Reitit
 {
@@ -36,7 +38,7 @@ namespace Reitit
             await UsingStatus(new TrayStatus(text), action);
         }
 
-        public static void AddRange<T>(this ObservableCollection<T> collection, IEnumerable<T> range)
+        public static void AddRange<T>(this Collection<T> collection, IEnumerable<T> range)
         {
             foreach (var item in range)
             {
@@ -207,13 +209,12 @@ namespace Reitit
             }
         }
 
-        public static async Task<bool> GetIsNetworkAvailableAndWarn()
+        public static bool GetIsNetworkAvailableAndWarn()
         {
             var available = NetworkInterface.GetIsNetworkAvailable();
             if (!available)
             {
-                var dialog = new MessageDialog(Utils.GetString("NetworkUnavailableText"), Utils.GetString("NetworkUnavailableTitle"));
-                await dialog.ShowAsync();
+                Utils.ShowMessageDialog(Utils.GetString("NetworkUnavailableText"), Utils.GetString("NetworkUnavailableTitle"));
             }
             return available;
         }
@@ -246,6 +247,27 @@ namespace Reitit
             {
                 frame.Navigate(page, parameter);
             }
+        }
+
+        //public static void ShowMessageFlyout(string message, string title)
+        //{
+        //    var flyout = new Flyout
+        //    {
+        //        Placement = FlyoutPlacementMode.Top,
+        //        FlyoutPresenterStyle = (Style)Application.Current.Resources["NoScrollFlyoutPresenterStyle"],
+        //        Content = new MessageFlyoutContent
+        //        {
+        //            Title = title,
+        //            Message = message,
+        //        },
+        //    };
+        //    flyout.ShowAt((Frame)Window.Current.Content);
+        //}
+
+        public static async Task ShowMessageDialog(string message, string title)
+        {
+            var dialog = new MessageDialog(message, title);
+            await dialog.ShowAsync();
         }
     }
 }

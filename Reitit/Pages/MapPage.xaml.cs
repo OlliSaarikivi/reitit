@@ -86,9 +86,16 @@ namespace Reitit
 
             var statusBar = StatusBar.GetForCurrentView();
             statusBar.ForegroundColor = Color.FromArgb(255, 0, 0, 0);
-            statusBar.BackgroundOpacity = 0;
 
             Messenger.Default.Register<MapPageNavigateMessage>(this, HandleMapPageNavigateMessage);
+        }
+
+        protected override void OnNavigatedFrom(NavigationEventArgs e)
+        {
+            base.OnNavigatedFrom(e);
+
+            var statusBar = StatusBar.GetForCurrentView();
+            statusBar.ForegroundColor = (Color)App.Current.Resources["PhoneForegroundColor"];
         }
 
         private void HandleMapPageNavigateMessage(MapPageNavigateMessage message)

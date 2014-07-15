@@ -179,7 +179,7 @@ namespace Reitit
                 try
                 {
                     await Utils.UsingStatus(Utils.GetString("SearchingStatus"), async () => {
-                        if (await Utils.GetIsNetworkAvailableAndWarn())
+                        if (Utils.GetIsNetworkAvailableAndWarn())
                         {
                             try
                             {
@@ -259,8 +259,7 @@ namespace Reitit
                             catch (ReittiAPIException)
                             {
                                 token.ThrowIfCancellationRequested();
-                                var dialog = new MessageDialog(Utils.GetString("SearchFailed"), Utils.GetString("SearchFailedTitle"));
-                                dialog.ShowAsync();
+                                Utils.ShowMessageDialog(Utils.GetString("SearchFailed"), Utils.GetString("SearchFailedTitle"));
                             }
                         }
                     });

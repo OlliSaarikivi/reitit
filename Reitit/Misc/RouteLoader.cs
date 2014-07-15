@@ -80,11 +80,11 @@ namespace Reitit
         {
             try
             {
-                var routes = await LoadRoutes(_cancellationSource.Token, s => 
+                var routes = await LoadRoutes(_cancellationSource.Token, async s => 
                 {
-                    Utils.OnCoreDispatcher(() => InitialStatus = s);
+                    await Utils.OnCoreDispatcher(() => InitialStatus = s);
                 });
-                Utils.OnCoreDispatcher(() => LoadedRoutes.AddRange(routes));
+                await Utils.OnCoreDispatcher(() => LoadedRoutes.AddRange(routes));
             }
             catch (OperationCanceledException)
             { }

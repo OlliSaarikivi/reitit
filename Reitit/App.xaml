@@ -22,7 +22,8 @@
             <local:NegVisibilityConverter x:Key="NegVisibilityConverter"/>
             <local:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
             <local:NegNullToVisibilityConverter x:Key="NegNullToVisibilityConverter"/>
-            <local:NullToOpacityConverter x:Key="NullToOpacityConverter"/>
+            <local:TransparentIfNullConverter x:Key="TransparentIfNullConverter"/>
+            <local:OpaqueIfNullConverter x:Key="OpaqueIfNullConverter"/>
             <local:SelectedBrushConverter x:Key="SelectedBrushConverter"/>
             <local:NullIfFalseConverter x:Key="NullIfFalseConverter"/>
             <local:NegationConverter x:Key="NegationConverter"/>
@@ -31,6 +32,70 @@
             <local:ColorToOpacityConverter x:Key="ColorToOpacityConverter"/>
             <local:ToUpperCaseConverter x:Key="ToUpperCaseConverter"/>
 
+            <DataTemplate x:Key="ReittiLocationListTemplate">
+                <StackPanel>
+                    <TextBlock Text="{Binding Name}" 
+                               Style="{ThemeResource ListViewItemTextBlockStyle}"
+                               TextWrapping="Wrap"
+                               Foreground="{Binding Selected, Converter={StaticResource SelectedBrushConverter}}"/>
+                    <TextBlock Text="{Binding Detail}"
+                               Visibility="{Binding Detail, Converter={StaticResource NullToVisibilityConverter}}"
+                               Style="{ThemeResource ListViewItemSubheaderTextBlockStyle}"
+                               TextWrapping="Wrap"
+                               Foreground="{Binding Selected, Converter={StaticResource SelectedBrushConverter}, ConverterParameter={ThemeResource ApplicationSecondaryForegroundThemeBrush}}"/>
+                </StackPanel>
+            </DataTemplate>
+
+            <DataTemplate x:Key="FavoriteLocationListTemplate">
+                <StackPanel>
+                    <TextBlock Text="{Binding Name}"
+                               Style="{ThemeResource ListViewItemTextBlockStyle}"
+                               Foreground="{Binding Selected, Converter={StaticResource SelectedBrushConverter}}"/>
+                </StackPanel>
+            </DataTemplate>
+
+            <DataTemplate x:Key="RecentLocationListTemplate">
+                <StackPanel>
+                    <TextBlock Text="{Binding Name}"
+                               Style="{ThemeResource ListViewItemTextBlockStyle}"
+                               Foreground="{Binding Selected, Converter={StaticResource SelectedBrushConverter}}"/>
+                </StackPanel>
+            </DataTemplate>
+
+            <Style x:Key="NoScrollFlyoutPresenterStyle" TargetType="FlyoutPresenter">
+                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+                <Setter Property="IsTabStop" Value="False"/>
+                <Setter Property="Background" Value="{ThemeResource FlyoutBackgroundThemeBrush}"/>
+                <Setter Property="Padding" Value="0"/>
+                <Setter Property="MinHeight" Value="{ThemeResource FlyoutThemeMinHeight}"/>
+                <Setter Property="ScrollViewer.HorizontalScrollMode" Value="Auto"/>
+                <Setter Property="ScrollViewer.VerticalScrollMode" Value="Auto"/>
+                <Setter Property="ScrollViewer.ZoomMode" Value="Disabled"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="FlyoutPresenter">
+                            <Border x:Name="Background" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" FlowDirection="LeftToRight">
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup x:Name="OrientationStates">
+                                        <VisualState x:Name="Portrait"/>
+                                        <VisualState x:Name="Landscape">
+                                            <Storyboard>
+                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Margin" Storyboard.TargetName="ScrollViewer">
+                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource FlyoutContentPanelLandscapeThemeMargin}"/>
+                                                </ObjectAnimationUsingKeyFrames>
+                                            </Storyboard>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                </VisualStateManager.VisualStateGroups>
+                                <Border x:Name="ScrollViewer" Margin="0,25.5,0,0" AutomationProperties.AccessibilityView="Raw" FlowDirection="{TemplateBinding FlowDirection}">
+                                    <ContentPresenter ContentTemplate="{TemplateBinding ContentTemplate}" ContentTransitions="{TemplateBinding ContentTransitions}" Content="{TemplateBinding Content}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                                </Border>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

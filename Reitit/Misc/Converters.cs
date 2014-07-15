@@ -108,12 +108,21 @@ namespace Reitit
             }) { }
     }
 
-    public class NullToOpacityConverter : LambdaConverter<object, double, object>
+    public class TransparentIfNullConverter : LambdaConverter<object, double, object>
     {
-        public NullToOpacityConverter()
+        public TransparentIfNullConverter()
             : base((o, p, language) =>
             {
                 return o != null ? 1 : 0;
+            }) { }
+    }
+    
+    public class OpaqueIfNullConverter : LambdaConverter<object, double, object>
+    {
+        public OpaqueIfNullConverter()
+            : base((o, p, language) =>
+            {
+                return o == null ? 1 : 0;
             }) { }
     }
 
@@ -122,7 +131,7 @@ namespace Reitit
         public SelectedBrushConverter()
             : base((b, p, language) =>
             {
-                return b ? (Brush)App.Current.Resources["AccentBrush"] : (p ?? (Brush)App.Current.Resources["ForegroundBrush"]);
+                return b ? (Brush)App.Current.Resources["PhoneAccentBrush"] : (p ?? (Brush)App.Current.Resources["ApplicationForegroundThemeBrush"]);
             }) { }
     }
 
