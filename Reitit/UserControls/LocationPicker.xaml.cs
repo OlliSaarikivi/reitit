@@ -43,7 +43,11 @@ namespace Reitit
         }
 
         public static readonly DependencyProperty ValueProperty =
-            DependencyProperty.Register("Value", typeof(IPickerLocation), typeof(LocationPicker), new PropertyMetadata(null));
+            DependencyProperty.Register("Value", typeof(IPickerLocation), typeof(LocationPicker), new PropertyMetadata(null, (s, e) =>
+            {
+                var location = (IPickerLocation)e.NewValue;
+                ((LocationPicker)s).LocationText.Text = location.Name;
+            }));
 
         public string Header
         {
