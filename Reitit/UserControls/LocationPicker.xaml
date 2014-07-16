@@ -25,10 +25,12 @@
                 FontSize="{ThemeResource ContentControlFontSize}"
                 HorizontalContentAlignment="Left">
             <Grid>
-                <TextBlock x:Name="PlaceholderText" x:Uid="LocationPickerPlaceholder"
+                <TextBlock x:Uid="LocationPickerPlaceholder"
                            Foreground="{ThemeResource ComboBoxInlinePlaceholderTextForegroundThemeBrush}"
-                           FontWeight="{ThemeResource ComboBoxInlinePlaceholderTextThemeFontWeight}" Opacity="0"/>
-                <TextBlock x:Name="LocationText"/>
+                           FontWeight="{ThemeResource ComboBoxInlinePlaceholderTextThemeFontWeight}"
+                           Opacity="{Binding Value, ElementName=ThisControl, Converter={StaticResource OpaqueIfNullConverter}}"/>
+                <TextBlock Text="{Binding Value, ElementName=ThisControl, Converter={StaticResource LocationPickerConverter}}"
+                           FontWeight="{ThemeResource PhoneButtonFontWeight}"/>
             </Grid>
             <Button.Flyout>
                 <Flyout x:Name="Flyout"

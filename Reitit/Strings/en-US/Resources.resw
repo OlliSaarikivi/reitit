@@ -297,4 +297,7 @@
   <data name="LocationPickerPlaceholder.Text" xml:space="preserve">
     <value>choose location</value>
   </data>
+  <data name="MyLocationText" xml:space="preserve">
+    <value>My location</value>
+  </data>
 </root>

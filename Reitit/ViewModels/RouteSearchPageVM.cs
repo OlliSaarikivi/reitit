@@ -35,15 +35,6 @@ namespace Reitit
             SearchPossibleProperty = CreateDerivedProperty(
                 () => SearchPossible,
                 () => From != null && To != null);
-
-            _searchCommand = new RelayCommand(() => Search(), () => SearchPossible);
-            PropertyChanged += (s, e) =>
-            {
-                if (e.PropertyName == "SearchPossible")
-                {
-                    _searchCommand.RaiseCanExecuteChanged();
-                }
-            };
         }
 
         private DerivedProperty<bool> SearchPossibleProperty;
@@ -90,6 +81,7 @@ namespace Reitit
                     var tmp = From;
                     From = To;
                     To = tmp;
+                    return;
                 });
             }
         }
@@ -256,10 +248,9 @@ namespace Reitit
         {
             get
             {
-                return _searchCommand;
+                return new RelayCommand(() => Search());
             }
         }
-        private RelayCommand _searchCommand;
 
         private void Search()
         {

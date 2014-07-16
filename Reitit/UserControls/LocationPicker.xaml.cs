@@ -42,12 +42,9 @@ namespace Reitit
             set { SetValue(ValueProperty, value); }
         }
 
+        // Using a DependencyProperty as the backing store for Location.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty ValueProperty =
-            DependencyProperty.Register("Value", typeof(IPickerLocation), typeof(LocationPicker), new PropertyMetadata(null, (s, e) =>
-            {
-                var location = (IPickerLocation)e.NewValue;
-                ((LocationPicker)s).LocationText.Text = location.Name;
-            }));
+            DependencyProperty.Register("Value", typeof(object), typeof(LocationPicker), new PropertyMetadata(null));
 
         public string Header
         {
