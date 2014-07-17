@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using Windows.Devices.Geolocation;
+using Windows.UI;
 
 namespace Reitit
 {
@@ -245,6 +246,11 @@ namespace Reitit
         //        });
         //    }
         //}
+
+        public PushpinVM FromPushpin = new PushpinVM
+        {
+            Color = Utils.FromColor,
+        };
 
         public ObservableCollection<PushpinVM> Pushpins { get { return _pushpins; } }
         [DataMember]

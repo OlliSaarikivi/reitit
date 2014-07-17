@@ -25,6 +25,9 @@ namespace Reitit
     {
         public static readonly double MapEpsilon = 0.0000001;
 
+        public static readonly Color FromColor = Color.FromArgb(255, 0, 160, 0);
+        public static readonly Color ToColor = Color.FromArgb(255, 160, 15, 0);
+
         public static async Task OnCoreDispatcher(DispatchedHandler handler, CoreDispatcherPriority priority = CoreDispatcherPriority.Normal)
         {
             await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(priority, handler);
