@@ -23,12 +23,17 @@ namespace Reitit
         public ReittiCoordinate Coordinate;
     }
 
+    [DataContract]
+    public class FavoritesManagerSettings
+    {
+        [DataMember]
+        public Dictionary<int, FavoriteLocation> FavoriteLocations = new Dictionary<int, FavoriteLocation>();
+        [DataMember]
+        public int NextFavoriteId = 0;
+    }
+
     public class FavoritesManager
     {
-        private static Setting<Dictionary<int, FavoriteLocation>> LocationsSetting
-            = new Setting<Dictionary<int,FavoriteLocation>>("FavoriteLocations", () => new Dictionary<int,FavoriteLocation>());
-        private static Setting<int> NextId = new Setting<int>("NextFavoriteId", 0);
-
         public FavoriteLocation this[int id]
         {
             get
@@ -43,7 +48,7 @@ namespace Reitit
 
         public FavoritesManager()
         {
-            _locations = LocationsSetting.Value;
+            _locations = App.Current.Settings.Favorites.FavoriteLocations;
 
             SortedLocations = new ObservableCollection<FavoriteLocation>(from loc in _locations.Values
                                      orderby loc.Name
@@ -64,6 +69,17 @@ namespace Reitit
         {
             SortedLocations.Remove(_locations[id]);
             _locations.Remove(id);
+        }
+
+        public IEnumerable<FavoriteLocation> LocationsWithPrefix(string prefix)
+        {
+            foreach (var favorite in SortedLocations)
+            {
+                if (favorite.Name.StartsWith(prefix))
+                {
+                    yield return favorite;
+                }
+            }
         }
 
         public bool Contains(FavoriteLocation location, out int id)
@@ -88,7 +104,7 @@ namespace Reitit
 
         internal int GetUniqueId()
         {
-            return NextId.Value++;
+            return App.Current.Settings.Favorites.NextFavoriteId++;
         }
     }
 }

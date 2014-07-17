@@ -197,5 +197,4 @@ namespace Reitit
                 return s.ToUpper();
             }) { }
     }
-
 }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
@@ -28,13 +29,17 @@ namespace Reitit
     public sealed partial class App : Application
     {
         public new static App Current { get { return (App)Application.Current; } }
+        public Settings Settings { get; private set; }
         public IIndicatorManager IndicatorManager { get; private set; }
         public ModelCache ModelCache { get; private set; }
         public ReittiAPIClient ReittiClient { get; private set; }
         public FavoritesManager Favorites { get; private set; }
         public RecentManager Recent { get; private set; }
+        public SearchHistoryManager SearchHistory { get; private set; }
+        public ParamCache ParamCache { get; private set; }
 
         private TransitionCollection transitions;
+        private Task _initTask;
 
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
@@ -45,11 +50,17 @@ namespace Reitit
             this.InitializeComponent();
             this.Suspending += this.OnSuspending;
 
-            IndicatorManager = new StackIndicatorManager();
-            ModelCache = new ModelCache(AppConfiguration.ModelCacheSize);
-            ReittiClient = new ReittiAPIClient(AppConfiguration.ReittiAPIUser, AppConfiguration.ReittiAPIPass);
-            Favorites = new FavoritesManager();
-            Recent = new RecentManager();
+            _initTask = Settings.Load().ContinueWith(t =>
+            {
+                Settings = t.Result;
+                IndicatorManager = new StackIndicatorManager();
+                ModelCache = new ModelCache(AppConfiguration.ModelCacheSize);
+                ReittiClient = new ReittiAPIClient(AppConfiguration.ReittiAPIUser, AppConfiguration.ReittiAPIPass);
+                Favorites = new FavoritesManager();
+                Recent = new RecentManager();
+                SearchHistory = new SearchHistoryManager();
+                ParamCache = new ParamCache();
+            });
         }
 
         /// <summary>
@@ -66,6 +77,8 @@ namespace Reitit
                 this.DebugSettings.EnableFrameRateCounter = true;
             }
 #endif
+
+            await _initTask;
 
             Frame rootFrame = Window.Current.Content as Frame;
 
@@ -151,6 +164,7 @@ namespace Reitit
         {
             var deferral = e.SuspendingOperation.GetDeferral();
             await SuspensionManager.SaveAsync();
+            await Settings.Save(Settings);
             deferral.Complete();
         }
     }

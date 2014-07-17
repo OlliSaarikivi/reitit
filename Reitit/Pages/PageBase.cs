@@ -19,20 +19,11 @@ using Windows.UI.Xaml.Navigation;
 
 namespace Reitit
 {
-    public class NavigateMessageRemove
-    {
-        public NavigateMessageRemove(Type pageType, object parameter = null)
-        {
-            PageType = pageType;
-            Parameter = parameter;
-        }
-        public Type PageType { get; set; }
-        public object Parameter { get; set; }
-    }
-
     public abstract class PageBase : Page
     {
         public NavigationHelper NavigationHelper { get; private set; }
+
+        protected object NavigationParameter { get; private set; }
 
         protected List<Tombstoner> Tombstoners
         {
@@ -70,7 +61,7 @@ namespace Reitit
             }
             else
             {
-                DataContext = ConstructVM(e.NavigationParameter);
+                DataContext = ConstructVM(NavigationParameter);
             }
         }
 
@@ -87,23 +78,15 @@ namespace Reitit
         protected virtual void LoadState(IDictionary<string, object> state) { }
         protected virtual void SaveState(IDictionary<string, object> state) { }
 
-        protected override async void OnNavigatedTo(NavigationEventArgs e)
+        protected override void OnNavigatedTo(NavigationEventArgs e)
         {
+            if (e.Parameter is int)
+            {
+                object _navigationParameter;
+                App.Current.ParamCache.TryGetParam((int)e.Parameter, out _navigationParameter);
+                NavigationParameter = _navigationParameter;
+            }
             NavigationHelper.OnNavigatedTo(e);
-
-            var bar = StatusBar.GetForCurrentView();
-            await bar.ShowAsync();
-            bar.BackgroundOpacity = 0;
-            if (App.Current.RequestedTheme == ApplicationTheme.Dark)
-            {
-                // TODO
-            }
-            else
-            {
-                // TODO
-            }
-
-            Messenger.Default.Register<NavigateMessageRemove>(this, m => Frame.Navigate(m.PageType, m.Parameter));
         }
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)

@@ -31,5 +31,15 @@ namespace Reitit
         {
             return new RouteSearchPageVM();
         }
+
+        protected override void OnMinimized()
+        {
+            CommandBar.Visibility = Visibility.Collapsed;
+        }
+
+        protected override void OnMaximized()
+        {
+            CommandBar.Visibility = Visibility.Visible;
+        }
     }
 }

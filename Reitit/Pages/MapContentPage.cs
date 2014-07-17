@@ -10,11 +10,47 @@ namespace Reitit
 {
     public abstract class MapContentPage : PageBase
     {
-        public static DependencyProperty MapHeightProperty = DependencyProperty.Register("MapHeight", typeof(double), typeof(MapContentPage), new PropertyMetadata((double)0));
         public double MapHeight
         {
-            get { return (double)this.GetValue(MapHeightProperty); }
-            set { this.SetValue(MapHeightProperty, value); }
+            get { return (double)GetValue(MapHeightProperty); }
+            set { SetValue(MapHeightProperty, value); }
+        }
+        public static readonly DependencyProperty MapHeightProperty =
+            DependencyProperty.Register("MapHeight", typeof(double), typeof(MapContentPage), new PropertyMetadata(0.0));
+
+        public double MinimizedHeight
+        {
+            get { return (double)GetValue(MinimizedHeightProperty); }
+            set { SetValue(MinimizedHeightProperty, value); }
+        }
+        public static readonly DependencyProperty MinimizedHeightProperty =
+            DependencyProperty.Register("MinimizedHeight", typeof(double), typeof(MapContentPage), new PropertyMetadata(60.0));
+
+        public bool IsMaximized
+        {
+            get { return (bool)GetValue(IsMaximizedProperty); }
+            set { SetValue(IsMaximizedProperty, value); }
+        }
+        public static readonly DependencyProperty IsMaximizedProperty =
+            DependencyProperty.Register("IsMaximized", typeof(bool), typeof(MapContentPage), new PropertyMetadata(true, IsMaximizedChanged));
+
+        public static void IsMaximizedChanged(DependencyObject s, DependencyPropertyChangedEventArgs e)
+        {
+            var page = s as MapContentPage;
+            if (page != null)
+            {
+                if ((bool)e.NewValue != (bool)e.OldValue)
+                {
+                    if ((bool)e.NewValue)
+                    {
+                        page.OnMaximized();
+                    }
+                    else
+                    {
+                        page.OnMinimized();
+                    }
+                }
+            }
         }
 
         public MapContentPage()
@@ -33,6 +69,10 @@ namespace Reitit
             };
             SetBinding(MapHeightProperty, binding);
         }
+
+        protected virtual void OnMinimized() { }
+
+        protected virtual void OnMaximized() { }
 
         protected override NavigationHelper ConstructNavigation()
         {

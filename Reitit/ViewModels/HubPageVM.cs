@@ -11,15 +11,20 @@ using Windows.UI.Xaml.Controls;
 
 namespace Reitit
 {
+    [DataContract]
     class MenuItem
     {
+        [DataMember]
         public string Title { get; set; }
-        public Type Target { get; set; }
+        [DataMember]
+        public string Target { get; set; }
     }
 
     [DataContract]
     class HubPageVM : ViewModelBase
     {
+        static HubPageVM() { SuspensionManager.KnownTypes.Add(typeof(HubPageVM)); }
+
         public RelayCommand<ItemClickEventArgs> MenuItemClickedCommand
         {
             get
@@ -29,7 +34,7 @@ namespace Reitit
                     var item = e.ClickedItem as MenuItem;
                     if (item != null)
                     {
-                        Utils.Navigate(item.Target);
+                        Utils.Navigate(Type.GetType(item.Target));
                     }
                 });
             }
@@ -42,7 +47,7 @@ namespace Reitit
         }
         [DataMember]
         public ObservableCollection<MenuItem> _menuItems = new ObservableCollection<MenuItem>(new MenuItem[] {
-            new MenuItem { Title = "routes", Target = typeof(RouteSearchPage) },
+            new MenuItem { Title = "routes", Target = typeof(RouteSearchPage).FullName },
         });
         
     }

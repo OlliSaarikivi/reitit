@@ -8,29 +8,63 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.Contacts;
 using Windows.System;
 using Windows.UI.Core;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
+using Reitit.UserControls;
 
 namespace Reitit
 {
-    class LocationPickerFlyoutVM : ViewModelBase
+    public class LocationPickerFlyoutVM : ViewModelBase
     {
         public DerivedProperty<bool> NoResultsProperty;
         public bool NoResults { get { return NoResultsProperty.Get(); } }
 
+        public DerivedProperty<bool> CanRevealLocalProperty;
+        public bool CanRevealLocal { get { return CanRevealLocalProperty.Get(); } }
+
+        public DerivedProperty<bool> ShowResultsProperty;
+        public bool ShowResults { get { return ShowResultsProperty.Get(); } }
+
         public LocationPickerFlyoutVM()
         {
             NoResultsProperty = CreateDerivedProperty(() => NoResults,
-                () => HasSearched && ResultLocationGroups.Count == 0);
+                () => HasSearched && !SomeRemoteResults && (ResultLocationGroups.Count == 0 || !ShowEvenOnlyLocalResults));
+            CanRevealLocalProperty = CreateDerivedProperty(() => CanRevealLocal,
+                () => NoResults && ResultLocationGroups.Count != 0);
+            ShowResultsProperty = CreateDerivedProperty(() => ShowResults,
+                () => !NoResults && !CanRevealLocal);
 
             _resultLocationGroupsSource = new CollectionViewSource
             {
                 Source = ResultLocationGroups,
                 IsSourceGrouped = true,
             };
+            Clear();
+        }
+
+        public void Clear()
+        {
+            SearchTerm = "";
+            SearchMessage = "";
+            ResultLocationGroups.Clear();
+            AddFavorites();
+            AddRecent();
+            JumpingEnabled = true;
+            if (ResultLocationGroups.Count > 0 && ResultLocationGroups[0].Count > 0)
+            {
+                SelectedResult = ResultLocationGroups[0][0];
+            }
+            else
+            {
+                SelectedResult = null;
+            }
+            HasSearched = false;
+            SomeRemoteResults = false;
+            ShowEvenOnlyLocalResults = false;
         }
 
         public string SearchTerm
@@ -38,14 +72,14 @@ namespace Reitit
             get { return _searchTerm; }
             set { Set(() => SearchTerm, ref _searchTerm, value); }
         }
-        private string _searchTerm = "";
+        private string _searchTerm;
 
         public string SearchMessage
         {
             get { return _searchMessage; }
             set { Set(() => SearchMessage, ref _searchMessage, value); }
         }
-        private string _searchMessage = "";
+        private string _searchMessage;
 
         public ObservableCollection<LocationGroup> ResultLocationGroups
         {
@@ -59,12 +93,32 @@ namespace Reitit
         }
         private CollectionViewSource _resultLocationGroupsSource;
 
+        public ObservableCollection<string> Suggestions
+        {
+            get { return _suggestions; }
+        }
+        private ObservableCollection<string> _suggestions = new ObservableCollection<string>();
+
         public bool JumpingEnabled
         {
             get { return _jumpingEnabled; }
             set { Set(() => JumpingEnabled, ref _jumpingEnabled, value); }
         }
-        private bool _jumpingEnabled = true;
+        private bool _jumpingEnabled;
+
+        public bool SomeRemoteResults
+        {
+            get { return _someRemoteResults; }
+            set { Set(() => SomeRemoteResults, ref _someRemoteResults, value); }
+        }
+        public bool _someRemoteResults;
+
+        public bool ShowEvenOnlyLocalResults
+        {
+            get { return _showEvenOnlyLocalResults; }
+            set { Set(() => ShowEvenOnlyLocalResults, ref _showEvenOnlyLocalResults, value); }
+        }
+        public bool _showEvenOnlyLocalResults;
 
         public SelectableLocation SelectedResult
         {
@@ -85,32 +139,20 @@ namespace Reitit
         }
         private SelectableLocation _selectedResult;
 
-        public TransformObservableCollection<FavoritePickerLocation, FavoriteLocation> Favorites
-        {
-            get
-            {
-                return _favorites;
-            }
-        }
-        private TransformObservableCollection<FavoritePickerLocation, FavoriteLocation> _favorites
-            = new TransformObservableCollection<FavoritePickerLocation, FavoriteLocation>(App.Current.Favorites.SortedLocations, fav => new FavoritePickerLocation(fav));
+        //public TransformObservableCollection<FavoritePickerLocation, FavoriteLocation> Favorites { get { return _favorites; } }
+        //private TransformObservableCollection<FavoritePickerLocation, FavoriteLocation> _favorites
+        //    = new TransformObservableCollection<FavoritePickerLocation, FavoriteLocation>(App.Current.Favorites.SortedLocations, fav => new FavoritePickerLocation(fav));
 
-        public TransformObservableCollection<RecentPickerLocation, RecentLocation> RecentLocations
-        {
-            get
-            {
-                return _recentLocations;
-            }
-        }
-        private TransformObservableCollection<RecentPickerLocation, RecentLocation> _recentLocations
-            = new TransformObservableCollection<RecentPickerLocation, RecentLocation>(App.Current.Recent.Locations, recent => new RecentPickerLocation(recent));
+        //public TransformObservableCollection<RecentPickerLocation, RecentLocation> RecentLocations { get { return _recentLocations; } }
+        //private TransformObservableCollection<RecentPickerLocation, RecentLocation> _recentLocations
+        //    = new TransformObservableCollection<RecentPickerLocation, RecentLocation>(App.Current.Recent.Locations, recent => new RecentPickerLocation(recent));
 
         public bool HasSearched
         {
             get { return _hasSearched; }
             set { Set(() => HasSearched, ref _hasSearched, value); }
         }
-        private bool _hasSearched = false;
+        private bool _hasSearched;
 
         public RelayCommand<KeyRoutedEventArgs> KeyDownCommand
         {
@@ -126,13 +168,48 @@ namespace Reitit
             }
         }
 
+        public RelayCommand RevealLocalCommand
+        {
+            get
+            {
+                return new RelayCommand(() =>
+                {
+                    ShowEvenOnlyLocalResults = true;
+                    Messenger.Default.Send(new UnfocusTextBoxMessage(), this);
+                });
+            }
+        }
+
+        public RelayCommand SelectContactCommand
+        {
+            get
+            {
+                return new RelayCommand(async () =>
+                {
+                    var picker = new ContactPicker();
+                    picker.DesiredFieldsWithContactFieldType.Add(ContactFieldType.Address);
+                    Messenger.Default.Send(new DontStopListeningMessage(), this);
+                    var contact = await picker.PickContactAsync();
+                    Messenger.Default.Send(new SearchContactMessage { Contact = contact }, this);
+                });
+            }
+        }
+
         public RelayCommand<AutoSuggestBoxTextChangedEventArgs> TextChangedCommand
         {
             get
             {
                 return new RelayCommand<AutoSuggestBoxTextChangedEventArgs>((e) =>
                 {
-                    _hasWritten = true;
+                    if (e.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
+                    {
+                        _hasWritten = true;
+                        Suggestions.Clear();
+                        if (SearchTerm.Length > 0)
+                        {
+                            Suggestions.AddRange(App.Current.SearchHistory.SearchesWithPrefix(SearchTerm));
+                        }
+                    }
                 });
             }
         }
@@ -148,7 +225,8 @@ namespace Reitit
             _searchTokenSource = new CancellationTokenSource();
             try
             {
-                if (SearchTerm.Trim().Length < 3)
+                string sanitizedSearch = SearchTerm.Trim();
+                if (sanitizedSearch.Length < 3)
                 {
                     SearchMessage = Utils.GetString("LocationPickerShortSearchMessage");
                 }
@@ -162,7 +240,7 @@ namespace Reitit
                         {
                             try
                             {
-                                var result = await App.Current.ReittiClient.GeocodeAsync(SearchTerm.Trim(), cancellationToken: _searchTokenSource.Token);
+                                var result = await App.Current.ReittiClient.GeocodeAsync(sanitizedSearch, cancellationToken: _searchTokenSource.Token);
                                 _searchTokenSource.Token.ThrowIfCancellationRequested();
 
                                 SelectedResult = null;
@@ -202,9 +280,19 @@ namespace Reitit
 
                                 var resultsCount = (from grp in ResultLocationGroups
                                                     select grp.Count).Sum();
+
+                                SomeRemoteResults = (resultsCount != 0);
+                                ShowEvenOnlyLocalResults = false;
+
+                                AddFavorites(sanitizedSearch);
+                                AddRecent(sanitizedSearch);
+
+                                resultsCount = (from grp in ResultLocationGroups
+                                                select grp.Count).Sum();
                                 JumpingEnabled = ResultLocationGroups.Count > 1 && resultsCount > 7;
 
-                                if (resultsCount == 1)
+
+                                if (ResultLocationGroups.Count > 0 && ResultLocationGroups[0].Count > 0)
                                 {
                                     SelectedResult = ResultLocationGroups[0][0];
                                 }
@@ -214,11 +302,11 @@ namespace Reitit
                                 // Scroll to top
                                 if (ResultLocationGroups.Count != 0)
                                 {
-                                    Messenger.Default.Send(new ScrollIntoViewMessage{ Item = ResultLocationGroups[0] });
+                                    Messenger.Default.Send(new ScrollIntoViewMessage { Item = ResultLocationGroups[0] }, this);
                                 }
                                 if (!_hasWritten)
                                 {
-                                    Messenger.Default.Send(new UnfocusTextBoxMessage());
+                                    Messenger.Default.Send(new UnfocusTextBoxMessage(), this);
                                 }
                             }
                             catch (ReittiAPIException)
@@ -231,6 +319,28 @@ namespace Reitit
                 }
             }
             catch (OperationCanceledException) { }
+        }
+
+        private void AddFavorites(string prefix = "")
+        {
+            var favoritesGroup = new LocationGroup { Key = Utils.GetString("LocationPickerFavoritesHeader") };
+            favoritesGroup.AddRange<SelectableLocation>(from favorite in App.Current.Favorites.LocationsWithPrefix(prefix)
+                                                        select new FavoritePickerLocation(favorite));
+            if (favoritesGroup.Count > 0)
+            {
+                ResultLocationGroups.Add(favoritesGroup);
+            }
+        }
+
+        private void AddRecent(string prefix = "")
+        {
+            var recentGroup = new LocationGroup { Key = Utils.GetString("LocationPickerRecentHeader") };
+            recentGroup.AddRange<SelectableLocation>(from recent in App.Current.Recent.LocationsWithPrefix(prefix)
+                                                     select new RecentPickerLocation(recent));
+            if (recentGroup.Count > 0)
+            {
+                ResultLocationGroups.Add(recentGroup);
+            }
         }
     }
 

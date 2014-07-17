@@ -32,6 +32,8 @@ namespace Reitit
     [DataContract]
     public class RoutesPageVM : ViewModelBase
     {
+        static RoutesPageVM() { SuspensionManager.KnownTypes.Add(typeof(RoutesPageVM)); }
+
         public RouteLoader Loader { get { return _loader; } }
         [DataMember]
         public RouteLoader _loader;

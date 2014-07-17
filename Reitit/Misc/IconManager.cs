@@ -100,8 +100,6 @@ namespace Reitit
 "/Icons/FavIcons/T38.png",
         };
 
-        private static Setting<int> CustomIconFreeIndex = new Setting<int>("CustomIconFreeIndex", -1);
-
         private Dictionary<int, ImageSource> _sources = new Dictionary<int, ImageSource>();
 
         private static string GetCustomIconFileName(int index)
@@ -118,7 +116,7 @@ namespace Reitit
 
         private static int ReserveIndex()
         {
-            return CustomIconFreeIndex.Value--;
+            return App.Current.Settings.CustomIconFreeIndex--;
         }
 
         public async Task<int> AddCustomIcon(Stream inStream)

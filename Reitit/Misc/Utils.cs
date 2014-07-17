@@ -236,16 +236,16 @@ namespace Reitit
             {
                 if (frame.CurrentSourcePageType == typeof(MapPage))
                 {
-                    Messenger.Default.Send(new MapPageNavigateMessage(page, parameter));
+                    Messenger.Default.Send(new MapPageNavigateMessage(page, App.Current.ParamCache.AddParam(parameter)));
                 }
                 else
                 {
-                    frame.Navigate(typeof(MapPage), new MapPageNavigateMessage(page, parameter));
+                    frame.Navigate(typeof(MapPage), App.Current.ParamCache.AddParam(new MapPageNavigateMessage(page, App.Current.ParamCache.AddParam(parameter))));
                 }
             }
             else
             {
-                frame.Navigate(page, parameter);
+                frame.Navigate(page, App.Current.ParamCache.AddParam(parameter));
             }
         }
 

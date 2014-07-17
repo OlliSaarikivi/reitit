@@ -53,13 +53,15 @@ namespace Reitit
             if (page != null)
             {
                 ((HostingNavigationHelper)NavigationHelper).HostedHelper = page.NavigationHelper;
+                ContentFrame.Height = page.Height;
+                ((MapPageVM)DataContext).ContentMinimizedHeight = page.Height - page.MinimizedHeight;
                 Binding binding = new Binding
                 {
-                    Path = new PropertyPath("Height"),
-                    Source = page,
+                    Path = new PropertyPath("ContentMaximized"),
+                    Source = DataContext,
                     Mode = BindingMode.OneWay,
                 };
-                ContentFrame.SetBinding(Frame.HeightProperty, binding);
+                page.SetBinding(MapContentPage.IsMaximizedProperty, binding);
             }
             else
             {
@@ -74,10 +76,13 @@ namespace Reitit
 
         protected override object ConstructVM(object parameter)
         {
+            // A bit ugly, but it works
+            DataContext = new MapPageVM();
+
             var message = (MapPageNavigateMessage)parameter;
             ContentFrame.BackStack.Clear();
             HandleMapPageNavigateMessage(message);
-            return null;
+            return DataContext;
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -101,6 +106,18 @@ namespace Reitit
         private void HandleMapPageNavigateMessage(MapPageNavigateMessage message)
         {
             ContentFrame.Navigate(message.ContentPage, message.Parameter);
+        }
+        
+        private void MinimizerRectangle_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            VisualStateManager.GoToState(this, "ContentMinimized", true);
+            ((MapPageVM)DataContext).ContentMaximized = false;
+        }
+
+        private void MaximizerRectangle_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            VisualStateManager.GoToState(this, "ContentMaximized", true);
+            ((MapPageVM)DataContext).ContentMaximized = true;
         }
     }
 }

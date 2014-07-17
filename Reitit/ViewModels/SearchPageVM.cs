@@ -26,6 +26,8 @@ namespace Reitit
     [DataContract]
     public class SearchResultVM : ViewModelBase
     {
+        static SearchResultVM() { SuspensionManager.KnownTypes.Add(typeof(SearchResultVM)); }
+
         public Brush IconBackground { get; set; }
         public ImageSource Icon { get; set; }
         [DataMember]

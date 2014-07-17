@@ -21,6 +21,7 @@ namespace Reitit
     [DataContract]
     public class RouteSearchPageVM : ViewModelBase
     {
+        static RouteSearchPageVM() { SuspensionManager.KnownTypes.Add(typeof(RouteSearchPageVM)); }
         protected override void Initialize()
         {
             SelectedTimeTypeProperty = CreateDerivedProperty(

@@ -91,6 +91,8 @@
     <Compile Include="API\RouteSearchResult.cs" />
     <Compile Include="API\RouteSearchResults.cs" />
     <Compile Include="API\Utils.cs" />
+    <Compile Include="Misc\ParamCache.cs" />
+    <Compile Include="Misc\SearchHistoryManager.cs" />
     <Compile Include="UserControls\MessageDialogContent.xaml.cs">
       <DependentUpon>MessageDialogContent.xaml</DependentUpon>
     </Compile>
@@ -131,7 +133,7 @@
     <Compile Include="Misc\PickerLocation.cs" />
     <Compile Include="Misc\RecentManager.cs" />
     <Compile Include="Misc\RouteLoader.cs" />
-    <Compile Include="Misc\Setting.cs" />
+    <Compile Include="Misc\Settings.cs" />
     <Compile Include="Misc\StackIndicatorManager.cs" />
     <Compile Include="Misc\Tombstoners.cs" />
     <Compile Include="Misc\TransformObservableCollection.cs" />
@@ -142,6 +144,7 @@
       <DependentUpon>LogoTitle.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModels\HubPageVM.cs" />
+    <Compile Include="ViewModels\MapPageVM.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
     <Compile Include="Pages\MapPage.xaml.cs">
       <DependentUpon>MapPage.xaml</DependentUpon>
@@ -269,6 +272,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Enough.Universal.Storage">
+      <HintPath>..\packages\Enough.Storage.2.2.0\lib\wpa\Enough.Universal.Storage.dll</HintPath>
+    </Reference>
     <Reference Include="GalaSoft.MvvmLight">
       <HintPath>..\packages\MvvmLightLibs.4.4.32.1\lib\wpa81\GalaSoft.MvvmLight.dll</HintPath>
     </Reference>

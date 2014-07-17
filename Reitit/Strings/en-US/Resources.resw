@@ -160,7 +160,7 @@
     <value>done</value>
   </data>
   <data name="LocationPickerFlyoutTitle.Text" xml:space="preserve">
-    <value>CHOOSE LOCATION</value>
+    <value>CHOOSE A LOCATION</value>
   </data>
   <data name="LocationPickerMe.Label" xml:space="preserve">
     <value>use my location</value>
@@ -170,9 +170,6 @@
   </data>
   <data name="LocationPickerOtherHeader" xml:space="preserve">
     <value>other</value>
-  </data>
-  <data name="LocationPickerPivot.Title" xml:space="preserve">
-    <value>CHOOSE LOCATION</value>
   </data>
   <data name="LocationPickerPlacesHeader" xml:space="preserve">
     <value>places</value>
@@ -295,9 +292,36 @@
     <value>slow 30 m/min</value>
   </data>
   <data name="LocationPickerPlaceholder.Text" xml:space="preserve">
-    <value>choose location</value>
+    <value>choose a location</value>
+  </data>
+  <data name="LocationPickerFavoritesHeader" xml:space="preserve">
+    <value>favorites</value>
+  </data>
+  <data name="LocationPickerRecentHeader" xml:space="preserve">
+    <value>recent</value>
+  </data>
+  <data name="LocationPickerRevealLocalButton.Content" xml:space="preserve">
+    <value>show results from your phone</value>
   </data>
   <data name="MyLocationText" xml:space="preserve">
     <value>My location</value>
+  </data>
+  <data name="AddFavoriteAccept.Content" xml:space="preserve">
+    <value>done</value>
+  </data>
+  <data name="AddFavoriteCancel.Content" xml:space="preserve">
+    <value>cancel</value>
+  </data>
+  <data name="AddFavoriteFlyoutTitle.Text" xml:space="preserve">
+    <value>Add Favorite</value>
+  </data>
+  <data name="AddressPickerFlyout.Title" xml:space="preserve">
+    <value>CHOOSE AN ADDRESS</value>
+  </data>
+  <data name="PickerMe" xml:space="preserve">
+    <value>me</value>
+  </data>
+  <data name="AddFavoriteName.Header" xml:space="preserve">
+    <value>Name</value>
   </data>
 </root>

@@ -13,6 +13,7 @@ namespace Reitit
     public interface IPickerLocation
     {
         string Name { get; }
+        string Detail { get; }
         Task<ReittiCoordinate> GetCoordinates();
     }
 
@@ -67,6 +68,7 @@ namespace Reitit
     public abstract class SelectableLocation : ExtendedObservableObject, IPickerLocation
     {
         public abstract string Name { get; }
+        public abstract string Detail { get; }
         public abstract Task<ReittiCoordinate> GetCoordinates();
         public abstract bool Selected { get; set; }
     }
@@ -78,6 +80,7 @@ namespace Reitit
         public FavoriteLocation _location;
 
         public override string Name { get { return _location.Name; } }
+        public override string Detail { get { return null; } }
 
         public override bool Selected
         {
@@ -105,6 +108,7 @@ namespace Reitit
         public RecentLocation _location;
 
         public override string Name { get { return _location.Name; } }
+        public override string Detail { get { return _location.Detail; } }
 
         public override bool Selected
         {
@@ -129,7 +133,6 @@ namespace Reitit
     public abstract class ReittiLocationBase : SelectableLocation
     {
         public abstract string LongName { get; }
-        public abstract string Detail { get; }
         public override bool Selected
         {
             get { return _selected; }

@@ -16,6 +16,8 @@ namespace Reitit
         [DataMember]
         public string Name { get; set; }
         [DataMember]
+        public string Detail { get; set; }
+        [DataMember]
         public ReittiCoordinate Coordinate;
     }
 
@@ -23,14 +25,11 @@ namespace Reitit
     {
         public const int RecentLocationsSize = 20;
 
-        private static Setting<ObservableCollection<RecentLocation>> LocationsSetting
-            = new Setting<ObservableCollection<RecentLocation>>("RecentLocations", () => new ObservableCollection<RecentLocation>());
-
         public ObservableCollection<RecentLocation> Locations { get; private set; }
 
         public RecentManager()
         {
-            Locations = LocationsSetting.Value;
+            Locations = App.Current.Settings.RecentLocations;
         }
 
         public void Add(RecentLocation location)
@@ -46,6 +45,17 @@ namespace Reitit
             while (Locations.Count > RecentLocationsSize)
             {
                 Locations.RemoveAt(Locations.Count - 1);
+            }
+        }
+
+        public IEnumerable<RecentLocation> LocationsWithPrefix(string prefix)
+        {
+            foreach (var recent in Locations)
+            {
+                if (recent.Name.StartsWith(prefix))
+                {
+                    yield return recent;
+                }
             }
         }
     }

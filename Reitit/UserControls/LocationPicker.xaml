@@ -7,9 +7,163 @@
     xmlns:core="using:Microsoft.Xaml.Interactions.Core"
     xmlns:local="using:Reitit"
     HorizontalAlignment="Stretch">
-    
+
     <UserControl.Resources>
         <local:LocationPickerConverter x:Key="LocationPickerConverter"/>
+        <local:LocationPickerFavoriteVisibilityConverter x:Key="LocationPickerFavoriteVisibilityConverter"/>
+        <ListPickerFlyout x:Key="AddressPickerFlyout" x:Uid="AddressPickerFlyout"/>
+        <DataTemplate x:Key="AddressPickerItemTemplate">
+            <StackPanel>
+                <TextBlock Style="{ThemeResource ListViewItemTextBlockStyle}" Text="{Binding StreetAddress}"/>
+                <TextBlock Style="{ThemeResource ListViewItemSubheaderTextBlockStyle}" Text="{Binding Locality}"/>
+            </StackPanel>
+        </DataTemplate>
+        <Flyout x:Key="Flyout" x:Name="Flyout"
+                Placement="Full"
+                Opening="Flyout_Opening"
+                Opened="Flyout_Opened"
+                Closed="Flyout_Closed" 
+                FlyoutPresenterStyle="{StaticResource NoScrollFlyoutPresenterStyle}">
+            <Grid x:Name="FlyoutRoot"
+                          Margin="20,0,0,0">
+                <Grid.Resources>
+                    <CollectionViewSource x:Key="CVS" Source="{Binding ResultLocationGroups}" IsSourceGrouped="True"/>
+                </Grid.Resources>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0"
+                           x:Uid="LocationPickerFlyoutTitle" 
+                           Style="{ThemeResource FlyoutPickerTitleTextBlockStyle}"
+                           Margin="0,10,20,0"/>
+                <HyperlinkButton Height="0" Width="0"/>
+                <Grid Grid.Row="1" Margin="0,10,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <AutoSuggestBox x:Uid="LocationPickerSearchBox"
+                                            Name="SearchBox"
+                                            Grid.Column="0"
+                                            Text="{Binding SearchTerm, Mode=TwoWay}"
+                                            Margin="0,8,5,0"
+                                            AutoMaximizeSuggestionArea="True">
+                        <i:Interaction.Behaviors>
+                            <core:EventTriggerBehavior EventName="KeyDown">
+                                <core:InvokeCommandAction Command="{Binding KeyDownCommand}"/>
+                            </core:EventTriggerBehavior>
+                            <core:EventTriggerBehavior EventName="TextChanged">
+                                <core:InvokeCommandAction Command="{Binding TextChangedCommand}"/>
+                            </core:EventTriggerBehavior>
+                        </i:Interaction.Behaviors>
+                    </AutoSuggestBox>
+                    <Button Style="{StaticResource RoundButtonStyle}"
+                                    Grid.Column="1"
+                                    Margin="5,0,20,0">
+                        <SymbolIcon Symbol="People"/>
+                        <i:Interaction.Behaviors>
+                            <core:EventTriggerBehavior EventName="Click">
+                                <core:InvokeCommandAction Command="{Binding SelectContactCommand}"/>
+                            </core:EventTriggerBehavior>
+                        </i:Interaction.Behaviors>
+                    </Button>
+                </Grid>
+                <TextBlock Grid.Row="2"
+                                   Text="{Binding SearchMessage, Mode=OneWay}"
+                                   Style="{ThemeResource ControlContextualInfoTextBlockStyle}"
+                                   Margin="0,0,10,0"/>
+                <Grid Grid.Row="3">
+                    <SemanticZoom x:Name="SemanticZoom"
+                                          Visibility="{Binding ShowResults, Converter={StaticResource VisibilityConverter}}">
+                        <SemanticZoom.ZoomedInView>
+                            <ListView Name="LocationsListView"
+                                              ItemsSource="{Binding Source={StaticResource CVS}}"
+                                              SelectedItem="{Binding SelectedResult, Mode=TwoWay}"
+                                              SelectionChanged="LocationsListView_SelectionChanged"
+                                              SelectionMode="Single">
+                                <ListView.ItemTemplateSelector>
+                                    <local:PickerLocationListTemplateSelector/>
+                                </ListView.ItemTemplateSelector>
+                                <ListView.GroupStyle>
+                                    <GroupStyle HidesIfEmpty="True">
+                                        <GroupStyle.HeaderTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Key}"
+                                                           Style="{ThemeResource GroupHeaderTextBlockStyle}"/>
+                                                <!--Foreground="{Binding Path=DataContext.JumpingEnabled, ElementName=ThisPopup, Converter={StaticResource SelectedBrushConverter}, ConverterParameter={ThemeResource ApplicationSecondaryForegroundThemeBrush}}"-->
+                                            </DataTemplate>
+                                        </GroupStyle.HeaderTemplate>
+                                    </GroupStyle>
+                                </ListView.GroupStyle>
+                                <ListView.Footer>
+                                    <Rectangle Height="100"/>
+                                </ListView.Footer>
+                            </ListView>
+                        </SemanticZoom.ZoomedInView>
+                        <SemanticZoom.ZoomedOutView>
+                            <ListView ItemsSource="{Binding Source={StaticResource CVS}, Path=CollectionGroups}"
+                                              Padding="20,27.5,20,20"
+                                              Background="{ThemeResource PhoneChromeBrush}">
+                                <ListView.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Group.Key}"
+                                                            Style="{ThemeResource ListViewItemTextBlockStyle}"
+                                                            Padding="0,10,0,10"
+                                                            HorizontalAlignment="Stretch"/>
+                                        <!--Foreground="{Binding Path=DataContext.JumpingEnabled, ElementName=ThisPopup, Converter={StaticResource SelectedBrushConverter}, ConverterParameter={ThemeResource ApplicationSecondaryForegroundThemeBrush}}"-->
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+                        </SemanticZoom.ZoomedOutView>
+                    </SemanticZoom>
+                    <StackPanel VerticalAlignment="Top">
+                        <TextBlock x:Uid="LocationPickerNoResults"
+                                           Margin="0,0,20,0"
+                                           Style="{ThemeResource ListViewEmptyStaticTextBlockStyle}"
+                                           Visibility="{Binding NoResults, Converter={StaticResource VisibilityConverter}}"/>
+                        <HyperlinkButton x:Uid="LocationPickerRevealLocalButton"
+                                                 Visibility="{Binding CanRevealLocal, Converter={StaticResource VisibilityConverter}}"
+                                                 Foreground="{ThemeResource PhoneAccentBrush}"
+                                                 FontSize="{ThemeResource TextStyleMediumFontSize}"
+                                                 Command="{Binding RevealLocalCommand}"/>
+                    </StackPanel>
+                </Grid>
+            </Grid>
+        </Flyout>
+        <Flyout x:Key="AddFavoriteFlyout"
+                x:Name="AddFavoriteFlyout"
+                Placement="Top"
+                Opening="AddFavoriteFlyout_Opening">
+            <StackPanel Margin="20,20,20,10">
+                <TextBlock Grid.Row="0"
+                           x:Uid="AddFavoriteFlyoutTitle" 
+                           Style="{ThemeResource MessageDialogTitleStyle}"
+                           Margin="0,0,20,0"/>
+                <TextBox x:Name="AddFavoriteName"
+                         x:Uid="AddFavoriteName"
+                         TextChanged="AddFavoriteNameTextBox_TextChanged"/>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Button x:Uid="AddFavoriteAccept"
+                            x:Name="AddFavoriteAccept"
+                            Grid.Column="0"
+                            HorizontalAlignment="Stretch"
+                            Margin="0,0,10,0"
+                            Click="AddFavoriteAccept_Click"/>
+                    <Button x:Uid="AddFavoriteCancel"
+                            Grid.Column="1"
+                            HorizontalAlignment="Stretch"
+                            Margin="10,0,0,0"
+                            Click="AddFavoriteCancelButton_Click"/>
+                </Grid>
+            </StackPanel>
+        </Flyout>
     </UserControl.Resources>
 
     <StackPanel HorizontalAlignment="Stretch">
@@ -17,108 +171,34 @@
                    Text="{Binding Header, ElementName=ThisControl}"
                    Visibility="{Binding Header, ElementName=ThisControl, Converter={StaticResource NullToVisibilityConverter}}"
                    Margin="0,0,0,-4.5"/>
-        <Button Background="Transparent"
+        <Button x:Name="FlyoutButton"
+                Background="Transparent"
                 HorizontalAlignment="Stretch"
                 MinHeight="{ThemeResource ComboBoxItemMinHeightThemeSize}"
                 BorderThickness="2.5"
                 Padding="6.5,0,0,3"
                 FontSize="{ThemeResource ContentControlFontSize}"
-                HorizontalContentAlignment="Left">
+                HorizontalContentAlignment="Stretch"
+                Tapped="FlyoutButton_Tapped">
             <Grid>
-                <TextBlock x:Uid="LocationPickerPlaceholder"
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock HorizontalAlignment="Left"
+                           x:Uid="LocationPickerPlaceholder"
                            Foreground="{ThemeResource ComboBoxInlinePlaceholderTextForegroundThemeBrush}"
                            FontWeight="{ThemeResource ComboBoxInlinePlaceholderTextThemeFontWeight}"
                            Opacity="{Binding Value, ElementName=ThisControl, Converter={StaticResource OpaqueIfNullConverter}}"/>
-                <TextBlock Text="{Binding Value, ElementName=ThisControl, Converter={StaticResource LocationPickerConverter}}"
-                           FontWeight="{ThemeResource PhoneButtonFontWeight}"/>
+                <TextBlock HorizontalAlignment="Left"
+                           Text="{Binding Value, ElementName=ThisControl, Converter={StaticResource LocationPickerConverter}}"
+                           FontWeight="Normal"/>
+                <SymbolIcon Grid.Column="1"
+                            Symbol="Favorite"
+                            VerticalAlignment="Center"
+                            Margin="1,0,5,-5"
+                            Visibility="{Binding Value, ElementName=ThisControl, Converter={StaticResource LocationPickerFavoriteVisibilityConverter}}"/>
             </Grid>
-            <Button.Flyout>
-                <Flyout x:Name="Flyout"
-                        Placement="Full"
-                        Opening="PickerFlyout_Opening"
-                        Closed="PickerFlyout_Closed" 
-                        FlyoutPresenterStyle="{StaticResource NoScrollFlyoutPresenterStyle}">
-                    <Grid x:Name="FlyoutRoot"
-                          Margin="20,0,0,0">
-                        <Grid.Resources>
-                            <CollectionViewSource x:Key="CVS" Source="{Binding ResultLocationGroups}" IsSourceGrouped="True"/>
-                        </Grid.Resources>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="*"/>
-                        </Grid.RowDefinitions>
-                        <TextBlock Grid.Row="0"
-                                   x:Uid="LocationPickerFlyoutTitle" 
-                                   Style="{ThemeResource FlyoutPickerTitleTextBlockStyle}"
-                                   Margin="0,0,20,0"/>
-                        <AutoSuggestBox x:Uid="LocationPickerSearchBox"
-                                        Name="SearchBox"
-                                        Grid.Row="1"
-                                        Text="{Binding SearchTerm, Mode=TwoWay}"
-                                        Margin="0,10,20,0">
-                            <i:Interaction.Behaviors>
-                                <core:EventTriggerBehavior EventName="KeyDown">
-                                    <core:InvokeCommandAction Command="{Binding KeyDownCommand}"/>
-                                </core:EventTriggerBehavior>
-                                <core:EventTriggerBehavior EventName="TextChanged">
-                                    <core:InvokeCommandAction Command="{Binding TextChangedCommand}"/>
-                                </core:EventTriggerBehavior>
-                            </i:Interaction.Behaviors>
-                        </AutoSuggestBox>
-                        <TextBlock Grid.Row="2"
-                                   Text="{Binding SearchMessage, Mode=OneWay}"
-                                   Style="{ThemeResource ControlContextualInfoTextBlockStyle}"
-                                   Margin="0,0,10,0"/>
-                        <Grid Grid.Row="3">
-                            <SemanticZoom>
-                                <SemanticZoom.ZoomedInView>
-                                    <ListView Name="LocationsListView"
-                                              ItemsSource="{Binding Source={StaticResource CVS}}"
-                                              SelectedItem="{Binding SelectedResult, Mode=TwoWay}"
-                                              SelectionChanged="LocationsListView_SelectionChanged"
-                                              SelectionMode="Single">
-                                        <ListView.ItemTemplateSelector>
-                                            <local:PickerLocationListTemplateSelector/>
-                                        </ListView.ItemTemplateSelector>
-                                        <ListView.GroupStyle>
-                                            <GroupStyle HidesIfEmpty="True">
-                                                <GroupStyle.HeaderTemplate>
-                                                    <DataTemplate>
-                                                        <TextBlock Text="{Binding Key}"
-                                                           Style="{ThemeResource GroupHeaderTextBlockStyle}"/>
-                                                        <!--Foreground="{Binding Path=DataContext.JumpingEnabled, ElementName=ThisPopup, Converter={StaticResource SelectedBrushConverter}, ConverterParameter={ThemeResource ApplicationSecondaryForegroundThemeBrush}}"-->
-                                                    </DataTemplate>
-                                                </GroupStyle.HeaderTemplate>
-                                            </GroupStyle>
-                                        </ListView.GroupStyle>
-                                        <ListView.Footer>
-                                            <Rectangle Height="100"/>
-                                        </ListView.Footer>
-                                    </ListView>
-                                </SemanticZoom.ZoomedInView>
-                                <SemanticZoom.ZoomedOutView>
-                                    <ListView ItemsSource="{Binding Source={StaticResource CVS}, Path=CollectionGroups}"
-                                              >
-                                        <ListView.ItemTemplate>
-                                            <DataTemplate>
-                                                <TextBlock Text="{Binding Group.Key}"
-                                                           Style="{ThemeResource SubheaderTextBlockStyle}"/>
-                                                <!--Foreground="{Binding Path=DataContext.JumpingEnabled, ElementName=ThisPopup, Converter={StaticResource SelectedBrushConverter}, ConverterParameter={ThemeResource ApplicationSecondaryForegroundThemeBrush}}"-->
-                                            </DataTemplate>
-                                        </ListView.ItemTemplate>
-                                    </ListView>
-                                </SemanticZoom.ZoomedOutView>
-                            </SemanticZoom>
-                            <TextBlock x:Uid="LocationPickerNoResults"
-                                       Margin="0,0,20,0"
-                                       Style="{ThemeResource ListViewEmptyStaticTextBlockStyle}"
-                                       Visibility="{Binding NoResults, Converter={StaticResource VisibilityConverter}}"/>
-                        </Grid>
-                    </Grid>
-                </Flyout>
-            </Button.Flyout>
         </Button>
     </StackPanel>
 </UserControl>

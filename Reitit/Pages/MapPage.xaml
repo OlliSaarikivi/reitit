@@ -1,4 +1,5 @@
 ﻿<local:PageBase
+    x:Name="ThisPage"
     x:Class="Reitit.MapPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -10,20 +11,53 @@
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
+    <Page.Resources>
+        <PowerEase x:Key="Ease" EasingMode="EaseOut" Power="2"/>
+    </Page.Resources>
+    
     <Grid>
+    	<VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="ContentStates">
+                <VisualState x:Name="ContentMinimized">
+                    <Storyboard>
+                        <DoubleAnimation x:Name="MinimizeAnimation"
+                                         To="{Binding ContentMinimizedHeight}"
+                                         Storyboard.TargetProperty="Y"
+                                         Storyboard.TargetName="ContentTranslation"
+                                         Duration="0:0:0.2"
+                                         EasingFunction="{StaticResource Ease}"/>
+                    </Storyboard>
+                </VisualState>
+                <VisualState x:Name="ContentMaximized">
+                    <Storyboard>
+                        <DoubleAnimation To="0"
+                                         Storyboard.TargetProperty="Y"
+                                         Storyboard.TargetName="ContentTranslation"
+                                         Duration="0:0:0.2"
+                                         EasingFunction="{StaticResource Ease}"/>
+                    </Storyboard>
+                </VisualState>
+            </VisualStateGroup>
+    	</VisualStateManager.VisualStateGroups>
         <local:ReititMap x:Name="Map"/>
         <Rectangle HorizontalAlignment="Stretch"
                    VerticalAlignment="Stretch"
-                   Opacity="0">
-            <i:Interaction.Behaviors>
-                <core:EventTriggerBehavior EventName="Tapped">
-                    
-                </core:EventTriggerBehavior>
-            </i:Interaction.Behaviors>
-        </Rectangle>
-        <Frame Name="ContentFrame"
-               Navigated="ContentFrame_Navigated"
-               VerticalAlignment="Bottom"
-               VerticalContentAlignment="Bottom"/>
+                   Fill="Transparent"
+                   IsHitTestVisible="{Binding ContentMaximized}"
+                   Tapped="MinimizerRectangle_Tapped"/>
+        <Grid VerticalAlignment="Bottom">
+            <Grid.RenderTransform>
+                <TranslateTransform x:Name="ContentTranslation"/>
+            </Grid.RenderTransform>
+            <Frame Name="ContentFrame"
+                   Navigated="ContentFrame_Navigated"
+                   VerticalContentAlignment="Bottom"/>
+            <Rectangle HorizontalAlignment="Stretch"
+                   VerticalAlignment="Stretch"
+                   Fill="Transparent"
+                   Margin="0,-20,0,0"
+                   IsHitTestVisible="{Binding ContentMaximized, Converter={StaticResource NegationConverter}}"
+                   Tapped="MaximizerRectangle_Tapped"/>
+        </Grid>
     </Grid>
 </local:PageBase>
