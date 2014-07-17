@@ -15,7 +15,32 @@
                          MapServiceToken="0P_qoDX1pOS_G_mb4IYWqA"
                          PedestrianFeaturesVisible="True"
                          LandmarksVisible="True">
-            
+            <maps:MapControl.Children>
+                <maps:MapItemsControl ItemsSource="{Binding Pushpins}">
+                    <maps:MapItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid maps:MapControl.Location="{Binding Coordinates}" Loaded="PushpinStackPanel_Loaded">
+                                <Polygon Points="0,0 18,0 18,26 0,44">
+                                    <Polygon.Fill>
+                                        <SolidColorBrush Color="{Binding Color}"/>
+                                    </Polygon.Fill>
+                                </Polygon>
+                                <Border Height="26"
+                                               VerticalAlignment="Top">
+                                    <Border.Background>
+                                        <SolidColorBrush Color="{Binding Color}"/>
+                                    </Border.Background>
+                                    <TextBlock Foreground="White"
+                                               Text="{Binding Label}"
+                                               FontSize="18"
+                                               Margin="3,0,3,0"
+                                               VerticalAlignment="Center"/>
+                                </Border>
+                            </Grid>
+                        </DataTemplate>
+                    </maps:MapItemsControl.ItemTemplate>
+                </maps:MapItemsControl>
+            </maps:MapControl.Children>
         </maps:MapControl>
 
     </Grid>

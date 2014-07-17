@@ -17,11 +17,14 @@ using Windows.UI.Xaml;
 using GalaSoft.MvvmLight.Messaging;
 using Windows.UI.Xaml.Controls.Primitives;
 using GalaSoft.MvvmLight.Command;
+using Windows.Devices.Geolocation;
 
 namespace Reitit
 {
     static class Utils
     {
+        public static readonly double MapEpsilon = 0.0000001;
+
         public static async Task OnCoreDispatcher(DispatchedHandler handler, CoreDispatcherPriority priority = CoreDispatcherPriority.Normal)
         {
             await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(priority, handler);
@@ -268,6 +271,19 @@ namespace Reitit
         {
             var dialog = new MessageDialog(message, title);
             await dialog.ShowAsync();
+        }
+
+        private static Random _displace_randomizer = new Random();
+        public static Geopoint Jiggle(this Geopoint point)
+        {
+            var newLongitude = point.Position.Longitude + (_displace_randomizer.Next(2) == 0 ? MapEpsilon : -MapEpsilon);
+            var position = new BasicGeoposition
+            {
+                Latitude = point.Position.Latitude,
+                Longitude = point.Position.Longitude,
+                Altitude = point.Position.Altitude,
+            };
+            return new Geopoint(position, point.AltitudeReferenceSystem, point.SpatialReferenceId);
         }
     }
 }

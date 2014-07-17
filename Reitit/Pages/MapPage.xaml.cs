@@ -1,11 +1,14 @@
 ﻿using GalaSoft.MvvmLight.Messaging;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Phone.UI.Input;
 using Windows.UI;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
@@ -36,15 +39,26 @@ namespace Reitit
     /// </summary>
     public sealed partial class MapPage : PageBase
     {
+        private MapPageVM _vm;
+
         public MapPage()
         {
             this.InitializeComponent();
             ContentFrame.SizeChanged += ContentFrame_SizeChanged;
         }
 
-        void ContentFrame_SizeChanged(object sender, SizeChangedEventArgs e)
+        protected override async void OnBackPressed(BackPressedEventArgs e)
         {
-            Map.UpdateMapTransform((sender as FrameworkElement).ActualHeight);
+            if (DataContext != null && !_vm.ContentMaximized)
+            {
+                await Maximize();
+                e.Handled = true;
+            }
+        }
+
+        async void ContentFrame_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            await UpdateMapTransform();
         }
 
         void ContentFrame_Navigated(object sender, NavigationEventArgs e)
@@ -54,7 +68,7 @@ namespace Reitit
             {
                 ((HostingNavigationHelper)NavigationHelper).HostedHelper = page.NavigationHelper;
                 ContentFrame.Height = page.Height;
-                ((MapPageVM)DataContext).ContentMinimizedHeight = page.Height - page.MinimizedHeight;
+                _vm.ContentMinimizedOffset = page.Height - page.MinimizedHeight;
                 Binding binding = new Binding
                 {
                     Path = new PropertyPath("ContentMaximized"),
@@ -62,11 +76,27 @@ namespace Reitit
                     Mode = BindingMode.OneWay,
                 };
                 page.SetBinding(MapContentPage.IsMaximizedProperty, binding);
+                page.NewPushpins += ContentPage_NewPushpins;
+                _vm.Map.Pushpins = page.Pushpins;
             }
             else
             {
                 throw new Exception("Invalid navigation: MapPage content pages must extend MapContentPage");
             }
+        }
+
+        private void ContentFrame_Navigating(object sender, NavigatingCancelEventArgs e)
+        {
+            var page = ContentFrame.Content as MapContentPage;
+            if (page != null)
+            {
+                page.NewPushpins -= ContentPage_NewPushpins;
+            }
+        }
+
+        void ContentPage_NewPushpins(ObservableCollection<PushpinVM> newPushpins)
+        {
+            _vm.Map.Pushpins = newPushpins;
         }
 
         protected override NavigationHelper ConstructNavigation()
@@ -76,9 +106,9 @@ namespace Reitit
 
         protected override object ConstructVM(object parameter)
         {
+            _vm = new MapPageVM();
             // A bit ugly, but it works
-            DataContext = new MapPageVM();
-
+            DataContext = _vm;
             var message = (MapPageNavigateMessage)parameter;
             ContentFrame.BackStack.Clear();
             HandleMapPageNavigateMessage(message);
@@ -108,16 +138,34 @@ namespace Reitit
             ContentFrame.Navigate(message.ContentPage, message.Parameter);
         }
         
-        private void MinimizerRectangle_Tapped(object sender, TappedRoutedEventArgs e)
+        private async void MinimizerRectangle_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            VisualStateManager.GoToState(this, "ContentMinimized", true);
-            ((MapPageVM)DataContext).ContentMaximized = false;
+            await Minimize();
         }
 
-        private void MaximizerRectangle_Tapped(object sender, TappedRoutedEventArgs e)
+        private async Task Minimize()
+        {
+            VisualStateManager.GoToState(this, "ContentMinimized", true);
+            _vm.ContentMaximized = false;
+            await UpdateMapTransform();
+        }
+
+        private async void MaximizerRectangle_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            await Maximize();
+        }
+
+        private async Task Maximize()
         {
             VisualStateManager.GoToState(this, "ContentMaximized", true);
-            ((MapPageVM)DataContext).ContentMaximized = true;
+            _vm.ContentMaximized = true;
+            await UpdateMapTransform();
+        }
+
+        private async Task UpdateMapTransform()
+        {
+            var vm = (MapPageVM)DataContext;
+            await Map.UpdateMapTransform(ContentFrame.ActualHeight - (vm.ContentMaximized ? 0 : vm.ContentMinimizedOffset));
         }
     }
 }

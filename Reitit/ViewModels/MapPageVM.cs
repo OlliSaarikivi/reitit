@@ -10,6 +10,10 @@ namespace Reitit
     [DataContract]
     class MapPageVM : ViewModelBase
     {
+        public ReititMapVM Map { get { return _map; } }
+        [DataMember]
+        private ReititMapVM _map = new ReititMapVM();
+
         public bool ContentMaximized
         {
             get { return _contentMaximized; }
@@ -18,13 +22,13 @@ namespace Reitit
         [DataMember]
         public bool _contentMaximized = true;
 
-        public double ContentMinimizedHeight
+        public double ContentMinimizedOffset
         {
-            get { return _contentMinimizedHeight; }
-            set { Set(() => ContentMinimizedHeight, ref _contentMinimizedHeight, value); }
+            get { return _contentMinimizedOffset; }
+            set { Set(() => ContentMinimizedOffset, ref _contentMinimizedOffset, value); }
         }
         [DataMember]
-        public double _contentMinimizedHeight;
+        public double _contentMinimizedOffset;
 
     }
 }

@@ -21,7 +21,7 @@
                 <VisualState x:Name="ContentMinimized">
                     <Storyboard>
                         <DoubleAnimation x:Name="MinimizeAnimation"
-                                         To="{Binding ContentMinimizedHeight}"
+                                         To="{Binding ContentMinimizedOffset}"
                                          Storyboard.TargetProperty="Y"
                                          Storyboard.TargetName="ContentTranslation"
                                          Duration="0:0:0.2"
@@ -39,7 +39,7 @@
                 </VisualState>
             </VisualStateGroup>
     	</VisualStateManager.VisualStateGroups>
-        <local:ReititMap x:Name="Map"/>
+        <local:ReititMap x:Name="Map" DataContext="{Binding Map}"/>
         <Rectangle HorizontalAlignment="Stretch"
                    VerticalAlignment="Stretch"
                    Fill="Transparent"
@@ -51,6 +51,7 @@
             </Grid.RenderTransform>
             <Frame Name="ContentFrame"
                    Navigated="ContentFrame_Navigated"
+                   Navigating="ContentFrame_Navigating"
                    VerticalContentAlignment="Bottom"/>
             <Rectangle HorizontalAlignment="Stretch"
                    VerticalAlignment="Stretch"

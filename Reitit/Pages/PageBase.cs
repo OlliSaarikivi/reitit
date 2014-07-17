@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Phone.UI.Input;
 using Windows.UI;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
@@ -36,10 +37,18 @@ namespace Reitit
 
         public PageBase()
         {
+            HardwareButtons.BackPressed += HardwareButtons_BackPressed;
             NavigationHelper = ConstructNavigation();
             NavigationHelper.LoadState += this.NavigationHelper_LoadState;
             NavigationHelper.SaveState += this.NavigationHelper_SaveState;
         }
+
+        void HardwareButtons_BackPressed(object sender, BackPressedEventArgs e)
+        {
+            OnBackPressed(e);
+        }
+
+        protected virtual void OnBackPressed(BackPressedEventArgs e) { }
 
         protected virtual NavigationHelper ConstructNavigation()
         {

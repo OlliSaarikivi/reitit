@@ -10,6 +10,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using Windows.Devices.Geolocation;
 
 namespace Reitit
 {
@@ -244,6 +245,12 @@ namespace Reitit
         //        });
         //    }
         //}
+
+        public ObservableCollection<PushpinVM> Pushpins { get { return _pushpins; } }
+        [DataMember]
+        private ObservableCollection<PushpinVM> _pushpins = new ObservableCollection<PushpinVM>(new PushpinVM[] {
+            new PushpinVM { Coordinates = new Geopoint(new BasicGeoposition { Latitude = 60, Longitude = 24 }) }
+        });
 
         public RelayCommand SearchCommand
         {
