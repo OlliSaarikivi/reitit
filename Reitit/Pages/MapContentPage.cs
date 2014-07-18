@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,13 +20,7 @@ namespace Reitit
         public static readonly DependencyProperty MapHeightProperty =
             DependencyProperty.Register("MapHeight", typeof(double), typeof(MapContentPage), new PropertyMetadata(0.0));
 
-        public double MinimizedHeight
-        {
-            get { return (double)GetValue(MinimizedHeightProperty); }
-            set { SetValue(MinimizedHeightProperty, value); }
-        }
-        public static readonly DependencyProperty MinimizedHeightProperty =
-            DependencyProperty.Register("MinimizedHeight", typeof(double), typeof(MapContentPage), new PropertyMetadata(60.0));
+        public double MinimizedHeight { get; set; }
 
         public bool IsMaximized
         {
@@ -53,8 +49,12 @@ namespace Reitit
             }
         }
 
+        public ObservableCollection<UIElement> MapItems { get; private set; }
+
         public MapContentPage()
         {
+            MinimizedHeight = 60;
+
             // This converter works both ways due to the magical properties of subtraction
             Convert<double, double, object> convert = (otherHeight, P, C) =>
             {
@@ -68,6 +68,14 @@ namespace Reitit
                 Mode = BindingMode.TwoWay,
             };
             SetBinding(MapHeightProperty, binding);
+
+            MapItems = new ObservableCollection<UIElement>();
+            MapItems.CollectionChanged += MapItems_CollectionChanged;
+        }
+
+        void MapItems_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            return;
         }
 
         protected virtual void OnMinimized() { }

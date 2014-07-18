@@ -142,4 +142,8 @@
             <AppBarButton x:Uid="RouteSearchButton" Icon="Forward" Command="{Binding SearchCommand}" IsEnabled="{Binding SearchPossible}"/>
         </CommandBar>
     </Page.BottomAppBar>
+    
+    <local:MapContentPage.MapItems>
+        <Rectangle/>
+    </local:MapContentPage.MapItems>
 </local:MapContentPage>
