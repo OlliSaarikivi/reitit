@@ -44,18 +44,11 @@ namespace Reitit
             await Map.TrySetViewAsync(Map.Center.Jiggle(), Map.ZoomLevel, Map.Heading, Map.DesiredPitch, MapAnimationKind.None);
         }
 
-        private void PushpinStackPanel_Loaded(object sender, RoutedEventArgs e)
+        public void RegisterItems(ObservableCollection<DependencyObject> items)
         {
-            var panel = (DependencyObject)sender;
-            MapControl.SetNormalizedAnchorPoint(panel, new Point(0, 1));
         }
 
-        public void RegisterItems(ObservableCollection<UIElement> items)
-        {
-
-        }
-
-        public void UnregisterItems(ObservableCollection<UIElement> items)
+        public void UnregisterItems(ObservableCollection<DependencyObject> items)
         {
 
         }

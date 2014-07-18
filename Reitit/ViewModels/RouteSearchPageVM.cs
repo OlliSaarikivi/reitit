@@ -247,17 +247,6 @@ namespace Reitit
         //    }
         //}
 
-        public PushpinVM FromPushpin = new PushpinVM
-        {
-            Color = Utils.FromColor,
-        };
-
-        public ObservableCollection<PushpinVM> Pushpins { get { return _pushpins; } }
-        [DataMember]
-        private ObservableCollection<PushpinVM> _pushpins = new ObservableCollection<PushpinVM>(new PushpinVM[] {
-            new PushpinVM { Coordinates = new Geopoint(new BasicGeoposition { Latitude = 60, Longitude = 24 }) }
-        });
-
         public RelayCommand SearchCommand
         {
             get

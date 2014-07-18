@@ -76,8 +76,7 @@ namespace Reitit
                     Mode = BindingMode.OneWay,
                 };
                 page.SetBinding(MapContentPage.IsMaximizedProperty, binding);
-                page.NewPushpins += ContentPage_NewPushpins;
-                _vm.Map.Pushpins = page.Pushpins;
+                Map.RegisterItems(page.MapItems);
             }
             else
             {
@@ -90,13 +89,8 @@ namespace Reitit
             var page = ContentFrame.Content as MapContentPage;
             if (page != null)
             {
-                page.NewPushpins -= ContentPage_NewPushpins;
+                Map.UnregisterItems(page.MapItems);
             }
-        }
-
-        void ContentPage_NewPushpins(ObservableCollection<PushpinVM> newPushpins)
-        {
-            _vm.Map.Pushpins = newPushpins;
         }
 
         protected override NavigationHelper ConstructNavigation()

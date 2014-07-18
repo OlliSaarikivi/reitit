@@ -10,10 +10,6 @@ namespace Reitit
     [DataContract]
     class MapPageVM : ViewModelBase
     {
-        public ReititMapVM Map { get { return _map; } }
-        [DataMember]
-        private ReititMapVM _map = new ReititMapVM();
-
         public bool ContentMaximized
         {
             get { return _contentMaximized; }

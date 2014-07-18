@@ -92,6 +92,7 @@
     <Compile Include="API\RouteSearchResults.cs" />
     <Compile Include="API\Utils.cs" />
     <Compile Include="Misc\ParamCache.cs" />
+    <Compile Include="Misc\ReititMapItemsControl.cs" />
     <Compile Include="Misc\SearchHistoryManager.cs" />
     <Compile Include="UserControls\IMapItemsProvider.cs" />
     <Compile Include="UserControls\MessageDialogContent.xaml.cs">
