@@ -209,7 +209,7 @@ namespace Reitit
         /// <param name="e">Event data describing the conditions that led to the event.</param>
         private void HardwareButtons_BackPressed(object sender, Windows.Phone.UI.Input.BackPressedEventArgs e)
         {
-            if (this.GoBackCommand.CanExecute(null))
+            if (!e.Handled && this.GoBackCommand.CanExecute(null))
             {
                 e.Handled = true;
                 this.GoBackCommand.Execute(null);

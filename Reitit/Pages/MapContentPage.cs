@@ -49,6 +49,28 @@ namespace Reitit
             }
         }
 
+        public ObservableCollection<PushpinVM> Pushpins
+        {
+            get { return (ObservableCollection<PushpinVM>)GetValue(PushpinsProperty); }
+            set { SetValue(PushpinsProperty, value); }
+        }
+        public static readonly DependencyProperty PushpinsProperty =
+            DependencyProperty.Register("Pushpins", typeof(ObservableCollection<PushpinVM>), typeof(MapContentPage), new PropertyMetadata(null, PushpinsChanged));
+        public static void PushpinsChanged(DependencyObject s, DependencyPropertyChangedEventArgs e)
+        {
+            if (e.NewValue != e.OldValue)
+            {
+                var page = (MapContentPage)s;
+                var handler = page.NewPushpins;
+                if (handler != null)
+                {
+                    handler(e.NewValue as ObservableCollection<PushpinVM>);
+                }
+            }
+        }
+
+        public event Action<ObservableCollection<PushpinVM>> NewPushpins;
+
         public ObservableCollection<UIElement> MapItems { get; private set; }
 
         public MapContentPage()
