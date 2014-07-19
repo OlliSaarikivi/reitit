@@ -142,8 +142,20 @@
             <AppBarButton x:Uid="RouteSearchButton" Icon="Forward" Command="{Binding SearchCommand}" IsEnabled="{Binding SearchPossible}"/>
         </CommandBar>
     </Page.BottomAppBar>
-    
+
     <local:MapContentPage.MapItems>
-        <Rectangle/>
+        <local:ReititMapItem>
+            <DataTemplate>
+                <local:LabelPushpin local:ReititMap.PushpinCoordinate="{Binding From, Converter={StaticResource PickerLocationToCoordinateConverter}}"
+                                    Visibility="{Binding From, Converter={StaticResource PickerLocationToVisibilityConverter}}"
+                                    Background="#FF00A000"/>
+            </DataTemplate>
+        </local:ReititMapItem>
+        <local:ReititMapItem>
+            <DataTemplate>
+                <local:ToPushpin local:ReititMap.PushpinCoordinate="{Binding To, Converter={StaticResource PickerLocationToCoordinateConverter}}"
+                                 Visibility="{Binding To, Converter={StaticResource PickerLocationToVisibilityConverter}}"/>
+            </DataTemplate>
+        </local:ReititMapItem>
     </local:MapContentPage.MapItems>
 </local:MapContentPage>

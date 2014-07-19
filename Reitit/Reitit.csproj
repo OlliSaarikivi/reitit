@@ -91,10 +91,14 @@
     <Compile Include="API\RouteSearchResult.cs" />
     <Compile Include="API\RouteSearchResults.cs" />
     <Compile Include="API\Utils.cs" />
+    <Compile Include="Misc\DependencyObjectExtensions.cs" />
     <Compile Include="Misc\ParamCache.cs" />
-    <Compile Include="Misc\ReititMapItemsControl.cs" />
+    <Compile Include="UserControls\LabelPushpin.xaml.cs">
+      <DependentUpon>LabelPushpin.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\ReititMapItem.cs" />
+    <Compile Include="UserControls\ReititMapItemsControl.cs" />
     <Compile Include="Misc\SearchHistoryManager.cs" />
-    <Compile Include="UserControls\IMapItemsProvider.cs" />
     <Compile Include="UserControls\MessageDialogContent.xaml.cs">
       <DependentUpon>MessageDialogContent.xaml</DependentUpon>
     </Compile>
@@ -144,6 +148,9 @@
     <Compile Include="UserControls\LocationPickerFlyoutVM.cs" />
     <Compile Include="UserControls\LogoTitle.xaml.cs">
       <DependentUpon>LogoTitle.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\ToPushpin.xaml.cs">
+      <DependentUpon>ToPushpin.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModels\HubPageVM.cs" />
     <Compile Include="ViewModels\MapPageVM.cs" />
@@ -262,9 +269,17 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="UserControls\LabelPushpin.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UserControls\ReititMap.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UserControls\ToPushpin.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>

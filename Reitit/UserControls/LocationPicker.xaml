@@ -136,7 +136,8 @@
         <Flyout x:Key="AddFavoriteFlyout"
                 x:Name="AddFavoriteFlyout"
                 Placement="Top"
-                Opening="AddFavoriteFlyout_Opening">
+                Opening="AddFavoriteFlyout_Opening"
+                Closed="AddFavoriteFlyout_Closed">
             <StackPanel Margin="20,20,20,10">
                 <TextBlock Grid.Row="0"
                            x:Uid="AddFavoriteFlyoutTitle" 

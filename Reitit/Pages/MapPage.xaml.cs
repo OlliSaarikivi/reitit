@@ -125,6 +125,12 @@ namespace Reitit
 
             var statusBar = StatusBar.GetForCurrentView();
             statusBar.ForegroundColor = (Color)App.Current.Resources["PhoneForegroundColor"];
+
+            var page = ContentFrame.Content as MapContentPage;
+            if (page != null)
+            {
+                Map.UnregisterItems(page.MapItems);
+            }
         }
 
         private void HandleMapPageNavigateMessage(MapPageNavigateMessage message)

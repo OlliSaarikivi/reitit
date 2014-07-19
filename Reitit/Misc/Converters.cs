@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Reitit.API;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -195,6 +196,24 @@ namespace Reitit
             : base((s, p, language) =>
             {
                 return s.ToUpper();
+            }) { }
+    }
+
+    public class PickerLocationToCoordinateConverter : LambdaConverter<IPickerLocation, ReittiCoordinate, object>
+    {
+        public PickerLocationToCoordinateConverter()
+            : base((s, p, language) =>
+            {
+                return s != null ? s.GetCoordinatesSynchronouslyOrNone() : null;
+            }) { }
+    }
+
+    public class PickerLocationToVisibilityConverter : LambdaConverter<IPickerLocation, Visibility, object>
+    {
+        public PickerLocationToVisibilityConverter()
+            : base((s, p, language) =>
+            {
+                return s != null ? (s.GetCoordinatesSynchronouslyOrNone() != null ? Visibility.Visible : Visibility.Collapsed) : Visibility.Collapsed;
             }) { }
     }
 }

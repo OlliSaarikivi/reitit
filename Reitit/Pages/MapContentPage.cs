@@ -49,7 +49,7 @@ namespace Reitit
             }
         }
 
-        public ObservableCollection<DependencyObject> MapItems { get; private set; }
+        public ObservableCollection<object> MapItems { get; private set; }
 
         public MapContentPage()
         {
@@ -69,13 +69,41 @@ namespace Reitit
             };
             SetBinding(MapHeightProperty, binding);
 
-            MapItems = new ObservableCollection<DependencyObject>();
+            MapItems = new ObservableCollection<object>();
             MapItems.CollectionChanged += MapItems_CollectionChanged;
+            DataContextChanged += MapContentPage_DataContextChanged;
+        }
+
+        void MapContentPage_DataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
+        {
+            foreach (var item in MapItems)
+            {
+                var single = item as ReititMapItem;
+                if (single != null)
+                {
+                    var element = single.Element as FrameworkElement;
+                    if (element != null)
+                    {
+                        element.DataContext = DataContext;
+                    }
+                }
+            }
         }
 
         void MapItems_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            return;
+            foreach (var item in e.NewItems)
+            {
+                var single = item as ReititMapItem;
+                if (single != null)
+                {
+                    var element = single.Element as FrameworkElement;
+                    if (element != null)
+                    {
+                        element.DataContext = DataContext;
+                    }
+                }
+            }
         }
 
         protected virtual void OnMinimized() { }

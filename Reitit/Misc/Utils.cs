@@ -18,6 +18,7 @@ using GalaSoft.MvvmLight.Messaging;
 using Windows.UI.Xaml.Controls.Primitives;
 using GalaSoft.MvvmLight.Command;
 using Windows.Devices.Geolocation;
+using Reitit.API;
 
 namespace Reitit
 {
@@ -27,6 +28,8 @@ namespace Reitit
 
         public static readonly Color FromColor = Color.FromArgb(255, 0, 160, 0);
         public static readonly Color ToColor = Color.FromArgb(255, 160, 15, 0);
+
+        public static readonly ReittiCoordinate HelsinkiCoordinate = new ReittiCoordinate(60.1708, 24.9375);
 
         public static async Task OnCoreDispatcher(DispatchedHandler handler, CoreDispatcherPriority priority = CoreDispatcherPriority.Normal)
         {
@@ -287,6 +290,36 @@ namespace Reitit
                 Altitude = point.Position.Altitude,
             };
             return new Geopoint(position, point.AltitudeReferenceSystem, point.SpatialReferenceId);
+        }
+
+        public static int UpperBound<T>(this IList<T> list, T key, IComparer<T> comparer)
+        {
+            int begin = 0;
+            int end = list.Count;
+            while (begin < end)
+            {
+                int middle = (begin + end) / 2;
+                T element = list[middle];
+                if (comparer.Compare(element, key) >= 0)
+                {
+                    end = middle;
+                }
+                else
+                {
+                    begin = middle + 1;
+                }
+            }
+            return begin;
+        }
+
+        public static ReittiCoordinate GetCoordinatesSynchronouslyOrNone(this IPickerLocation location)
+        {
+            if (!(location is MeLocation))
+            {
+                var task = location.GetCoordinates();
+                return task.IsCompleted ? task.Result : null;
+            }
+            return null;
         }
     }
 }

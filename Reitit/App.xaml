@@ -31,6 +31,8 @@
             <local:EqualConverter x:Key="EqualConverter"/>
             <local:ColorToOpacityConverter x:Key="ColorToOpacityConverter"/>
             <local:ToUpperCaseConverter x:Key="ToUpperCaseConverter"/>
+            <local:PickerLocationToCoordinateConverter x:Key="PickerLocationToCoordinateConverter"/>
+            <local:PickerLocationToVisibilityConverter x:Key="PickerLocationToVisibilityConverter"/>
 
             <DataTemplate x:Key="ReittiLocationListTemplate">
                 <StackPanel>

@@ -13,6 +13,8 @@ namespace Reitit.API
     [DataContract]
     public class ReittiCoordinate
     {
+        public ReittiCoordinate() { }
+
         public ReittiCoordinate(double latitude, double longitude, double? altitude = null)
         {
             Latitude = latitude;

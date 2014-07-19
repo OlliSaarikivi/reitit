@@ -10,7 +10,7 @@ namespace Reitit
 {
     public class PickerLocationListTemplateSelector : DataTemplateSelector
     {
-        protected override DataTemplate SelectTemplateCore(object item, DependencyObject container)
+        protected override DataTemplate SelectTemplateCore(object item)
         {
             if (item is ReittiLocationBase)
             {
@@ -25,6 +25,11 @@ namespace Reitit
                 return (DataTemplate)App.Current.Resources["RecentLocationListTemplate"];
             }
             return null;
+        }
+
+        protected override DataTemplate SelectTemplateCore(object item, DependencyObject container)
+        {
+            return SelectTemplateCore(item);
         }
     }
 }

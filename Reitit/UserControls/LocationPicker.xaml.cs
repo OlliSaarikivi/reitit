@@ -276,8 +276,18 @@ namespace Reitit
 
         private void AddFavoriteFlyout_Opening(object sender, object e)
         {
+            var statusBar = StatusBar.GetForCurrentView();
+            _oldStatusBarColor = statusBar.ForegroundColor;
+            statusBar.ForegroundColor = (Color)App.Current.Resources["PhoneForegroundColor"];
+
             AddFavoriteName.Text = Value.Name;
             AddFavoriteAccept.IsEnabled = (AddFavoriteName.Text.Length != 0);
+        }
+
+        private void AddFavoriteFlyout_Closed(object sender, object e)
+        {
+            var statusBar = StatusBar.GetForCurrentView();
+            statusBar.ForegroundColor = _oldStatusBarColor;
         }
     }
 }
