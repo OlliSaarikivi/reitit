@@ -22,40 +22,11 @@ namespace Reitit
 
     public class KeepScrollMessage { }
 
-    public class ScrollViewerBehavior
-    {
-        public static DependencyProperty VerticalOffsetProperty =
-            DependencyProperty.RegisterAttached("VerticalOffset",
-                                                typeof(double),
-                                                typeof(ScrollViewerBehavior),
-                                                new PropertyMetadata(0.0, OnVerticalOffsetChanged));
-
-        public static void SetVerticalOffset(FrameworkElement target, double value)
-        {
-            target.SetValue(VerticalOffsetProperty, value);
-        }
-        public static double GetVerticalOffset(FrameworkElement target)
-        {
-            return (double)target.GetValue(VerticalOffsetProperty);
-        }
-        private static void OnVerticalOffsetChanged(DependencyObject target, DependencyPropertyChangedEventArgs e)
-        {
-            ScrollViewer scrollViewer = target as ScrollViewer;
-            if (scrollViewer != null)
-            {
-                scrollViewer.ScrollToVerticalOffset((double)e.NewValue);
-            }
-        }
-    }
-
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
     public sealed partial class RoutesPage : MapContentPage
     {
-        private Storyboard _scrollBoard;
-        private DoubleAnimation _scrollAnimation;
-
         public RoutesPage()
         {
             this.InitializeComponent();
@@ -71,31 +42,28 @@ namespace Reitit
             base.OnNavigatedTo(e);
             Messenger.Default.Register<KeepScrollMessage>(this, async m =>
             {
-                double footerViewportOffset = Footer.TransformToVisual(Scroll).TransformPoint(new Point(0, 0)).Y;
-                double footerOldPosition = Footer.TransformToVisual(Panel).TransformPoint(new Point(0, 0)).Y;
+                Panel.SizeChanged += Panel_SizeChanged;
+                //double footerOldOffset = Footer.TransformToVisual(Scroll).TransformPoint(new Point(0, 0)).Y;
+                //double oldScrollOffset = Scroll.VerticalOffset;
 
-                await Utils.OnCoreDispatcher(() =>
-                {
-                    double footerPosition = Footer.TransformToVisual(Panel).TransformPoint(new Point(0, 0)).Y;
-                    Scroll.ScrollToVerticalOffset(footerPosition - footerViewportOffset);
-                    if (_scrollAnimation != null)
-                    {
-                        _scrollAnimation.To += footerPosition - footerOldPosition;
-                    }
-                });
+                //await Utils.OnCoreDispatcher(() =>
+                //{
+                //    double footerNewOffset = Footer.TransformToVisual(Scroll).TransformPoint(new Point(0, 0)).Y;
+                //    Scroll.ScrollToVerticalOffset(oldScrollOffset + footerNewOffset - footerOldOffset);
+                //    //if (_scrollAnimation != null)
+                //    //{
+                //    //    _scrollAnimation.To += footerPosition - footerOldPosition;
+                //    //}
+                //});
             });
             Messenger.Default.Register<ScrollToCurrentMessage>(this, async m =>
             {
-                UIElement container = RoutesListView.ItemContainerGenerator.ContainerFromItem(RoutesListView.SelectedItem) as UIElement;
+
+                UIElement container = RoutesListView.ContainerFromItem(RoutesListView.SelectedItem) as UIElement;
                 double initialItemViewportOffset = container.TransformToVisual(Scroll).TransformPoint(new Point(0, 0)).Y;
 
                 await Utils.OnCoreDispatcher(() =>
                 {
-                    if (_scrollBoard != null)
-                    {
-                        RemoveScrollBoard();
-                    }
-
                     double to = container.TransformToVisual(Panel).TransformPoint(new Point(0, 0)).Y;
                     to = Math.Max(0, to);
                     to = Math.Min(to, Scroll.ExtentHeight - Scroll.ViewportHeight);
@@ -103,40 +71,23 @@ namespace Reitit
                     double from = to - initialItemViewportOffset;
                     from = Math.Max(0, from);
                     from = Math.Min(from, Scroll.ExtentHeight - Scroll.ViewportHeight);
-                    Scroll.ScrollToVerticalOffset(from);
 
-                    var ease = new ExponentialEase();
-                    ease.EasingMode = EasingMode.EaseOut;
-                    ease.Exponent = 3;
-
-                    _scrollAnimation = new DoubleAnimation();
-                    _scrollAnimation.To = to;
-                    _scrollAnimation.EasingFunction = ease;
-                    _scrollAnimation.Duration = new Duration(TimeSpan.FromSeconds(0.15));
-                    _scrollBoard = new Storyboard();
-                    _scrollBoard.Children.Add(_scrollAnimation);
-                    Storyboard.SetTarget(_scrollAnimation, Scroll);
-                    Storyboard.SetTargetProperty(_scrollAnimation, "(ScrollViewerBehavior.VerticalOffset)");
-                    _scrollBoard.Completed += (s, e2) => RemoveScrollBoard();
-                    _scrollBoard.Begin();
+                    Scroll.ScrollToVerticalOffset(to);
+                    ScrollAnimation.From = to - from;
+                    ScrollAnimation.To = 0;
+                    ScrollBoard.Begin();
                 });
             });
         }
 
-        private void RemoveScrollBoard()
+        private void Panel_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            ScrollViewerBehavior.SetVerticalOffset(Scroll, ScrollViewerBehavior.GetVerticalOffset(Scroll));
-            _scrollBoard.Stop();
-            _scrollBoard = null;
-            _scrollAnimation = null;
-        }
-
-        private void Scroll_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
-        {
-            if (_scrollBoard != null)
+            var offset = e.NewSize.Height - e.PreviousSize.Height;
+            Utils.OnCoreDispatcher(() =>
             {
-                RemoveScrollBoard();
-            }
+                Scroll.ScrollToVerticalOffset(Scroll.VerticalOffset + offset);
+            });
+            Panel.SizeChanged -= Panel_SizeChanged;
         }
     }
 }

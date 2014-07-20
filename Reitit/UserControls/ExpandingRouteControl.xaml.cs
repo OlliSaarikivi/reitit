@@ -550,10 +550,9 @@ namespace Reitit
                     Margin = new Thickness(12, 6, 0, 6)
                 };
 
-                var iconControl = new ColorizedIconControl
+                var iconControl = new ModeIcon
                 {
-                    IconBackground = Utils.GetStrokeForType(leg.Type),
-                    Icon = Utils.GetIconForType(leg.Type)
+                    Type = leg.Type,
                 };
                 detailsStack.Children.Add(iconControl);
 
@@ -591,10 +590,9 @@ namespace Reitit
 
                 tilt.Content = detailsStack;
 
-                var iconControl = new ColorizedIconControl
+                var iconControl = new ModeIcon
                 {
-                    IconBackground = Utils.GetStrokeForType(leg.Type),
-                    Icon = Utils.GetIconForType(leg.Type),
+                    Type = leg.Type,
                 };
                 detailsStack.Children.Add(iconControl);
 
