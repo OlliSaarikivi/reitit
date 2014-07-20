@@ -8,7 +8,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
-    MapHeight="100">
+    MapHeight="100"
+    ShowMyLocationImplicit="{Binding ShowMyLocation}">
 
     <!--LayoutRoot is the root grid where all page content is placed-->
     <Grid x:Name="LayoutRoot" Background="{StaticResource PhoneBackgroundBrush}">
@@ -86,17 +87,17 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <CheckBox IsChecked="{Binding UseBus, Mode=TwoWay}" Grid.Column="0" Margin="-10,0,-10,0">
-                        Bus
+                    <CheckBox IsChecked="{Binding UseBus, Mode=TwoWay}" Grid.Column="0" Style="{StaticResource CompactCheckBoxStyle}">
+                        <local:ModeIcon Type="bus"/>
                     </CheckBox>
-                    <CheckBox IsChecked="{Binding UseMetro, Mode=TwoWay}" Grid.Column="2" Margin="-10,0,-10,0">
-                        Metro
+                    <CheckBox IsChecked="{Binding UseMetro, Mode=TwoWay}" Grid.Column="2" Style="{StaticResource CompactCheckBoxStyle}">
+                        <local:ModeIcon Type="metro"/>
                     </CheckBox>
-                    <CheckBox IsChecked="{Binding UseTram, Mode=TwoWay}" Grid.Column="4" Margin="-10,0,-10,0">
-                        Tram
+                    <CheckBox IsChecked="{Binding UseTram, Mode=TwoWay}" Grid.Column="4" Style="{StaticResource CompactCheckBoxStyle}">
+                        <local:ModeIcon Type="tram"/>
                     </CheckBox>
-                    <CheckBox IsChecked="{Binding UseTrain, Mode=TwoWay}" Grid.Column="5" Margin="-10,0,-10,0">
-                        Train
+                    <CheckBox IsChecked="{Binding UseTrain, Mode=TwoWay}" Grid.Column="6" Style="{StaticResource CompactCheckBoxStyle}">
+                        <local:ModeIcon Type="train"/>
                     </CheckBox>
                 </Grid>
 
@@ -143,19 +144,11 @@
         </CommandBar>
     </Page.BottomAppBar>
 
-    <local:MapContentPage.MapItems>
-        <local:ReititMapItem>
-            <DataTemplate>
-                <local:LabelPushpin local:ReititMap.PushpinCoordinate="{Binding From, Converter={StaticResource PickerLocationToCoordinateConverter}}"
-                                    Visibility="{Binding From, Converter={StaticResource PickerLocationToVisibilityConverter}}"
-                                    Background="#FF00A000"/>
-            </DataTemplate>
-        </local:ReititMapItem>
-        <local:ReititMapItem>
-            <DataTemplate>
-                <local:ToPushpin local:ReititMap.PushpinCoordinate="{Binding To, Converter={StaticResource PickerLocationToCoordinateConverter}}"
-                                 Visibility="{Binding To, Converter={StaticResource PickerLocationToVisibilityConverter}}"/>
-            </DataTemplate>
-        </local:ReititMapItem>
-    </local:MapContentPage.MapItems>
+    <local:PageBase.MapItems>
+        <local:LabelPushpin local:ReititMap.PushpinCoordinate="{Binding From, Converter={StaticResource PickerLocationToCoordinateConverter}}"
+                            Visibility="{Binding From, Converter={StaticResource PickerLocationToVisibilityConverter}}"
+                            Background="#FF00A000"/>
+        <local:ToPushpin local:ReititMap.PushpinCoordinate="{Binding To, Converter={StaticResource PickerLocationToCoordinateConverter}}"
+                         Visibility="{Binding To, Converter={StaticResource PickerLocationToVisibilityConverter}}"/>
+    </local:PageBase.MapItems>
 </local:MapContentPage>

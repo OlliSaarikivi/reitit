@@ -19,6 +19,7 @@
         <Hub x:Name="Hub" x:Uid="Hub" Header="Reitit">
             <HubSection x:Uid="MenuSection">
                 <DataTemplate>
+                    <StackPanel>
                     <ListView
                         ItemsSource="{Binding MenuItems}"
                         IsItemClickEnabled="True"
@@ -36,6 +37,7 @@
                             </DataTemplate>
                         </ListView.ItemTemplate>
                     </ListView>
+                    </StackPanel>
                 </DataTemplate>
             </HubSection>
         </Hub>

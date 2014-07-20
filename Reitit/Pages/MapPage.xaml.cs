@@ -34,6 +34,11 @@ namespace Reitit
         public object Parameter { get; set; }
     }
 
+    public class ShowMyLocationImplicitMessage
+    {
+        public bool Show { get; set; }
+    }
+
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
@@ -68,6 +73,8 @@ namespace Reitit
             {
                 ((HostingNavigationHelper)NavigationHelper).HostedHelper = page.NavigationHelper;
                 ContentFrame.Height = page.Height;
+                Map.BottomObscuredHeight = page.Height;
+                _vm.ContentMinimizedHeight = page.MinimizedHeight;
                 _vm.ContentMinimizedOffset = page.Height - page.MinimizedHeight;
                 Binding binding = new Binding
                 {
@@ -77,10 +84,23 @@ namespace Reitit
                 };
                 page.SetBinding(MapContentPage.IsMaximizedProperty, binding);
                 Map.RegisterItems(page.MapItems);
+                Messenger.Default.Register<ShowMyLocationImplicitMessage>(this, page, ShowMyLocationImplicitChanged);
             }
             else
             {
                 throw new Exception("Invalid navigation: MapPage content pages must extend MapContentPage");
+            }
+        }
+
+        private async void ShowMyLocationImplicitChanged(ShowMyLocationImplicitMessage message)
+        {
+            if (message.Show)
+            {
+                await _vm.ShowMyLocationImplicit();
+            }
+            else
+            {
+                _vm.ClearShowMyLocationImplicit();
             }
         }
 
@@ -114,9 +134,21 @@ namespace Reitit
             base.OnNavigatedTo(e);
 
             var statusBar = StatusBar.GetForCurrentView();
-            statusBar.ForegroundColor = Color.FromArgb(255, 0, 0, 0);
+            statusBar.BackgroundOpacity = 0.5;
+            statusBar.BackgroundColor = ((SolidColorBrush)App.Current.Resources["PhoneBackgroundBrush"]).Color;
 
             Messenger.Default.Register<MapPageNavigateMessage>(this, HandleMapPageNavigateMessage);
+
+            if (_vm.ContentMaximized)
+            {
+                Maximize(false);
+            }
+            else
+            {
+                Minimize(false);
+            }
+
+            Map.RegisterItems(MapItems);
         }
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)
@@ -131,21 +163,18 @@ namespace Reitit
             {
                 Map.UnregisterItems(page.MapItems);
             }
+
+            Map.UnregisterItems(MapItems);
         }
 
         private void HandleMapPageNavigateMessage(MapPageNavigateMessage message)
         {
             ContentFrame.Navigate(message.ContentPage, message.Parameter);
         }
-        
-        private async void MinimizerRectangle_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            await Minimize();
-        }
 
-        private async Task Minimize()
+        private async Task Minimize(bool animate = true)
         {
-            VisualStateManager.GoToState(this, "ContentMinimized", true);
+            VisualStateManager.GoToState(this, "ContentMinimized", animate);
             _vm.ContentMaximized = false;
             await UpdateMapTransform();
         }
@@ -155,9 +184,9 @@ namespace Reitit
             await Maximize();
         }
 
-        private async Task Maximize()
+        private async Task Maximize(bool animate = true)
         {
-            VisualStateManager.GoToState(this, "ContentMaximized", true);
+            VisualStateManager.GoToState(this, "ContentMaximized", animate);
             _vm.ContentMaximized = true;
             await UpdateMapTransform();
         }
@@ -165,7 +194,12 @@ namespace Reitit
         private async Task UpdateMapTransform()
         {
             var vm = (MapPageVM)DataContext;
-            await Map.UpdateMapTransform(ContentFrame.ActualHeight - (vm.ContentMaximized ? 0 : vm.ContentMinimizedOffset));
+            Map.UpdateMapTransform(ContentFrame.ActualHeight - (vm.ContentMaximized ? 0 : vm.ContentMinimizedOffset));
+        }
+
+        private async void MapTouched()
+        {
+            await Minimize();
         }
     }
 }

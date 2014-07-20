@@ -8,5 +8,7 @@
 
         public const string ReittiAPIUser = "reittiwp";
         public const string ReittiAPIPass = "yq8izavx187k";
+
+        public const double GPSMovementThreshold = 5;
     }
 }

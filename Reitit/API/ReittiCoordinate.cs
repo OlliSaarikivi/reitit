@@ -63,21 +63,28 @@ namespace Reitit.API
             throw new FormatException("Not enough parts");
         }
 
-        //public static implicit operator GeoCoordinate(ReittiCoordinate c)
-        //{
-        //    return c.Altitude.HasValue ? 
-        //        new GeoCoordinate(c.Latitude, c.Longitude, c.Altitude.Value) :
-        //        new GeoCoordinate(c.Latitude, c.Longitude);
-        //}
+        public static implicit operator Geopoint(ReittiCoordinate c)
+        {
+            var position = new BasicGeoposition
+            {
+                Latitude = c.Latitude,
+                Longitude = c.Longitude,
+            };
+            if (c.Altitude.HasValue)
+            {
+                position.Altitude = c.Altitude.Value;
+            }
+            return new Geopoint(position);
+        }
 
-        //public static explicit operator ReittiCoordinate(GeoCoordinate c)
-        //{
-        //    return new ReittiCoordinate(c.Latitude, c.Longitude, c.Altitude);
-        //}
+        public static explicit operator ReittiCoordinate(Geopoint c)
+        {
+            return new ReittiCoordinate(c.Position.Latitude, c.Position.Longitude, c.Position.Altitude);
+        }
 
         public static explicit operator ReittiCoordinate(Geocoordinate c)
         {
-            return new ReittiCoordinate(c.Latitude, c.Longitude, c.Altitude);
+            return (ReittiCoordinate)c.Point;
         }
 
         public override string ToString()

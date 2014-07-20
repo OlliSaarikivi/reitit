@@ -62,7 +62,7 @@
                     </AutoSuggestBox>
                     <Button Style="{StaticResource RoundButtonStyle}"
                                     Grid.Column="1"
-                                    Margin="5,0,20,0">
+                                    Margin="10,0,20,0">
                         <SymbolIcon Symbol="People"/>
                         <i:Interaction.Behaviors>
                             <core:EventTriggerBehavior EventName="Click">

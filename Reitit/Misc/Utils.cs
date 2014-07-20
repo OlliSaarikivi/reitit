@@ -25,11 +25,15 @@ namespace Reitit
     static class Utils
     {
         public static readonly double MapEpsilon = 0.0000001;
+        public static readonly double MinZoomedLatitudeDiff = 0.004;
+        public static readonly double MinZoomedLongitudeDiff = 0.01;
 
         public static readonly Color FromColor = Color.FromArgb(255, 0, 160, 0);
         public static readonly Color ToColor = Color.FromArgb(255, 160, 15, 0);
 
         public static readonly ReittiCoordinate HelsinkiCoordinate = new ReittiCoordinate(60.1708, 24.9375);
+        public static readonly ReittiCoordinate DefaultViewCoordinate = new ReittiCoordinate(60.188057413324714, 24.890878032892942);
+        public static readonly double DefaultViewZoom = 10.00100040435791;
 
         public static async Task OnCoreDispatcher(DispatchedHandler handler, CoreDispatcherPriority priority = CoreDispatcherPriority.Normal)
         {
@@ -258,20 +262,21 @@ namespace Reitit
             }
         }
 
-        //public static void ShowMessageFlyout(string message, string title)
-        //{
-        //    var flyout = new Flyout
-        //    {
-        //        Placement = FlyoutPlacementMode.Top,
-        //        FlyoutPresenterStyle = (Style)Application.Current.Resources["NoScrollFlyoutPresenterStyle"],
-        //        Content = new MessageFlyoutContent
-        //        {
-        //            Title = title,
-        //            Message = message,
-        //        },
-        //    };
-        //    flyout.ShowAt((Frame)Window.Current.Content);
-        //}
+        public static void ShowMessageFlyout(string message, string title)
+        {
+            var flyout = new Flyout
+            {
+                Placement = FlyoutPlacementMode.Top,
+                FlyoutPresenterStyle = (Style)Application.Current.Resources["NoScrollFlyoutPresenterStyle"],
+                Content = new MessageFlyoutContent
+                {
+                    Title = title,
+                    Message = message,
+                    VerticalAlignment = VerticalAlignment.Stretch,
+                },
+            };
+            flyout.ShowAt((Frame)Window.Current.Content);
+        }
 
         public static async Task ShowMessageDialog(string message, string title)
         {
@@ -320,6 +325,36 @@ namespace Reitit
                 return task.IsCompleted ? task.Result : null;
             }
             return null;
+        }
+        public static List<T> GetChildrenOfType<T>(this DependencyObject depObj)
+            where T : DependencyObject
+        {
+            List<T> results = new List<T>();
+
+            if (depObj == null) return results;
+
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(depObj); i++)
+            {
+                var child = VisualTreeHelper.GetChild(depObj, i);
+                var result = child as T;
+                if (result != null)
+                {
+                    results.Add(result);
+                }
+                results.AddRange(GetChildrenOfType<T>(child));
+            }
+            return results;
+        }
+        public static void IterateChildren(this DependencyObject depObj)
+        {
+            if (depObj == null) return;
+
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(depObj); i++)
+            {
+                var child = VisualTreeHelper.GetChild(depObj, i);
+                IterateChildren(child);
+            }
+            return;
         }
     }
 }

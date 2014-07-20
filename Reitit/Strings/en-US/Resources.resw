@@ -324,4 +324,22 @@
   <data name="AddFavoriteName.Header" xml:space="preserve">
     <value>Name</value>
   </data>
+  <data name="GPSDisabledMessage" xml:space="preserve">
+    <value>To turn them on, go to "location" in your phone settings.</value>
+  </data>
+  <data name="GPSDisabledMessageTitle" xml:space="preserve">
+    <value>Location services are off</value>
+  </data>
+  <data name="LocatingTrayStatus" xml:space="preserve">
+    <value>Getting your location...</value>
+  </data>
+  <data name="NoGPSMessage" xml:space="preserve">
+    <value>You do not have location services available on your device.</value>
+  </data>
+  <data name="NoGPSMessageTitle" xml:space="preserve">
+    <value>Location services unavailable</value>
+  </data>
+  <data name="NoLocationDataTrayStatus" xml:space="preserve">
+    <value>Waiting for location data...</value>
+  </data>
 </root>

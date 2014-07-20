@@ -7,6 +7,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
+using Windows.Devices.Geolocation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.ViewManagement;
@@ -30,13 +31,14 @@ namespace Reitit
     {
         public new static App Current { get { return (App)Application.Current; } }
         public Settings Settings { get; private set; }
-        public IIndicatorManager IndicatorManager { get; private set; }
+        public StackIndicatorManager IndicatorManager { get; private set; }
         public ModelCache ModelCache { get; private set; }
         public ReittiAPIClient ReittiClient { get; private set; }
         public FavoritesManager Favorites { get; private set; }
         public RecentManager Recent { get; private set; }
         public SearchHistoryManager SearchHistory { get; private set; }
         public ParamCache ParamCache { get; private set; }
+        public EasyGeolocator Geolocator { get; private set; }
 
         private TransitionCollection transitions;
         private Task _initTask;
@@ -60,6 +62,7 @@ namespace Reitit
                 Recent = new RecentManager();
                 SearchHistory = new SearchHistoryManager();
                 ParamCache = new ParamCache();
+                Geolocator = new EasyGeolocator { DesiredAccuracy = PositionAccuracy.High, MovementThreshold = AppConfiguration.GPSMovementThreshold };
             });
         }
 

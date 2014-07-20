@@ -14,6 +14,8 @@
                     <ImageBrush x:Key="HubBackgroundImageBrush" ImageSource="{x:Null}"/>
                 </ResourceDictionary>
             </ResourceDictionary.ThemeDictionaries>
+
+            <SolidColorBrush x:Key="PhoneSubtleBrush" Color="#FF999999"/>
             
             <local:DatePickerConverter x:Key="DatePickerConverter"/>
             <local:TimePickerConverter x:Key="TimePickerConverter"/>
@@ -33,6 +35,7 @@
             <local:ToUpperCaseConverter x:Key="ToUpperCaseConverter"/>
             <local:PickerLocationToCoordinateConverter x:Key="PickerLocationToCoordinateConverter"/>
             <local:PickerLocationToVisibilityConverter x:Key="PickerLocationToVisibilityConverter"/>
+            <local:ReittiCoordinateToGeopointConverter x:Key="ReittiCoordinateToGeopointConverter"/>
 
             <DataTemplate x:Key="ReittiLocationListTemplate">
                 <StackPanel>
@@ -114,7 +117,6 @@
                 <Setter Property="FontFamily" Value="{ThemeResource PhoneFontFamilyNormal}"/>
                 <Setter Property="FontWeight" Value="{ThemeResource PhoneButtonFontWeight}"/>
                 <Setter Property="FontSize" Value="{ThemeResource TextStyleLargeFontSize}"/>
-                <Setter Property="Padding" Value="9.5,0"/>
                 <Setter Property="MinHeight" Value="0"/>
                 <Setter Property="MinWidth" Value="0"/>
                 <Setter Property="HorizontalAlignment" Value="Left"/>
@@ -147,9 +149,6 @@
                                         <VisualState x:Name="Pressed">
                                             <Storyboard>
                                                 <PointerDownThemeAnimation Storyboard.TargetName="Grid"/>
-                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Foreground" Storyboard.TargetName="ContentPresenter">
-                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ButtonPressedForegroundThemeBrush}"/>
-                                                </ObjectAnimationUsingKeyFrames>
                                                 <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Fill" Storyboard.TargetName="Border">
                                                     <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ButtonPressedBackgroundThemeBrush}"/>
                                                 </ObjectAnimationUsingKeyFrames>
@@ -176,13 +175,191 @@
                                      Stroke="{TemplateBinding BorderBrush}"
                                      StrokeThickness="2.5"
                                      Fill="{TemplateBinding Background}"
-                                     Margin="{ThemeResource PhoneTouchTargetOverhang}"/>
-                                <ContentPresenter x:Name="ContentPresenter" AutomationProperties.AccessibilityView="Raw" ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" Foreground="{TemplateBinding Foreground}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                                     Margin="{ThemeResource PhoneTouchTargetOverhang}"
+                                     VerticalAlignment="Center"
+                                     HorizontalAlignment="Center"/>
+                                <ContentPresenter x:Name="ContentPresenter"
+                                                  AutomationProperties.AccessibilityView="Raw"
+                                                  ContentTemplate="{TemplateBinding ContentTemplate}"
+                                                  Content="{TemplateBinding Content}"
+                                                  Foreground="{TemplateBinding Foreground}"
+                                                  HorizontalAlignment="Center"
+                                                  VerticalAlignment="Center"
+                                                  Margin="0,0,0,1"/>
                             </Grid>
                         </ControlTemplate>
                     </Setter.Value>
                 </Setter>
             </Style>
+
+            <Style x:Key="CompactCheckBoxStyle" TargetType="CheckBox">
+                <Setter Property="Background" Value="{ThemeResource CheckBoxBackgroundThemeBrush}"/>
+                <Setter Property="BorderBrush" Value="{ThemeResource CheckBoxBorderThemeBrush}"/>
+                <Setter Property="BorderThickness" Value="{ThemeResource PhoneBorderThickness}"/>
+                <Setter Property="FontSize" Value="{ThemeResource TextStyleLargeFontSize}"/>
+                <Setter Property="FontFamily" Value="{ThemeResource PhoneFontFamilyNormal}"/>
+                <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                <Setter Property="VerticalContentAlignment" Value="Top"/>
+                <Setter Property="HorizontalAlignment" Value="Left"/>
+                <Setter Property="VerticalAlignment" Value="Top"/>
+                <Setter Property="Padding" Value="{ThemeResource CheckBoxAndRadioButtonTextPaddingThickness}"/>
+                <Setter Property="MinWidth" Value="0"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="CheckBox">
+                            <Grid Background="Transparent">
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup x:Name="CommonStates">
+                                        <VisualStateGroup.Transitions>
+                                            <VisualTransition From="Pressed" To="PointerOver">
+                                                <Storyboard>
+                                                    <PointerUpThemeAnimation Storyboard.TargetName="Grid"/>
+                                                </Storyboard>
+                                            </VisualTransition>
+                                            <VisualTransition From="PointerOver" To="Normal">
+                                                <Storyboard>
+                                                    <PointerUpThemeAnimation Storyboard.TargetName="Grid"/>
+                                                </Storyboard>
+                                            </VisualTransition>
+                                            <VisualTransition From="Pressed" To="Normal">
+                                                <Storyboard>
+                                                    <PointerUpThemeAnimation Storyboard.TargetName="Grid"/>
+                                                </Storyboard>
+                                            </VisualTransition>
+                                        </VisualStateGroup.Transitions>
+                                        <VisualState x:Name="Normal"/>
+                                        <VisualState x:Name="MouseOver"/>
+                                        <VisualState x:Name="PointerOver"/>
+                                        <VisualState x:Name="Pressed">
+                                            <Storyboard>
+                                                <PointerDownThemeAnimation Storyboard.TargetName="Grid"/>
+                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Background" Storyboard.TargetName="CheckBackground">
+                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource CheckBoxPressedBackgroundThemeBrush}"/>
+                                                </ObjectAnimationUsingKeyFrames>
+                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Fill" Storyboard.TargetName="CheckGlyph">
+                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource CheckBoxPressedForegroundThemeBrush}"/>
+                                                </ObjectAnimationUsingKeyFrames>
+                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Fill" Storyboard.TargetName="NormalRectangle">
+                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource CheckBoxPressedBackgroundThemeBrush}"/>
+                                                </ObjectAnimationUsingKeyFrames>
+                                            </Storyboard>
+                                        </VisualState>
+                                        <VisualState x:Name="Disabled">
+                                            <Storyboard>
+                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="BorderBrush" Storyboard.TargetName="CheckBackground">
+                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource CheckBoxDisabledBorderThemeBrush}"/>
+                                                </ObjectAnimationUsingKeyFrames>
+                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Fill" Storyboard.TargetName="CheckGlyph">
+                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource CheckBoxDisabledForegroundThemeBrush}"/>
+                                                </ObjectAnimationUsingKeyFrames>
+                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Fill" Storyboard.TargetName="NormalRectangle">
+                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource CheckBoxDisabledBackgroundThemeBrush}"/>
+                                                </ObjectAnimationUsingKeyFrames>
+                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Foreground" Storyboard.TargetName="ContentPresenter">
+                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource CheckBoxDisabledForegroundThemeBrush}"/>
+                                                </ObjectAnimationUsingKeyFrames>
+                                            </Storyboard>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                    <VisualStateGroup x:Name="CheckStates">
+                                        <VisualState x:Name="Checked">
+                                            <Storyboard>
+                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Visibility" Storyboard.TargetName="CheckGlyph">
+                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="Visible"/>
+                                                </ObjectAnimationUsingKeyFrames>
+                                            </Storyboard>
+                                        </VisualState>
+                                        <VisualState x:Name="Unchecked"/>
+                                        <VisualState x:Name="Indeterminate">
+                                            <Storyboard>
+                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Visibility" Storyboard.TargetName="NormalRectangle">
+                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="Visible"/>
+                                                </ObjectAnimationUsingKeyFrames>
+                                            </Storyboard>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                </VisualStateManager.VisualStateGroups>
+                                <Grid x:Name="Grid" Margin="{ThemeResource PhoneTouchTargetLargeOverhang}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="25.5"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid Grid.Column="0" VerticalAlignment="Center">
+                                        <Border x:Name="CheckBackground" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" HorizontalAlignment="Left" Height="25.5" IsHitTestVisible="False" VerticalAlignment="Center" Width="25.5"/>
+                                        <Rectangle x:Name="NormalRectangle" Fill="{ThemeResource CheckBoxBackgroundThemeBrush}" HorizontalAlignment="Center" Height="13" IsHitTestVisible="False" Visibility="Collapsed" VerticalAlignment="Center" Width="13"/>
+                                        <Path x:Name="CheckGlyph" Data="M0,123 L39,93 L124,164 L256,18 L295,49 L124,240 z" Fill="{ThemeResource CheckBoxForegroundThemeBrush}" FlowDirection="LeftToRight" HorizontalAlignment="Center" Height="17" IsHitTestVisible="False" Stretch="Fill" StrokeThickness="2.5" StrokeLineJoin="Round" Visibility="Collapsed" VerticalAlignment="Center" Width="18.5"/>
+                                    </Grid>
+                                    <ContentPresenter x:Name="ContentPresenter" AutomationProperties.AccessibilityView="Raw" ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" Grid.Column="1" Foreground="{TemplateBinding Foreground}" FontWeight="Normal" FontSize="{ThemeResource TextStyleLargeFontSize}" FontFamily="{ThemeResource PhoneFontFamilyNormal}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                                </Grid>
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <SolidColorBrush x:Key="BusBrush" Color="#FF193695"/>
+            <SolidColorBrush x:Key="FerryBrush" Color="#FF5AC5D8"/>
+            <SolidColorBrush x:Key="TrainBrush" Color="#FF2CBE2C"/>
+            <SolidColorBrush x:Key="MetroBrush" Color="#FFFB6500"/>
+            <SolidColorBrush x:Key="TramBrush" Color="#FF00AC67"/>
+            <SolidColorBrush x:Key="WalkBrush" Color="#FF0063FF"/>
+
+            <DataTemplate x:Key="BusIcon">
+                <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="{StaticResource BusBrush}">
+                    <Canvas Width="23" Height="23">
+                        <Rectangle Width="2" Height="2" Canvas.Left="16.5" Canvas.Top="20.5" Stretch="Fill" Fill="#FFFFFFFF"/>
+                        <Rectangle Width="2" Height="2" Canvas.Left="4.50002" Canvas.Top="20.5" Stretch="Fill" Fill="#FFFFFFFF"/>
+                        <Path Width="18" Height="19" Canvas.Left="2.50001" Canvas.Top="1.5" Stretch="Fill" Fill="#FFFFFFFF" Data="F1 M 2.50001,1.5L 20.5,1.5L 20.5,20.5L 2.50001,20.5L 2.50001,1.5 Z M 3.50001,5.5L 3.50001,15.5L 19.5,15.5L 19.5,5.5L 3.50001,5.5 Z M 4.50001,17.5L 4.50001,18.5L 7.50001,18.5L 7.50001,17.5L 4.50001,17.5 Z M 15.5,17.5L 15.5,18.5L 18.5,18.5L 18.5,17.5L 15.5,17.5 Z "/>
+                    </Canvas>
+                </Border>
+            </DataTemplate>
+            <DataTemplate x:Key="FerryIcon">
+                <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="{StaticResource FerryBrush}">
+                    <Canvas Width="20" Height="22">
+                        <Path Width="18" Height="8.01044" Canvas.Left="1" Canvas.Top="11.9896" Stretch="Fill" Fill="#FFFFFFFF" Data="F1 M 1,13L 2,19L 3,20L 17,20L 18,19L 19,13L 10,11.9896L 1,13 Z "/>
+                        <Path Width="14" Height="11" Canvas.Left="3" Canvas.Top="0" Stretch="Fill" Fill="#FFFFFFFF" Data="F1 M 3,5L 7,5L 7,0L 13,0L 13,5L 17,5L 17,11L 10,10L 3,11L 3,5 Z M 5,7L 5,9L 7,9L 7,7L 5,7 Z M 8.99999,7L 8.99999,9L 11,9L 11,7L 8.99999,7 Z M 13,7L 13,9L 15,9L 15,7L 13,7 Z "/>
+                        <Path Width="20" Height="1" Canvas.Left="0" Canvas.Top="21" Stretch="Fill" Fill="#FFFFFFFF" Data="F1 M 1,21L 2.5,21.5L 5.01042,21L 7.5,21.5L 9.99479,21L 12.5,21.5L 15.0105,21L 17.5,21.5L 19,21L 20,21.4794L 20,22L 0,22L 0,21.5208L 1,21 Z "/>
+                    </Canvas>
+                </Border>
+            </DataTemplate>
+            <DataTemplate x:Key="TrainIcon">
+                <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="{StaticResource TrainBrush}">
+                    <Canvas Width="18" Height="24">
+                        <Path Width="18" Height="21" Canvas.Left="0" Canvas.Top="0" Stretch="Fill" Fill="#FFFFFFFF" Data="M 0,20L 18,20L 18,4.5L 14,0L 4,0L 4.76837e-006,4.5L 0,20 Z M 7,2L 11,2L 11,3L 7,3L 7,2 Z M 2,18L 2,17L 5.5,17L 5.5,18L 2,18 Z M 12.5,17L 16,17L 16,18L 12.5,18L 12.5,17 Z M 2,6L 16,6L 14.5,15L 3.5,15L 2,6 Z "/>
+                        <Path Width="14" Height="3" Canvas.Left="2" Canvas.Top="22" Stretch="Fill" Fill="#FFFFFFFF" Data="M 2,24L 16,24L 16,23L 14,22.5L 11,21L 7,21L 4,22.5L 2,23L 2,24 Z "/>
+                    </Canvas>
+                </Border>
+            </DataTemplate>
+            <DataTemplate x:Key="MetroIcon">
+                <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="{StaticResource MetroBrush}">
+                    <Canvas Width="20" Height="22.5">
+                        <Rectangle Width="8" Height="1" Canvas.Left="6" Canvas.Top="21.5" Stretch="Fill" Fill="#FFFFFFFF"/>
+                        <Path Width="20" Height="19.5" Canvas.Left="0" Canvas.Top="0" Stretch="Fill" Fill="#FFFFFFFF" Data="F1 M 0,2.5L 2,1L 8,0L 12,0L 18,1L 20,2.5L 20,18.5L 16,19.5L 4,19.5L 0,18.5L 0,2.5 Z M 2,3.5L 2,12.5L 18,12.5L 18,3.5L 12,2.5L 7.99999,2.5L 2,3.5 Z M 2,15.5L 2,17.5L 4,17.5L 4,15.5L 2,15.5 Z M 16,15.5L 16,17.5L 18,17.5L 18,15.5L 16,15.5 Z "/>
+                    </Canvas>
+                </Border>
+            </DataTemplate>
+            <DataTemplate x:Key="TramIcon">
+                <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="{StaticResource TramBrush}">
+                    <Canvas Width="14" Height="27">
+                        <Path Width="14" Height="3" Canvas.Left="0" Canvas.Top="24" Stretch="Fill" Fill="#FFFFFFFF" Data="F1 M 0,25L 2,25L 2,24L 4,24L 4,25L 10,25L 10,24L 12,24L 12,25L 14,25L 14,27L 7.62939e-006,27L 0,25 Z "/>
+                        <Path Width="14" Height="23" Canvas.Left="1.90735e-006" Canvas.Top="0" Stretch="Fill" Fill="#FFFFFFFF" Data="F1 M 1,7L 1,14L 13,14L 13,7L 1,7 Z M 2,19L 2,20L 4,20L 4,19L 2,19 Z M 12,19L 10,19L 10,20L 12,20L 12,19 Z M 1.90735e-006,23L 1.90735e-006,5L 1.09928,4L 6,4L 6,2L 4,2L 4,0L 10,0L 10,2L 8,2L 8,4L 13.0867,4L 14,5L 14,23L 1.90735e-006,23 Z "/>
+                    </Canvas>
+                </Border>
+            </DataTemplate>
+            <DataTemplate x:Key="WaitIcon">
+                <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="{StaticResource WalkBrush}">
+                    <Canvas Width="9.5" Height="26">
+                        <Path Width="9.5" Height="26" Canvas.Left="0" Canvas.Top="0" Stretch="Fill" Fill="#FFFFFFFF" Data="F1 M 3.5,0.5L 4,0L 6,0L 6.5,0.5L 6.5,2.5L 6.24076,3.5L 8,4.5L 9.5,8L 9.5,13.5L 8,14L 7.5,8.7533L 7.5,12L 8,16.5L 7.5,23.5L 8.5,24L 8,25L 5.5,24.5L 5.5,23.5L 5.5,14.5L 5,16.5L 5,25L 4,25.5L 2.5,26L 2,25L 3,24L 2.5,16L 2.5,12.5L 2.5,8.5L 2.29805,9L 2.18867,11L 2.5,14L 1,15L 0,12L 0.5,8L 2,4.5L 3.74076,3.5L 3.5,2.5L 3.5,0.5 Z "/>
+                    </Canvas>
+                </Border>
+            </DataTemplate>
+            <DataTemplate x:Key="WalkIcon">
+                <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="{StaticResource WalkBrush}">
+                    <Canvas Width="16.5" Height="23.5">
+                        <Path Width="16.5" Height="23.5" Canvas.Left="0" Canvas.Top="0" Stretch="Fill" Fill="#FFFFFFFF" Data="F1 M 3,10.5L 6,7.5L 6,5.5L 7.5,4L 6.5,3L 6.5,1L 7.5,0L 9,0L 10,1L 10,2.5L 9.5,4L 11.5,5.5L 13,8L 13.5,12.5L 12,12.5L 11,8L 11,9.5L 11.5,13.5L 12.5,16.5L 16.5,21.5L 15,23.5L 13,23.5L 13,22.5L 14,22L 10,18L 8.5,15.5L 3,23L 0,21.5L 0.500001,20.5L 2,21L 6.5,12.5L 6.5,10L 3.5,12L 3,10.5 Z "/>
+                    </Canvas>
+                </Border>
+            </DataTemplate>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

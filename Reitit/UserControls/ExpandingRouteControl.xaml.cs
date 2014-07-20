@@ -108,18 +108,14 @@ namespace Reitit
         {
             _transparent = new SolidColorBrush(Color.FromArgb(0, 255, 255, 255));
             _accentBrush = (Brush)App.Current.Resources["PhoneAccentBrush"];
-
-            var foregroundColor = (Color)App.Current.Resources["PhoneForegroundColor"];
-            var backgroundColor = (Color)App.Current.Resources["PhoneBackgroundColor"];
-            _foregroundBrush = new SolidColorBrush(foregroundColor.FlattenOn(backgroundColor));
-
+            _foregroundBrush = (Brush)App.Current.Resources["PhoneForegroundBrush"];
             _backgroundBrush = (Brush)App.Current.Resources["PhoneBackgroundBrush"];
             _subtleBrush = (Brush)App.Current.Resources["PhoneSubtleBrush"];
             _boldFont = (FontFamily)App.Current.Resources["PhoneFontFamilySemiBold"];
-            _extraLargeFontSize = (double)App.Current.Resources["PhoneFontSizeExtraLarge"];
-            _largeFontSize = (double)App.Current.Resources["PhoneFontSizeLarge"];
-            _normalFontSize = (double)App.Current.Resources["PhoneFontSizeNormal"];
-            _smallFontSize = (double)App.Current.Resources["PhoneFontSizeSmall"];
+            _extraLargeFontSize = (double)App.Current.Resources["TextStyleExtraLargeFontSize"];
+            _largeFontSize = (double)App.Current.Resources["TextStyleLargeFontSize"];
+            _normalFontSize = (double)App.Current.Resources["TextStyleMediumFontSize"];
+            _smallFontSize = (double)App.Current.Resources["TextStyleSmallFontSize"];
             _tinyFontSize = 16;
 
             var textBlock = new TextBlock { FontSize = _largeFontSize };
@@ -247,9 +243,10 @@ namespace Reitit
                 MinimizedRoot.Children.Add(textBlock);
             }
 
-            var vehiclesStack = new WrapGrid
+            var vehiclesStack = new VariableSizedWrapGrid
             {
-                Orientation = Orientation.Horizontal
+                Orientation = Orientation.Horizontal,
+                MaximumRowsOrColumns = 7
             };
             Grid.SetColumn(vehiclesStack, 1);
             MinimizedRoot.Children.Add(vehiclesStack);
@@ -266,11 +263,10 @@ namespace Reitit
                     };
                     vehiclesStack.Children.Add(detailsStack);
 
-                    var iconControl = new ColorizedIconControl
+                    var iconControl = new ModeIcon
                     {
                         HorizontalAlignment = HorizontalAlignment.Left,
-                        IconBackground = Utils.GetStrokeForType(leg.Type),
-                        Icon = Utils.GetIconForType(leg.Type),
+                        Type = leg.Type,
                     };
                     detailsStack.Children.Add(iconControl);
 

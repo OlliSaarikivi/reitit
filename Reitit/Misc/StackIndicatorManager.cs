@@ -7,7 +7,7 @@ using Windows.UI.ViewManagement;
 
 namespace Reitit
 {
-    public class StackIndicatorManager : IIndicatorManager
+    public class StackIndicatorManager
     {
         List<TrayStatus> _indicators = new List<TrayStatus>();
 
@@ -28,6 +28,19 @@ namespace Reitit
             if (_indicators.Remove(indicator))
             {
                 await UpdateIndicator();
+            }
+        }
+
+        public async Task SurfaceStatus(TrayStatus indicator)
+        {
+            if (_indicators.Count != 0)
+            {
+                if (_indicators.LastElement() != indicator)
+                {
+                    _indicators.Remove(indicator);
+                    _indicators.Add(indicator);
+                    await UpdateIndicator();
+                }
             }
         }
 

@@ -38,10 +38,16 @@ namespace Reitit
             SearchPossibleProperty = CreateDerivedProperty(
                 () => SearchPossible,
                 () => From != null && To != null);
+            ShowMyLocationProperty = CreateDerivedProperty(
+                () => ShowMyLocation,
+                () => From is MeLocation || To is MeLocation);
         }
 
         private DerivedProperty<bool> SearchPossibleProperty;
         public bool SearchPossible { get { return SearchPossibleProperty.Get(); } }
+
+        private DerivedProperty<bool> ShowMyLocationProperty;
+        public bool ShowMyLocation { get { return ShowMyLocationProperty.Get(); } }
 
         public IPickerLocation From
         {

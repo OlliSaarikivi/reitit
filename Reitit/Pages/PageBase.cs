@@ -1,6 +1,8 @@
 ﻿using GalaSoft.MvvmLight.Messaging;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -24,6 +26,8 @@ namespace Reitit
     {
         public NavigationHelper NavigationHelper { get; private set; }
 
+        public ObservableCollection<object> MapItems { get; private set; }
+
         protected object NavigationParameter { get; private set; }
 
         protected List<Tombstoner> Tombstoners
@@ -41,6 +45,34 @@ namespace Reitit
             NavigationHelper = ConstructNavigation();
             NavigationHelper.LoadState += this.NavigationHelper_LoadState;
             NavigationHelper.SaveState += this.NavigationHelper_SaveState;
+
+            MapItems = new ObservableCollection<object>();
+            MapItems.CollectionChanged += MapItems_CollectionChanged;
+            DataContextChanged += MapContentPage_DataContextChanged;
+        }
+
+        void MapContentPage_DataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
+        {
+            foreach (var item in MapItems)
+            {
+                var element = item as FrameworkElement;
+                if (element != null)
+                {
+                    element.DataContext = DataContext;
+                }
+            }
+        }
+
+        void MapItems_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            foreach (var item in e.NewItems)
+            {
+                var element = item as FrameworkElement;
+                if (element != null)
+                {
+                    element.DataContext = DataContext;
+                }
+            }
         }
 
         void HardwareButtons_BackPressed(object sender, BackPressedEventArgs e)

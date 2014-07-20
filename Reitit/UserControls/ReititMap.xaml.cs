@@ -29,20 +29,31 @@ namespace Reitit
 
         public int Compare(DependencyObject x, DependencyObject y)
         {
-            double xLatitude = 0;
-            try
-            {
-                xLatitude = ReititMap.GetPushpinCoordinate(x).Latitude;
-            }
-            catch (NullReferenceException) { }
-            double yLatitude = 0;
-            try
-            {
-                yLatitude = ReititMap.GetPushpinCoordinate(y).Latitude;
-            }
-            catch (NullReferenceException) { }
+            var xCoordinate = ReititMap.GetPushpinCoordinate(x);
+            double xLatitude = xCoordinate != null ? xCoordinate.Latitude : 0;
+            var yCoordinate = ReititMap.GetPushpinCoordinate(y);
+            double yLatitude = yCoordinate != null ? yCoordinate.Latitude : 0;
             return xLatitude.CompareTo(yLatitude);
         }
+    }
+
+    public class CoerceZoomLevelConverter : LambdaConverter<double, double, object>
+    {
+        public static double? MaxZoomLevel;
+        public static double? MinZoomLevel;
+
+        public CoerceZoomLevelConverter()
+            : base((s, p, language) =>
+            {
+                var max = MaxZoomLevel ?? 20;
+                var min = MinZoomLevel ?? 1;
+                return s > max ? max : (s < min ? min : s);
+            },
+            (s, p, language) =>
+            {
+                return s;
+            })
+        { }
     }
 
     public sealed partial class ReititMap : UserControl
@@ -56,9 +67,8 @@ namespace Reitit
             obj.SetValue(PushpinCoordinateProperty, value);
         }
         public static readonly DependencyProperty PushpinCoordinateProperty =
-            DependencyProperty.RegisterAttached("PushpinCoordinate", typeof(ReittiCoordinate), typeof(ReititMap), new PropertyMetadata(null, PushpinCoordinate));
-
-        private static void PushpinCoordinate(DependencyObject d, DependencyPropertyChangedEventArgs e)
+            DependencyProperty.RegisterAttached("PushpinCoordinate", typeof(ReittiCoordinate), typeof(ReititMap), new PropertyMetadata(null, PushpinCoordinateChanged));
+        private static void PushpinCoordinateChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var coordinate = e.NewValue as ReittiCoordinate;
             if (coordinate != null)
@@ -75,21 +85,92 @@ namespace Reitit
         }
         static Dictionary<DependencyObject, Action> _pushpinCoordinateChangedActions = new Dictionary<DependencyObject, Action>();
 
+        public static bool GetInAutofocus(DependencyObject obj)
+        {
+            return (bool)obj.GetValue(InAutofocusProperty);
+        }
+        public static void SetInAutofocus(DependencyObject obj, bool value)
+        {
+            obj.SetValue(InAutofocusProperty, value);
+        }
+        public static readonly DependencyProperty InAutofocusProperty =
+            DependencyProperty.RegisterAttached("InAutofocus", typeof(bool), typeof(ReititMap), new PropertyMetadata(true, InAutofocusChanged));
+        private static void InAutofocusChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            Action action;
+            if (_inAutofocusChangedActions.TryGetValue(d, out action))
+            {
+                action();
+            }
+        }
+        static Dictionary<DependencyObject, Action> _inAutofocusChangedActions = new Dictionary<DependencyObject, Action>();
+
+        public static int GetZLayer(DependencyObject obj)
+        {
+            return (int)obj.GetValue(ZLayerProperty);
+        }
+        public static void SetZLayer(DependencyObject obj, int value)
+        {
+            obj.SetValue(ZLayerProperty, value);
+        }
+        public static readonly DependencyProperty ZLayerProperty =
+            DependencyProperty.RegisterAttached("ZLayer", typeof(int), typeof(ReititMap), new PropertyMetadata(0));
+
+        public ReittiCoordinate Center
+        {
+            get { return (ReittiCoordinate)GetValue(CenterProperty); }
+            set { SetValue(CenterProperty, value); }
+        }
+        public static readonly DependencyProperty CenterProperty =
+            DependencyProperty.Register("Center", typeof(ReittiCoordinate), typeof(ReititMap), new PropertyMetadata(Utils.DefaultViewCoordinate));
+
+        public double ZoomLevel
+        {
+            get { return (double)GetValue(ZoomLevelProperty); }
+            set { SetValue(ZoomLevelProperty, value); }
+        }
+        public static readonly DependencyProperty ZoomLevelProperty =
+            DependencyProperty.Register("ZoomLevel", typeof(double), typeof(ReititMap), new PropertyMetadata(Utils.DefaultViewZoom));
+
+        public bool Autofocus
+        {
+            get { return (bool)GetValue(AutofocusProperty); }
+            set { SetValue(AutofocusProperty, value); }
+        }
+        public static readonly DependencyProperty AutofocusProperty =
+            DependencyProperty.Register("Autofocus", typeof(bool), typeof(ReititMap), new PropertyMetadata(true, AutofocusChanged));
+        private static void AutofocusChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var control = d as ReititMap;
+            if (control != null && (bool)e.NewValue)
+            {
+                control.AutofocusView();
+            }
+        }
+
+        public double BottomObscuredHeight { get; set; }
+
+        public event Action Touched;
+
         Dictionary<ObservableCollection<object>, MapItemsRegistration> _registrations = new Dictionary<ObservableCollection<object>, MapItemsRegistration>();
-        //ObservableCollection<UIElement> _pageMapItems;
+        ObservableCollection<UIElement> _pageMapItems;
+        List<Canvas> _mapCanvases;
 
         public ReititMap()
         {
             this.InitializeComponent();
-            //_pageMapItems = new ObservableCollection<UIElement>();
-            //PageLayerItemsControl.ItemsSource = _pageMapItems;
+            _pageMapItems = new ObservableCollection<UIElement>();
+            PageLayerItemsControl.ItemsSource = _pageMapItems;
+            _mapCanvases = new List<Canvas>();
+            CoerceZoomLevelConverter.MaxZoomLevel = Map.MaxZoomLevel;
+            CoerceZoomLevelConverter.MinZoomLevel = Map.MinZoomLevel;
         }
 
-        public async Task UpdateMapTransform(double contentHeight)
+        public void UpdateMapTransform(double contentHeight)
         {
             var screenHeight = Window.Current.Bounds.Height;
             Map.TransformOrigin = new Point(0.5, 1 - (double)(screenHeight + contentHeight) / (2 * screenHeight));
-            await Map.TrySetViewAsync(Map.Center.Jiggle(), Map.ZoomLevel, Map.Heading, Map.DesiredPitch, MapAnimationKind.None);
+            //await Map.TrySetViewAsync(Map.Center.Jiggle(), Map.ZoomLevel, Map.Heading, Map.DesiredPitch, MapAnimationKind.None);
         }
 
         public void RegisterItems(ObservableCollection<object> items)
@@ -115,30 +196,132 @@ namespace Reitit
             InsertElement(element);
             _pushpinCoordinateChangedActions.Add(element, () =>
             {
-                PageLayerItemsControl.Items.Clear();
-                PageLayerItemsControl.Items.Remove(element);
+                _pageMapItems.Remove(element);
                 InsertElement(element);
+                EnsureOrder();
+                if (Autofocus && ReititMap.GetInAutofocus(element))
+                {
+                    AutofocusView();
+                }
             });
-            MapControl.SetNormalizedAnchorPoint(element, new Point(0, 1));
+            _inAutofocusChangedActions.Add(element, () =>
+            {
+                if (Autofocus)
+                {
+                    AutofocusView();
+                }
+            });
+            EnsureOrder();
+            if (Autofocus && ReititMap.GetInAutofocus(element))
+            {
+                AutofocusView();
+            }
         }
 
         void InsertElement(UIElement element)
         {
-            int insertIndex = PageLayerItemsControl.Items.UpperBound(element, MapItemComparer.Instance);
-            if (insertIndex == PageLayerItemsControl.Items.Count)
-            {
-                PageLayerItemsControl.Items.Add(element);
-            }
-            else
-            {
-                PageLayerItemsControl.Items.Insert(insertIndex, element);
-            }
+            int insertIndex = _pageMapItems.UpperBound(element, MapItemComparer.Instance);
+            _pageMapItems.Insert(insertIndex, element);
         }
 
         void RemoveElement(UIElement element)
         {
             _pushpinCoordinateChangedActions.Remove(element);
-            PageLayerItemsControl.Items.Remove(element);
+            _pageMapItems.Remove(element);
+            EnsureOrder();
+            if (Autofocus && ReititMap.GetInAutofocus(element))
+            {
+                AutofocusView();
+            }
+        }
+
+        bool _autofocusDirty = false;
+        void AutofocusView()
+        {
+            _autofocusDirty = true;
+            Utils.OnCoreDispatcher(async () =>
+            {
+                if (_autofocusDirty)
+                {
+                    await DoAutofocusView();
+                    _autofocusDirty = false;
+                }
+            });
+        }
+
+        async Task DoAutofocusView()
+        {
+            bool atLeastOne = false;
+            double maxLatitude = double.MinValue, minLatitude = double.MaxValue, maxLongitude = double.MinValue, minLongitude = double.MaxValue;
+            foreach (var element in _pageMapItems)
+            {
+                if (ReititMap.GetInAutofocus(element))
+                {
+                    var c = ReititMap.GetPushpinCoordinate(element);
+                    if (c != null)
+                    {
+                        atLeastOne = true;
+                        if (c.Latitude > maxLatitude) maxLatitude = c.Latitude;
+                        if (c.Latitude < minLatitude) minLatitude = c.Latitude;
+                        if (c.Longitude > maxLongitude) maxLongitude = c.Longitude;
+                        if (c.Longitude < minLongitude) minLongitude = c.Longitude;
+                    }
+                }
+            }
+            if (atLeastOne)
+            {
+                double latitudeMargin = Math.Max(Utils.MinZoomedLatitudeDiff - (maxLatitude - minLatitude), 0) / 2;
+                double longitudeMargin = Math.Max(Utils.MinZoomedLongitudeDiff - (maxLongitude - minLongitude), 0) / 2;
+                await Map.TrySetViewBoundsAsync(new GeoboundingBox(
+                    new BasicGeoposition
+                {
+                    Latitude = maxLatitude + latitudeMargin,
+                    Longitude = minLongitude - longitudeMargin
+                }, new BasicGeoposition
+                {
+                    Latitude = minLatitude - latitudeMargin,
+                    Longitude = maxLongitude + longitudeMargin
+                }), new Thickness(20, 50, 20, BottomObscuredHeight + 12), MapAnimationKind.Linear);
+            }
+        }
+
+        bool _zIndicesDirty = false;
+        void EnsureOrder()
+        {
+            _zIndicesDirty = true;
+            Utils.OnCoreDispatcher(() =>
+            {
+                if (_zIndicesDirty)
+                {
+                    SetZIndices();
+                    _zIndicesDirty = false;
+                }
+            });
+        }
+
+        void SetZIndices()
+        {
+            if (_mapCanvases.Count == 0)
+            {
+                _mapCanvases.AddRange(Map.GetChildrenOfType<Canvas>());
+            }
+            foreach (var canvas in _mapCanvases)
+            {
+                for (int i = 0; i < VisualTreeHelper.GetChildrenCount(canvas); ++i)
+                {
+                    var child = VisualTreeHelper.GetChild(canvas, i) as ContentPresenter;
+                    if (child != null)
+                    {
+                        var content = child.Content as UIElement;
+                        if (content != null)
+                        {
+                            int zLayer = ReititMap.GetZLayer(content);
+                            int zIndex = _pageMapItems.IndexOf(content) - zLayer * _pageMapItems.Count;
+                            Canvas.SetZIndex(child, -zIndex);
+                        }
+                    }
+                }
+            }
         }
 
         class MapItemsRegistration : IDisposable
@@ -212,8 +395,8 @@ namespace Reitit
                 }
                 else
                 {
-                    var element = item as ReititMapItem;
-                    _map.AddElement(element.Element);
+                    var element = item as UIElement;
+                    _map.AddElement(element);
                 }
                 _currentItems.Add(item, true);
             }
@@ -232,8 +415,8 @@ namespace Reitit
                 }
                 else
                 {
-                    var element = item as ReititMapItem;
-                    _map.RemoveElement(element.Element);
+                    var element = item as UIElement;
+                    _map.RemoveElement(element);
                 }
                 _currentItems.Remove(item);
             }
@@ -323,6 +506,15 @@ namespace Reitit
                         _map.RemoveElement(element);
                     }
                 }
+            }
+        }
+
+        private void Map_MapTapped(MapControl sender, MapInputEventArgs args)
+        {
+            var handler = Touched;
+            if (handler != null)
+            {
+                handler();
             }
         }
     }

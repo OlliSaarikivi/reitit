@@ -17,7 +17,9 @@ namespace Reitit
     {
         Geolocator _locator;
         event StatusChangedHandler _statusEvent;
+        object _statusEventLock = new object();
         event PositionChangedHandler _positionEvent;
+        object _positionEventLock = new object();
         Geocoordinate _cachedCoordinate;
 
         public PositionAccuracy DesiredAccuracy
@@ -53,7 +55,7 @@ namespace Reitit
         {
             add
             {
-                lock (_statusEvent)
+                lock (_statusEventLock)
                 {
                     bool start = _statusEvent == null;
                     _statusEvent += value;
@@ -65,7 +67,7 @@ namespace Reitit
             }
             remove
             {
-                lock (_statusEvent)
+                lock (_statusEventLock)
                 {
                     _statusEvent -= value;
                     if (_statusEvent == null)
@@ -80,7 +82,7 @@ namespace Reitit
         {
             add
             {
-                lock (_positionEvent)
+                lock (_positionEventLock)
                 {
                     bool start = _positionEvent == null;
                     _positionEvent += value;
@@ -92,7 +94,7 @@ namespace Reitit
             }
             remove
             {
-                lock (_statusEvent)
+                lock (_positionEventLock)
                 {
                     _positionEvent -= value;
                     if (_positionEvent == null)

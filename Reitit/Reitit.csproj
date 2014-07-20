@@ -96,6 +96,12 @@
     <Compile Include="UserControls\LabelPushpin.xaml.cs">
       <DependentUpon>LabelPushpin.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UserControls\ModeIcon.xaml.cs">
+      <DependentUpon>ModeIcon.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\MyLocationPushpin.xaml.cs">
+      <DependentUpon>MyLocationPushpin.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\ReititMapItem.cs" />
     <Compile Include="UserControls\ReititMapItemsControl.cs" />
     <Compile Include="Misc\SearchHistoryManager.cs" />
@@ -133,7 +139,6 @@
     <Compile Include="Misc\ExtendedObservableObject.cs" />
     <Compile Include="Misc\FavoritesManager.cs" />
     <Compile Include="Misc\IconManager.cs" />
-    <Compile Include="Misc\IIndicatorManager.cs" />
     <Compile Include="Pages\MapContentPage.cs" />
     <Compile Include="Pages\PageBase.cs" />
     <Compile Include="Misc\PickerLocation.cs" />
@@ -182,7 +187,6 @@
     <Compile Include="UserControls\ReititMap.xaml.cs">
       <DependentUpon>ReititMap.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UserControls\ReititMapVM.cs" />
     <Compile Include="ViewModels\RouteSearchPageVM.cs" />
     <Compile Include="ViewModels\RoutesPageVM.cs" />
     <Compile Include="ViewModels\SearchPageVM.cs" />
@@ -270,6 +274,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UserControls\LabelPushpin.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\ModeIcon.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\MyLocationPushpin.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

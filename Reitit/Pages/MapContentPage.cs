@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GalaSoft.MvvmLight.Messaging;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -29,7 +30,6 @@ namespace Reitit
         }
         public static readonly DependencyProperty IsMaximizedProperty =
             DependencyProperty.Register("IsMaximized", typeof(bool), typeof(MapContentPage), new PropertyMetadata(true, IsMaximizedChanged));
-
         public static void IsMaximizedChanged(DependencyObject s, DependencyPropertyChangedEventArgs e)
         {
             var page = s as MapContentPage;
@@ -49,11 +49,25 @@ namespace Reitit
             }
         }
 
-        public ObservableCollection<object> MapItems { get; private set; }
+        public bool ShowMyLocationImplicit
+        {
+            get { return (bool)GetValue(ShowMyLocationImplicitProperty); }
+            set { SetValue(ShowMyLocationImplicitProperty, value); }
+        }
+        public static readonly DependencyProperty ShowMyLocationImplicitProperty =
+            DependencyProperty.Register("ShowMyLocationImplicit", typeof(bool), typeof(MapContentPage), new PropertyMetadata(false, ShowMyLocationImplicitChanged));
+        private static void ShowMyLocationImplicitChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var page = d as MapContentPage;
+            if (page != null)
+            {
+                Messenger.Default.Send(new ShowMyLocationImplicitMessage { Show = (bool)e.NewValue }, page);
+            }
+        }
 
         public MapContentPage()
         {
-            MinimizedHeight = 60;
+            MinimizedHeight = 30;
 
             // This converter works both ways due to the magical properties of subtraction
             Convert<double, double, object> convert = (otherHeight, P, C) =>
@@ -68,42 +82,6 @@ namespace Reitit
                 Mode = BindingMode.TwoWay,
             };
             SetBinding(MapHeightProperty, binding);
-
-            MapItems = new ObservableCollection<object>();
-            MapItems.CollectionChanged += MapItems_CollectionChanged;
-            DataContextChanged += MapContentPage_DataContextChanged;
-        }
-
-        void MapContentPage_DataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
-        {
-            foreach (var item in MapItems)
-            {
-                var single = item as ReititMapItem;
-                if (single != null)
-                {
-                    var element = single.Element as FrameworkElement;
-                    if (element != null)
-                    {
-                        element.DataContext = DataContext;
-                    }
-                }
-            }
-        }
-
-        void MapItems_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            foreach (var item in e.NewItems)
-            {
-                var single = item as ReititMapItem;
-                if (single != null)
-                {
-                    var element = single.Element as FrameworkElement;
-                    if (element != null)
-                    {
-                        element.DataContext = DataContext;
-                    }
-                }
-            }
         }
 
         protected virtual void OnMinimized() { }

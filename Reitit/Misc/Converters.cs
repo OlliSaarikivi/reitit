@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Devices.Geolocation;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Data;
@@ -215,5 +216,20 @@ namespace Reitit
             {
                 return s != null ? (s.GetCoordinatesSynchronouslyOrNone() != null ? Visibility.Visible : Visibility.Collapsed) : Visibility.Collapsed;
             }) { }
+    }
+
+    public class ReittiCoordinateToGeopointConverter : LambdaConverter<ReittiCoordinate, Geopoint, object>
+    {
+        public ReittiCoordinateToGeopointConverter()
+            : base(
+            (s, p, language) =>
+            {
+                return s;
+            },
+            (s, p, language) =>
+            {
+                return (ReittiCoordinate)s;
+            })
+        { }
     }
 }

@@ -14,29 +14,44 @@ namespace Reitit
         public async Task SetText(string text)
         {
             Text = text;
-            await ((App)Application.Current).IndicatorManager.UpdateIndicator();
+            await App.Current.IndicatorManager.UpdateIndicator();
         }
         public double? Value { get; private set; }
         public async Task SetValue(double? value)
         {
             Value = value;
-            await ((App)Application.Current).IndicatorManager.UpdateIndicator();
+            await App.Current.IndicatorManager.UpdateIndicator();
         }
+
+        public bool Active { get; private set; }
 
         public TrayStatus(string text = "", double? value = null)
         {
             Text = text;
             Value = value;
+            Active = false;
         }
 
         public async Task Push()
         {
-            await ((App)Application.Current).IndicatorManager.PushStatus(this);
+            if (!Active)
+            {
+                Active = true;
+                await App.Current.IndicatorManager.PushStatus(this);
+            }
+            else
+            {
+                await App.Current.IndicatorManager.SurfaceStatus(this);
+            }
         }
 
         public async Task Remove()
         {
-            await ((App)Application.Current).IndicatorManager.RemoveStatus(this);
+            if (Active)
+            {
+                await App.Current.IndicatorManager.RemoveStatus(this);
+                Active = false;
+            }
         }
     }
 }

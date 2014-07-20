@@ -13,10 +13,11 @@
 
     <Page.Resources>
         <PowerEase x:Key="Ease" EasingMode="EaseOut" Power="2"/>
+        <BackEase x:Key="BouncyEase" EasingMode="EaseOut" Amplitude="0.4"/>
     </Page.Resources>
-    
+
     <Grid>
-    	<VisualStateManager.VisualStateGroups>
+        <VisualStateManager.VisualStateGroups>
             <VisualStateGroup x:Name="ContentStates">
                 <VisualState x:Name="ContentMinimized">
                     <Storyboard>
@@ -26,6 +27,15 @@
                                          Storyboard.TargetName="ContentTranslation"
                                          Duration="0:0:0.2"
                                          EasingFunction="{StaticResource Ease}"/>
+                        <PopInThemeAnimation FromHorizontalOffset="20"
+                                             Storyboard.TargetName="MaximizerDots"
+                                             BeginTime="0:0:0.10"/>
+                        <DoubleAnimation To="0"
+                                         Storyboard.TargetName="MeButtonTranslation"
+                                         Storyboard.TargetProperty="Y"
+                                         BeginTime="0:0:0.15"
+                                         Duration="0:0:0.3"
+                                         EasingFunction="{StaticResource BouncyEase}"/>
                     </Storyboard>
                 </VisualState>
                 <VisualState x:Name="ContentMaximized">
@@ -35,16 +45,52 @@
                                          Storyboard.TargetName="ContentTranslation"
                                          Duration="0:0:0.2"
                                          EasingFunction="{StaticResource Ease}"/>
+                        <PopOutThemeAnimation Storyboard.TargetName="MaximizerDots"/>
+                        <DoubleAnimation To="40"
+                                         Storyboard.TargetName="MeButtonTranslation"
+                                         Storyboard.TargetProperty="Y"
+                                         Duration="0:0:0.3"
+                                         EasingFunction="{StaticResource BouncyEase}"/>
                     </Storyboard>
                 </VisualState>
             </VisualStateGroup>
-    	</VisualStateManager.VisualStateGroups>
-        <local:ReititMap x:Name="Map" DataContext="{Binding Map}"/>
-        <Rectangle HorizontalAlignment="Stretch"
-                   VerticalAlignment="Stretch"
-                   Fill="Transparent"
-                   IsHitTestVisible="{Binding ContentMaximized}"
-                   Tapped="MinimizerRectangle_Tapped"/>
+        </VisualStateManager.VisualStateGroups>
+        <local:ReititMap x:Name="Map"
+                         Touched="MapTouched"
+                         Center="{Binding MapCenter, Mode=TwoWay}"
+                         ZoomLevel="{Binding MapZoomLevel, Mode=TwoWay}"
+                         Autofocus="{Binding ContentMaximized}"/>
+        <Grid VerticalAlignment="Bottom">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Rectangle HorizontalAlignment="Stretch"
+                       Height="40"
+                       Fill="Transparent"
+                       Visibility="{Binding ContentMaximized, Converter={StaticResource NegVisibilityConverter}}"
+                       Tapped="MaximizerRectangle_Tapped"/>
+            <StackPanel Orientation="Horizontal"
+                        Margin="20,0,20,0">
+                <Button x:Name="MeButton"
+                        Style="{StaticResource RoundButtonStyle}"
+                        Foreground="Black"
+                        BorderBrush="Black"
+                        Background="#A6FFFFFF">
+                    <Button.RenderTransform>
+                        <TranslateTransform x:Name="MeButtonTranslation"/>
+                    </Button.RenderTransform>
+                    <i:Interaction.Behaviors>
+                        <core:EventTriggerBehavior EventName="Click">
+                            <core:InvokeCommandAction Command="{Binding ShowMyLocationExplicit}"/>
+                        </core:EventTriggerBehavior>
+                    </i:Interaction.Behaviors>
+                    <SymbolIcon Symbol="Target"/>
+                </Button>
+            </StackPanel>
+            <Border Grid.Row="1"
+                    Height="{Binding ContentMinimizedHeight}"/>
+        </Grid>
         <Grid VerticalAlignment="Bottom">
             <Grid.RenderTransform>
                 <TranslateTransform x:Name="ContentTranslation"/>
@@ -53,12 +99,22 @@
                    Navigated="ContentFrame_Navigated"
                    Navigating="ContentFrame_Navigating"
                    VerticalContentAlignment="Bottom"/>
+            <SymbolIcon x:Name="MaximizerDots"
+                        Symbol="More"
+                        VerticalAlignment="Top"
+                        HorizontalAlignment="Right"
+                        Margin="0,0,18,0"/>
             <Rectangle HorizontalAlignment="Stretch"
-                   VerticalAlignment="Stretch"
-                   Fill="Transparent"
-                   Margin="0,-20,0,0"
-                   IsHitTestVisible="{Binding ContentMaximized, Converter={StaticResource NegationConverter}}"
-                   Tapped="MaximizerRectangle_Tapped"/>
+                       VerticalAlignment="Stretch"
+                       Fill="Transparent"
+                       Visibility="{Binding ContentMaximized, Converter={StaticResource NegVisibilityConverter}}"
+                       Tapped="MaximizerRectangle_Tapped"/>
         </Grid>
     </Grid>
+
+    <local:PageBase.MapItems>
+        <local:MyLocationPushpin local:ReititMap.PushpinCoordinate="{Binding MyLocation}"
+                                 local:ReititMap.ZLayer="1"
+                                 Visibility="{Binding MyLocation, Converter={StaticResource NullToVisibilityConverter}}"/>
+    </local:PageBase.MapItems>
 </local:PageBase>
