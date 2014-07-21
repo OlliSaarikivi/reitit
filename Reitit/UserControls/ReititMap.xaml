@@ -19,11 +19,11 @@
     <Grid x:Name="LayoutRoot">
         <maps:MapControl Name="Map"
                          MapServiceToken="0P_qoDX1pOS_G_mb4IYWqA"
-                         PedestrianFeaturesVisible="True"
                          LandmarksVisible="True"
                          MapTapped="Map_MapTapped"
                          Center="{Binding Center, ElementName=ThisControl, Converter={StaticResource ReittiCoordinateToGeopointConverter}, Mode=TwoWay}"
-                         ZoomLevel="{Binding ZoomLevel, ElementName=ThisControl, Mode=TwoWay, Converter={StaticResource CoerceZoomLevelConverter}}">
+                         ZoomLevel="{Binding ZoomLevel, ElementName=ThisControl, Mode=TwoWay, Converter={StaticResource CoerceZoomLevelConverter}}"
+                         HeadingChanged="Map_HeadingChanged">
             <maps:MapControl.Children>
                 <maps:MapItemsControl x:Name="PageLayerItemsControl"/>
             </maps:MapControl.Children>

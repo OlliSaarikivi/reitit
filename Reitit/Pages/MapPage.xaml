@@ -13,7 +13,6 @@
 
     <Page.Resources>
         <PowerEase x:Key="Ease" EasingMode="EaseOut" Power="2"/>
-        <BackEase x:Key="BouncyEase" EasingMode="EaseOut" Amplitude="0.4"/>
     </Page.Resources>
 
     <Grid>
@@ -56,10 +55,18 @@
             </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
         <local:ReititMap x:Name="Map"
-                         Touched="MapTouched"
                          Center="{Binding MapCenter, Mode=TwoWay}"
                          ZoomLevel="{Binding MapZoomLevel, Mode=TwoWay}"
-                         Autofocus="{Binding ContentMaximized}"/>
+                         Autofocus="{Binding ContentMaximized}"
+                         ReititTapped="Map_ReititTapped"/>
+        <Rectangle HorizontalAlignment="Stretch"
+                   VerticalAlignment="Stretch"
+                   Fill="Transparent"
+                   Opacity="{Binding ContentMaximized, Converter={StaticResource OpaqueIfTrueConverter}}"
+                   PointerPressed="Minimizer_PointerPressed"/>
+        <Canvas HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <Rectangle x:Name="MenuPositioner" Width="0" Height="0" Opacity="0"/>
+        </Canvas>
         <Grid VerticalAlignment="Bottom">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -82,7 +89,7 @@
                     </Button.RenderTransform>
                     <i:Interaction.Behaviors>
                         <core:EventTriggerBehavior EventName="Click">
-                            <core:InvokeCommandAction Command="{Binding ShowMyLocationExplicit}"/>
+                            <core:InvokeCommandAction Command="{Binding ShowMyLocationExplicitCommand}"/>
                         </core:EventTriggerBehavior>
                     </i:Interaction.Behaviors>
                     <SymbolIcon Symbol="Target"/>
@@ -115,6 +122,7 @@
     <local:PageBase.MapItems>
         <local:MyLocationPushpin local:ReititMap.PushpinCoordinate="{Binding MyLocation}"
                                  local:ReititMap.ZLayer="1"
+                                 local:ReititMap.InAutofocus="{Binding ShowMyLocationImplicit}"
                                  Visibility="{Binding MyLocation, Converter={StaticResource NullToVisibilityConverter}}"/>
     </local:PageBase.MapItems>
 </local:PageBase>

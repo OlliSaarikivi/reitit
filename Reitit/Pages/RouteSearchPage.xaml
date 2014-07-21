@@ -8,8 +8,15 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
-    MapHeight="100"
+    MapHeight="140"
     ShowMyLocationImplicit="{Binding ShowMyLocation}">
+    
+    <Page.Resources>
+        <MenuFlyout x:Key="MapFlyout" x:Name="MapFlyout">
+            <MenuFlyoutItem x:Uid="MapFlyoutFromItem" Click="MapFlyoutFromItem_Click"/>
+            <MenuFlyoutItem x:Uid="MapFlyoutToItem" Click="MapFlyoutToItem_Click"/>
+        </MenuFlyout>
+    </Page.Resources>
 
     <!--LayoutRoot is the root grid where all page content is placed-->
     <Grid x:Name="LayoutRoot" Background="{StaticResource PhoneBackgroundBrush}">
@@ -18,7 +25,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <local:LogoTitle Grid.Row="0" x:Uid="RouteSearchTitle" Margin="20,15,20,25"/>
+        <local:LogoTitle Grid.Row="0" x:Uid="RouteSearchTitle" Margin="20,15,20,20"/>
 
         <ScrollViewer Grid.Row="1" Name="ContentScroll" Margin="20,0,0,60">
             <StackPanel Margin="0,0,20,40">
@@ -35,14 +42,7 @@
                             VerticalAlignment="Center"
                             Style="{StaticResource RoundButtonStyle}"
                             Margin="0,-5,0,-5">
-                        <Viewbox Width="20" Height="20">
-                            <Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Name="Document" Width="30" Height="30">
-                                <Rectangle Fill="{ThemeResource AppBarItemForegroundThemeBrush}" x:Name="Rectangle" Width="4.35" Height="23.2" Canvas.Left="4.35001" Canvas.Top="6.52502" Stretch="Fill"/>
-                                <Path Fill="{ThemeResource AppBarItemForegroundThemeBrush}" x:Name="Path" Width="13.05" Height="13.775" Canvas.Left="0" Canvas.Top="0" Stretch="Fill" Data="F1 M 8.70001,9.42499L 13.05,13.775L 13.05,7.97498L 6.525,0L 0,7.97498L 0,13.775L 4.35,9.42499L 8.70001,9.42499 Z "/>
-                                <Rectangle Fill="{ThemeResource AppBarItemForegroundThemeBrush}" x:Name="Rectangle_0" Width="4.35" Height="23.2" Canvas.Left="20.3" Canvas.Top="0.724976" Stretch="Fill"/>
-                                <Path Fill="{ThemeResource AppBarItemForegroundThemeBrush}" x:Name="Path_1" Width="13.05" Height="13.775" Canvas.Left="15.95" Canvas.Top="16.675" Stretch="Fill" Data="F1 M 20.3,21.025L 15.95,16.675L 15.95,22.475L 22.475,30.45L 29,22.475L 29,16.675L 24.65,21.025L 20.3,21.025 Z "/>
-                            </Canvas>
-                        </Viewbox>
+                        <SymbolIcon Symbol="Sort"/>
                     </Button>
                 </Grid>
                 <local:LocationPicker Value="{Binding To, Mode=TwoWay}"/>
@@ -90,14 +90,14 @@
                     <CheckBox IsChecked="{Binding UseBus, Mode=TwoWay}" Grid.Column="0" Style="{StaticResource CompactCheckBoxStyle}">
                         <local:ModeIcon Type="bus"/>
                     </CheckBox>
-                    <CheckBox IsChecked="{Binding UseMetro, Mode=TwoWay}" Grid.Column="2" Style="{StaticResource CompactCheckBoxStyle}">
+                    <CheckBox IsChecked="{Binding UseTrain, Mode=TwoWay}" Grid.Column="2" Style="{StaticResource CompactCheckBoxStyle}">
+                        <local:ModeIcon Type="train"/>
+                    </CheckBox>
+                    <CheckBox IsChecked="{Binding UseMetro, Mode=TwoWay}" Grid.Column="4" Style="{StaticResource CompactCheckBoxStyle}">
                         <local:ModeIcon Type="metro"/>
                     </CheckBox>
-                    <CheckBox IsChecked="{Binding UseTram, Mode=TwoWay}" Grid.Column="4" Style="{StaticResource CompactCheckBoxStyle}">
+                    <CheckBox IsChecked="{Binding UseTram, Mode=TwoWay}" Grid.Column="6" Style="{StaticResource CompactCheckBoxStyle}">
                         <local:ModeIcon Type="tram"/>
-                    </CheckBox>
-                    <CheckBox IsChecked="{Binding UseTrain, Mode=TwoWay}" Grid.Column="6" Style="{StaticResource CompactCheckBoxStyle}">
-                        <local:ModeIcon Type="train"/>
                     </CheckBox>
                 </Grid>
 
@@ -147,7 +147,7 @@
     <local:PageBase.MapItems>
         <local:LabelPushpin local:ReititMap.PushpinCoordinate="{Binding From, Converter={StaticResource PickerLocationToCoordinateConverter}}"
                             Visibility="{Binding From, Converter={StaticResource PickerLocationToVisibilityConverter}}"
-                            Background="#FF00A000"/>
+                            Background="{StaticResource StartBrush}"/>
         <local:ToPushpin local:ReititMap.PushpinCoordinate="{Binding To, Converter={StaticResource PickerLocationToCoordinateConverter}}"
                          Visibility="{Binding To, Converter={StaticResource PickerLocationToVisibilityConverter}}"/>
     </local:PageBase.MapItems>

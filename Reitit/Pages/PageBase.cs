@@ -13,6 +13,7 @@ using Windows.UI;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Controls.Maps;
 using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
@@ -27,6 +28,29 @@ namespace Reitit
         public NavigationHelper NavigationHelper { get; private set; }
 
         public ObservableCollection<object> MapItems { get; private set; }
+
+        public ObservableCollection<MapElement> MapElements { get; private set; }
+
+        public object MapElementsSource
+        {
+            get { return (object)GetValue(MapElementsSourceProperty); }
+            set { SetValue(MapElementsSourceProperty, value); }
+        }
+        public static readonly DependencyProperty MapElementsSourceProperty =
+            DependencyProperty.Register("MapElementsSource", typeof(object), typeof(PageBase), new PropertyMetadata(null, MapElementsSourceChanged));
+        private static void MapElementsSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var page = d as PageBase;
+            if (page != null)
+            {
+                page.MapElements.Clear();
+                var newItems = e.NewValue as IEnumerable<MapElement>;
+                if (newItems != null)
+                {
+                    page.MapElements.AddRange(newItems);
+                }
+            }
+        }
 
         protected object NavigationParameter { get; private set; }
 
@@ -49,11 +73,13 @@ namespace Reitit
             MapItems = new ObservableCollection<object>();
             MapItems.CollectionChanged += MapItems_CollectionChanged;
             DataContextChanged += MapContentPage_DataContextChanged;
+
+            MapElements = new ObservableCollection<MapElement>();
         }
 
-        void MapContentPage_DataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
+        void MapItems_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            foreach (var item in MapItems)
+            foreach (var item in e.NewItems)
             {
                 var element = item as FrameworkElement;
                 if (element != null)
@@ -63,9 +89,9 @@ namespace Reitit
             }
         }
 
-        void MapItems_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        void MapContentPage_DataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
         {
-            foreach (var item in e.NewItems)
+            foreach (var item in MapItems)
             {
                 var element = item as FrameworkElement;
                 if (element != null)

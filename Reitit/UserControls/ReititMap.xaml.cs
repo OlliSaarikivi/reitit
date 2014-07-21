@@ -23,12 +23,21 @@ namespace Reitit
 {
     public class MapItemComparer : IComparer<DependencyObject>
     {
-        public static readonly MapItemComparer Instance = new MapItemComparer();
+        public Point CoordinateToAngledPoint(ReittiCoordinate coordinate)
+        {
+            var angle = ((-Map.Heading + 90) / 360) * Math.PI * 2;
+            var xo = coordinate.Longitude - Utils.HelsinkiCoordinate.Longitude;
+            var yo = coordinate.Latitude - Utils.HelsinkiCoordinate.Latitude;
+            var x = xo * Math.Cos(angle) - yo * Math.Sin(angle);
+            var y = xo * Math.Sin(angle) + yo * Math.Cos(angle);
+            return new Point(x, y);
+        }
 
-        private MapItemComparer() { }
+        public MapControl Map { get; set; }
 
         public int Compare(DependencyObject x, DependencyObject y)
         {
+
             var xCoordinate = ReititMap.GetPushpinCoordinate(x);
             double xLatitude = xCoordinate != null ? xCoordinate.Latitude : 0;
             var yCoordinate = ReititMap.GetPushpinCoordinate(y);
@@ -150,18 +159,20 @@ namespace Reitit
 
         public double BottomObscuredHeight { get; set; }
 
-        public event Action Touched;
+        public event Action<ReittiCoordinate, Point> ReititTapped;
 
-        Dictionary<ObservableCollection<object>, MapItemsRegistration> _registrations = new Dictionary<ObservableCollection<object>, MapItemsRegistration>();
-        ObservableCollection<UIElement> _pageMapItems;
-        List<Canvas> _mapCanvases;
+        MapItemComparer _itemComparer;
+        Dictionary<ObservableCollection<object>, MapItemsRegistration> _itemRegistrations = new Dictionary<ObservableCollection<object>, MapItemsRegistration>();
+        ObservableCollection<UIElement> _pageMapItems = new ObservableCollection<UIElement>();
+        List<Canvas> _mapCanvases = new List<Canvas>();
+
+        Dictionary<ObservableCollection<MapElement>, MapElementsRegistration> _elementRegistrations = new Dictionary<ObservableCollection<MapElement>, MapElementsRegistration>();
 
         public ReititMap()
         {
             this.InitializeComponent();
-            _pageMapItems = new ObservableCollection<UIElement>();
+            _itemComparer = new MapItemComparer { Map = Map };
             PageLayerItemsControl.ItemsSource = _pageMapItems;
-            _mapCanvases = new List<Canvas>();
             CoerceZoomLevelConverter.MaxZoomLevel = Map.MaxZoomLevel;
             CoerceZoomLevelConverter.MinZoomLevel = Map.MinZoomLevel;
         }
@@ -169,71 +180,30 @@ namespace Reitit
         public void UpdateMapTransform(double contentHeight)
         {
             var screenHeight = Window.Current.Bounds.Height;
-            Map.TransformOrigin = new Point(0.5, 1 - (double)(screenHeight + contentHeight) / (2 * screenHeight));
+            var point = new Point(0.5, 1 - (double)(screenHeight + contentHeight) / (2 * screenHeight));
+            if (point.Y < 0.001)
+            {
+                point.Y = 0.001;
+            }
+            Map.TransformOrigin = point;
             //await Map.TrySetViewAsync(Map.Center.Jiggle(), Map.ZoomLevel, Map.Heading, Map.DesiredPitch, MapAnimationKind.None);
         }
 
-        public void RegisterItems(ObservableCollection<object> items)
+        public async Task SetView(ReittiCoordinate center, double zoomLevel)
         {
-            if (!_registrations.ContainsKey(items))
+            await Map.TrySetViewAsync(center, zoomLevel, 0, null, MapAnimationKind.Bow);
+        }
+
+        private void Map_MapTapped(MapControl sender, MapInputEventArgs args)
+        {
+            var handler = ReititTapped;
+            if (handler != null)
             {
-                _registrations.Add(items, new MapItemsRegistration(this, items));
+                handler((ReittiCoordinate)args.Location, args.Position);
             }
         }
 
-        public void UnregisterItems(ObservableCollection<object> items)
-        {
-            MapItemsRegistration registration;
-            if (_registrations.TryGetValue(items, out registration))
-            {
-                _registrations.Remove(items);
-                registration.Dispose();
-            }
-        }
-
-        void AddElement(UIElement element)
-        {
-            InsertElement(element);
-            _pushpinCoordinateChangedActions.Add(element, () =>
-            {
-                _pageMapItems.Remove(element);
-                InsertElement(element);
-                EnsureOrder();
-                if (Autofocus && ReititMap.GetInAutofocus(element))
-                {
-                    AutofocusView();
-                }
-            });
-            _inAutofocusChangedActions.Add(element, () =>
-            {
-                if (Autofocus)
-                {
-                    AutofocusView();
-                }
-            });
-            EnsureOrder();
-            if (Autofocus && ReititMap.GetInAutofocus(element))
-            {
-                AutofocusView();
-            }
-        }
-
-        void InsertElement(UIElement element)
-        {
-            int insertIndex = _pageMapItems.UpperBound(element, MapItemComparer.Instance);
-            _pageMapItems.Insert(insertIndex, element);
-        }
-
-        void RemoveElement(UIElement element)
-        {
-            _pushpinCoordinateChangedActions.Remove(element);
-            _pageMapItems.Remove(element);
-            EnsureOrder();
-            if (Autofocus && ReititMap.GetInAutofocus(element))
-            {
-                AutofocusView();
-            }
-        }
+        #region Ordering
 
         bool _autofocusDirty = false;
         void AutofocusView()
@@ -281,7 +251,7 @@ namespace Reitit
                 {
                     Latitude = minLatitude - latitudeMargin,
                     Longitude = maxLongitude + longitudeMargin
-                }), new Thickness(20, 50, 20, BottomObscuredHeight + 12), MapAnimationKind.Linear);
+                }), new Thickness(40, 50, 40, BottomObscuredHeight + 12), MapAnimationKind.Linear);
             }
         }
 
@@ -297,6 +267,12 @@ namespace Reitit
                     _zIndicesDirty = false;
                 }
             });
+        }
+
+        private void Map_HeadingChanged(MapControl sender, object args)
+        {
+            _pageMapItems.BubbleSort(_itemComparer);
+            EnsureOrder();
         }
 
         void SetZIndices()
@@ -321,6 +297,143 @@ namespace Reitit
                         }
                     }
                 }
+            }
+            SetFlippings();
+        }
+
+        void SetFlippings()
+        {
+            var flipped = new bool[_pageMapItems.Count];
+            var someFlipped = true;
+            Func<Point, int, int, bool> tryFlip = (iPoint, i, j) =>
+            {
+                var otherFlippable = _pageMapItems[j] is IFlippable;
+                var jCoord = ReititMap.GetPushpinCoordinate(_pageMapItems[j]);
+                if (jCoord == null || !otherFlippable)
+                {
+                    return true;
+                }
+                var jPoint = _itemComparer.CoordinateToAngledPoint(jCoord);
+                if (iPoint.Y - jPoint.Y > Utils.PushpinAvoidDiff)
+                {
+                    return true;
+                }
+                double longDiff = jPoint.X - iPoint.X;
+                if (longDiff > 0)
+                {
+                    if (longDiff < Utils.PushpinAvoidDiff || (flipped[j] && longDiff * 2 < Utils.PushpinAvoidDiff))
+                    {
+                        flipped[i] = true;
+                        someFlipped = true;
+                        return true;
+                    }
+                }
+                return false;
+            };
+            while (someFlipped)
+            {
+                someFlipped = false;
+                for (int i = 0; i < _pageMapItems.Count; ++i)
+                {
+                    var flippable = _pageMapItems[i] is IFlippable;
+                    var iCoord = ReititMap.GetPushpinCoordinate(_pageMapItems[i]);
+                    if (flippable && iCoord != null && !flipped[i])
+                    {
+                        var iPoint = _itemComparer.CoordinateToAngledPoint(iCoord);
+                        for (int j = i - 1; j >= 0; --j)
+                        {
+                            if (tryFlip(iPoint, i, j))
+                            {
+                                break;
+                            }
+                        }
+                        if (flipped[i])
+                        {
+                            break;
+                        }
+                        for (int j = i + 1; j < _pageMapItems.Count; ++j)
+                        {
+                            if (tryFlip(iPoint, i, j))
+                            {
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            for (int i = 0; i < _pageMapItems.Count; ++i)
+            {
+                var flippable = _pageMapItems[i] as IFlippable;
+                if (flippable != null)
+                {
+                    flippable.SetFlip(flipped[i] ? FlipPreference.West : FlipPreference.East);
+                }
+            }
+        }
+
+        #endregion
+
+        #region Items
+
+        public void RegisterItems(ObservableCollection<object> items)
+        {
+            if (!_itemRegistrations.ContainsKey(items))
+            {
+                _itemRegistrations.Add(items, new MapItemsRegistration(this, items));
+            }
+        }
+
+        public void UnregisterItems(ObservableCollection<object> items)
+        {
+            MapItemsRegistration registration;
+            if (_itemRegistrations.TryGetValue(items, out registration))
+            {
+                _itemRegistrations.Remove(items);
+                registration.Dispose();
+            }
+        }
+
+        void AddElement(UIElement element)
+        {
+            InsertElement(element);
+            _pushpinCoordinateChangedActions.Add(element, () =>
+            {
+                _pageMapItems.Remove(element);
+                InsertElement(element);
+                EnsureOrder();
+                if (Autofocus && ReititMap.GetInAutofocus(element))
+                {
+                    AutofocusView();
+                }
+            });
+            _inAutofocusChangedActions.Add(element, () =>
+            {
+                if (Autofocus)
+                {
+                    AutofocusView();
+                }
+            });
+            EnsureOrder();
+            if (Autofocus && ReititMap.GetInAutofocus(element))
+            {
+                AutofocusView();
+            }
+        }
+
+        void InsertElement(UIElement element)
+        {
+            int insertIndex = _pageMapItems.UpperBound(element, _itemComparer);
+            _pageMapItems.Insert(insertIndex, element);
+        }
+
+        void RemoveElement(UIElement element)
+        {
+            _pushpinCoordinateChangedActions.Remove(element);
+            _pageMapItems.Remove(element);
+            EnsureOrder();
+            if (Autofocus && ReititMap.GetInAutofocus(element))
+            {
+                AutofocusView();
             }
         }
 
@@ -508,14 +621,120 @@ namespace Reitit
                 }
             }
         }
+        #endregion
 
-        private void Map_MapTapped(MapControl sender, MapInputEventArgs args)
+        #region Elements
+
+        public void RegisterMapElements(ObservableCollection<MapElement> elements)
         {
-            var handler = Touched;
-            if (handler != null)
+            if (!_elementRegistrations.ContainsKey(elements))
             {
-                handler();
+                _elementRegistrations.Add(elements, new MapElementsRegistration(this, elements));
             }
         }
+
+        public void UnregisterMapElements(ObservableCollection<MapElement> elements)
+        {
+            MapElementsRegistration registration;
+            if (_elementRegistrations.TryGetValue(elements, out registration))
+            {
+                _elementRegistrations.Remove(elements);
+                registration.Dispose();
+            }
+        }
+
+        void AddMapElement(MapElement element)
+        {
+            Map.MapElements.Add(element);
+        }
+
+        void RemoveMapElement(MapElement element)
+        {
+            Map.MapElements.Remove(element);
+        }
+
+        class MapElementsRegistration : IDisposable
+        {
+            ReititMap _map;
+            ObservableCollection<MapElement> _elements;
+            Dictionary<MapElement, bool> _currentElements = new Dictionary<MapElement, bool>();
+
+            public MapElementsRegistration(ReititMap map, ObservableCollection<MapElement> elements)
+            {
+                _map = map;
+                _elements = elements;
+                foreach (var element in _elements)
+                {
+                    AddElement(element);
+                }
+                _elements.CollectionChanged += ElementsChanged;
+            }
+
+            void ElementsChanged(object sender, NotifyCollectionChangedEventArgs e)
+            {
+                switch (e.Action)
+                {
+                    case NotifyCollectionChangedAction.Add:
+                        foreach (var item in e.NewItems)
+                        {
+                            AddElement((MapElement)item);
+                        }
+                        break;
+                    case NotifyCollectionChangedAction.Remove:
+                        foreach (var item in e.OldItems)
+                        {
+                            RemoveElement((MapElement)item);
+                        }
+                        break;
+                    case NotifyCollectionChangedAction.Replace:
+                        foreach (var item in e.OldItems)
+                        {
+                            RemoveElement((MapElement)item);
+                        }
+                        foreach (var item in e.NewItems)
+                        {
+                            AddElement((MapElement)item);
+                        }
+                        break;
+                    case NotifyCollectionChangedAction.Reset:
+                        foreach (var item in _currentElements.Keys.ToList())
+                        {
+                            RemoveElement(item);
+                        }
+                        foreach (var item in _elements)
+                        {
+                            AddElement(item);
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            void AddElement(object item)
+            {
+                var element = item as MapElement;
+                _map.AddMapElement(element);
+                _currentElements.Add(element, true);
+            }
+
+            void RemoveElement(object item)
+            {
+                var element = item as MapElement;
+                _map.RemoveMapElement(element);
+                _currentElements.Remove(element);
+            }
+
+            public void Dispose()
+            {
+                _elements.CollectionChanged -= ElementsChanged;
+                foreach (var item in _elements)
+                {
+                    RemoveElement(item);
+                }
+            }
+        }
+
+        #endregion
     }
 }

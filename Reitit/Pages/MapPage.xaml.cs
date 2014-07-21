@@ -1,4 +1,5 @@
 ﻿using GalaSoft.MvvmLight.Messaging;
+using Reitit.API;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -39,6 +40,11 @@ namespace Reitit
         public bool Show { get; set; }
     }
 
+    public class MapSetViewMessage
+    {
+        public ReittiCoordinate Center { get; set; }
+    }
+
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
@@ -52,18 +58,18 @@ namespace Reitit
             ContentFrame.SizeChanged += ContentFrame_SizeChanged;
         }
 
-        protected override async void OnBackPressed(BackPressedEventArgs e)
+        protected override void OnBackPressed(BackPressedEventArgs e)
         {
             if (DataContext != null && !_vm.ContentMaximized)
             {
-                await Maximize();
+                Maximize();
                 e.Handled = true;
             }
         }
 
-        async void ContentFrame_SizeChanged(object sender, SizeChangedEventArgs e)
+        void ContentFrame_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            await UpdateMapTransform();
+            UpdateMapTransform();
         }
 
         void ContentFrame_Navigated(object sender, NavigationEventArgs e)
@@ -84,7 +90,9 @@ namespace Reitit
                 };
                 page.SetBinding(MapContentPage.IsMaximizedProperty, binding);
                 Map.RegisterItems(page.MapItems);
+                Map.RegisterMapElements(page.MapElements);
                 Messenger.Default.Register<ShowMyLocationImplicitMessage>(this, page, ShowMyLocationImplicitChanged);
+                Messenger.Default.Send(new ShowMyLocationImplicitMessage { Show = page.ShowMyLocationImplicit }, page);
             }
             else
             {
@@ -96,7 +104,7 @@ namespace Reitit
         {
             if (message.Show)
             {
-                await _vm.ShowMyLocationImplicit();
+                await _vm.SetShowMyLocationImplicit();
             }
             else
             {
@@ -110,6 +118,8 @@ namespace Reitit
             if (page != null)
             {
                 Map.UnregisterItems(page.MapItems);
+                Map.UnregisterMapElements(page.MapElements);
+                Messenger.Default.Unregister<ShowMyLocationImplicitMessage>(this, page);
             }
         }
 
@@ -133,11 +143,8 @@ namespace Reitit
         {
             base.OnNavigatedTo(e);
 
-            var statusBar = StatusBar.GetForCurrentView();
-            statusBar.BackgroundOpacity = 0.5;
-            statusBar.BackgroundColor = ((SolidColorBrush)App.Current.Resources["PhoneBackgroundBrush"]).Color;
-
             Messenger.Default.Register<MapPageNavigateMessage>(this, HandleMapPageNavigateMessage);
+            Messenger.Default.Register<MapSetViewMessage>(this, HandleSetViewMessgage);
 
             if (_vm.ContentMaximized)
             {
@@ -149,22 +156,24 @@ namespace Reitit
             }
 
             Map.RegisterItems(MapItems);
+            Map.RegisterMapElements(MapElements);
         }
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)
         {
             base.OnNavigatedFrom(e);
 
-            var statusBar = StatusBar.GetForCurrentView();
-            statusBar.ForegroundColor = (Color)App.Current.Resources["PhoneForegroundColor"];
+            _vm.ClearShowMyLocation();
 
             var page = ContentFrame.Content as MapContentPage;
             if (page != null)
             {
                 Map.UnregisterItems(page.MapItems);
+                Map.UnregisterMapElements(page.MapElements);
             }
 
             Map.UnregisterItems(MapItems);
+            Map.UnregisterMapElements(MapElements);
         }
 
         private void HandleMapPageNavigateMessage(MapPageNavigateMessage message)
@@ -172,34 +181,50 @@ namespace Reitit
             ContentFrame.Navigate(message.ContentPage, message.Parameter);
         }
 
-        private async Task Minimize(bool animate = true)
+        private async void HandleSetViewMessgage(MapSetViewMessage message)
+        {
+            await Map.SetView(message.Center, Utils.ShowLocationZoom);
+        }
+
+        private void Minimize(bool animate = true)
         {
             VisualStateManager.GoToState(this, "ContentMinimized", animate);
             _vm.ContentMaximized = false;
-            await UpdateMapTransform();
+            UpdateMapTransform();
         }
 
-        private async void MaximizerRectangle_Tapped(object sender, TappedRoutedEventArgs e)
+        private void MaximizerRectangle_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            await Maximize();
+            Maximize();
         }
 
-        private async Task Maximize(bool animate = true)
+        private void Maximize(bool animate = true)
         {
             VisualStateManager.GoToState(this, "ContentMaximized", animate);
             _vm.ContentMaximized = true;
-            await UpdateMapTransform();
+            UpdateMapTransform();
         }
 
-        private async Task UpdateMapTransform()
+        private void UpdateMapTransform()
         {
-            var vm = (MapPageVM)DataContext;
-            Map.UpdateMapTransform(ContentFrame.ActualHeight - (vm.ContentMaximized ? 0 : vm.ContentMinimizedOffset));
+            Map.UpdateMapTransform(ContentFrame.ActualHeight - (_vm.ContentMaximized ? 0 : _vm.ContentMinimizedOffset));
         }
 
-        private async void MapTouched()
+        private void Minimizer_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
-            await Minimize();
+            _vm.StopTracking();
+            Minimize();
+        }
+
+        private void Map_ReititTapped(ReittiCoordinate coordinate, Point position)
+        {
+            var page = ContentFrame.Content as MapContentPage;
+            if (page != null)
+            {
+                Canvas.SetLeft(MenuPositioner, position.X);
+                Canvas.SetTop(MenuPositioner, position.Y);
+                page.OnMapTapped(MenuPositioner, coordinate);
+            }
         }
     }
 }

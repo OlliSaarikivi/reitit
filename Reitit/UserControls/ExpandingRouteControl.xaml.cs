@@ -1,4 +1,5 @@
-﻿using Reitit.API;
+﻿using GalaSoft.MvvmLight.Command;
+using Reitit.API;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -16,9 +17,10 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
+using Windows.UI.Xaml.Shapes;
 using Shapes = Windows.UI.Xaml.Shapes;
 
-// The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
+// The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234235
 
 namespace Reitit
 {
@@ -47,7 +49,10 @@ namespace Reitit
         private static void OnRouteChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var control = (ExpandingRouteControl)d;
-            control.Populate(e.NewValue as CompoundRoute);
+            if (e.NewValue != null)
+            {
+                control.Populate(e.NewValue as CompoundRoute);
+            }
         }
 
         public string From
@@ -66,6 +71,14 @@ namespace Reitit
         public static readonly DependencyProperty ToProperty =
             DependencyProperty.Register("To", typeof(string), typeof(ExpandingRouteControl), new PropertyMetadata(null));
 
+        public Leg FocusedLeg
+        {
+            get { return (Leg)GetValue(FocusedLegProperty); }
+            set { SetValue(FocusedLegProperty, value); }
+        }
+        public static readonly DependencyProperty FocusedLegProperty =
+            DependencyProperty.Register("FocusedLeg", typeof(Leg), typeof(ExpandingRouteControl), new PropertyMetadata(null));
+
         public bool Expanded
         {
             get { return (bool)GetValue(ExpandedProperty); }
@@ -81,19 +94,20 @@ namespace Reitit
                 if (control.ExpandedRoot.Children.Count == 0)
                 {
                     control.PopulateExpanded(control.Route);
-                    control.Root.Children.Add(control.ExpandedRoot);
+                    control.Root.Children.Add(control.ExpandedNoTilt);
                 }
-                control.ExpandedRoot.Visibility = Visibility.Visible;
+                control.ExpandedNoTilt.Visibility = Visibility.Visible;
                 //control.MinimizedRoot.Opacity = 0;
                 control._minimizeBoard.Stop();
                 control._maximizeBoard.Begin();
             }
             else
             {
-                control.ExpandedRoot.Visibility = Visibility.Collapsed;
+                control.ExpandedNoTilt.Visibility = Visibility.Collapsed;
                 //control.MinimizedRoot.Opacity = 1;
                 control._maximizeBoard.Stop();
                 control._minimizeBoard.Begin();
+                control.FocusedLeg = null;
             }
         }
 
@@ -102,6 +116,7 @@ namespace Reitit
         private Grid Root { get; set; }
         private Grid MinimizedRoot { get; set; }
         private Grid ExpandedRoot { get; set; }
+        private ListViewItem ExpandedNoTilt { get; set; }
         private ScaleTransform ExpandTransform { get; set; }
 
         static ExpandingRouteControl()
@@ -118,9 +133,10 @@ namespace Reitit
             _smallFontSize = (double)App.Current.Resources["TextStyleSmallFontSize"];
             _tinyFontSize = 16;
 
-            var textBlock = new TextBlock { FontSize = _largeFontSize };
-            textBlock.Text = Utils.CurrentCultureUsesTwentyFourHourClock() ? "88:88" : "12:88 AM";
-            _timeStringMaxLength = textBlock.ActualWidth;
+            var textBlock = new TextBlock { FontSize = _extraLargeFontSize };
+            textBlock.Text = Utils.CurrentCultureUsesTwentyFourHourClock() ? "88:88" : "10:88 AM";
+            textBlock.Measure(new Size(1000, 1000));
+            _timeStringMaxLength = textBlock.DesiredSize.Width;
         }
 
         public ExpandingRouteControl()
@@ -132,25 +148,28 @@ namespace Reitit
         {
             Root = new Grid();
             Content = Root;
-            var rootTilt = new ListViewItem();
-            Root.Children.Add(rootTilt);
             MinimizedRoot = new Grid();
             PopulateMinimzied(route);
             ExpandedRoot = new Grid();
-            rootTilt.Content = MinimizedRoot;
+            ExpandedNoTilt = new ListViewItem
+            {
+                Content = ExpandedRoot,
+                Style = (Style)App.Current.Resources["NonTiltListViewItemStyle"],
+            };
+            Root.Children.Add(MinimizedRoot);
             ExpandTransform = new ScaleTransform();
-            ExpandedRoot.RenderTransform = ExpandTransform;
+            ExpandedNoTilt.RenderTransform = ExpandTransform;
             ExpandTransform.CenterY = 0;
             if (Expanded)
             {
                 MinimizedRoot.Opacity = 0;
                 PopulateExpanded(route);
-                Root.Children.Add(ExpandedRoot);
+                Root.Children.Add(ExpandedNoTilt);
             }
             else
             {
-                ExpandedRoot.Opacity = 0;
-                ExpandedRoot.Visibility = Visibility.Collapsed;
+                ExpandedNoTilt.Opacity = 0;
+                ExpandedNoTilt.Visibility = Visibility.Collapsed;
                 ExpandTransform.ScaleY = 0.51;
             }
 
@@ -165,7 +184,7 @@ namespace Reitit
             fadeExpIn.Duration = dur;
             fadeExpIn.EasingFunction = fadeEase;
             Storyboard.SetTargetProperty(fadeExpIn, "Opacity");
-            Storyboard.SetTarget(fadeExpIn, ExpandedRoot);
+            Storyboard.SetTarget(fadeExpIn, ExpandedNoTilt);
             var maximizeExp = new DoubleAnimation();
             maximizeExp.To = 1;
             maximizeExp.Duration = dur;
@@ -174,7 +193,7 @@ namespace Reitit
             Storyboard.SetTarget(maximizeExp, ExpandTransform);
             var fadeMinOut = new DoubleAnimation();
             fadeMinOut.To = 0;
-            fadeMinOut.Duration = dur;
+            fadeMinOut.Duration = TimeSpan.Zero;
             fadeMinOut.EasingFunction = fadeEase;
             Storyboard.SetTargetProperty(fadeMinOut, "Opacity");
             Storyboard.SetTarget(fadeMinOut, MinimizedRoot);
@@ -201,7 +220,7 @@ namespace Reitit
             fadeExpOut.Duration = dur;
             fadeExpOut.EasingFunction = fadeEase;
             Storyboard.SetTargetProperty(fadeExpOut, "Opacity");
-            Storyboard.SetTarget(fadeExpOut, ExpandedRoot);
+            Storyboard.SetTarget(fadeExpOut, ExpandedNoTilt);
 
             _minimizeBoard = new Storyboard();
             _minimizeBoard.Children.Add(fadeMinIn);
@@ -211,9 +230,19 @@ namespace Reitit
 
         private void PopulateMinimzied(CompoundRoute route)
         {
-            MinimizedRoot.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(_timeStringMaxLength + 12) });
-            MinimizedRoot.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-            MinimizedRoot.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(_timeStringMaxLength + 12) });
+            MinimizedRoot.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+            MinimizedRoot.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+
+            //MinimizedRoot.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(_timeStringMaxLength + 10) });
+            //MinimizedRoot.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+
+            var detailsRoot = new Grid();
+            Grid.SetRow(detailsRoot, 0);
+            MinimizedRoot.Children.Add(detailsRoot);
+
+            detailsRoot.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(_timeStringMaxLength + 10) });
+            detailsRoot.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+            detailsRoot.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(_timeStringMaxLength + 10) });
 
             { // Add departure time
                 var loc = route.Routes[0].Legs[0].Locs[0];
@@ -223,11 +252,43 @@ namespace Reitit
                     Text = timeString,
                     VerticalAlignment = VerticalAlignment.Top,
                     HorizontalAlignment = HorizontalAlignment.Left,
-                    FontSize = _largeFontSize,
+                    FontSize = _extraLargeFontSize,
                 };
                 Grid.SetColumn(textBlock, 0);
-                MinimizedRoot.Children.Add(textBlock);
+                detailsRoot.Children.Add(textBlock);
             }
+
+            // Add route details
+            string description = "";
+            if (route.Routes[0].Legs[0].Type == "walk")
+            {
+                var firstRoute = route.Routes[0];
+                for (int i = 1; i < firstRoute.Legs.Length; ++i)
+                {
+                    if (firstRoute.Legs[i].Type != "walk")
+                    {
+                        var atStop = firstRoute.Legs[i].Locs[0].DepTime;
+                        description += string.Format(Utils.GetString("RouteDetailsOnStopFormat"), Utils.ToShortTimeString(atStop)) + " ";
+                        break;
+                    }
+                }
+            }
+            TimeSpan totalTime = TimeSpan.Zero;
+            foreach (var subRoute in route.Routes)
+            {
+                totalTime += subRoute.Duration;
+            }
+            description += string.Format(Utils.GetString("RouteDetailsShortTimeFormat"), Utils.FormatTimeSpan(totalTime));
+            var detailsBlock = new TextBlock
+            {
+                Text = description,
+                VerticalAlignment = VerticalAlignment.Center,
+                FontSize = _normalFontSize,
+                Foreground = _subtleBrush,
+                TextWrapping = TextWrapping.WrapWholeWords,
+            };
+            Grid.SetColumn(detailsBlock, 1);
+            detailsRoot.Children.Add(detailsBlock);
 
             { // Add arrival time
                 var loc = route.Routes.LastElement().Legs.LastElement().Locs.LastElement();
@@ -237,18 +298,19 @@ namespace Reitit
                     Text = timeString,
                     VerticalAlignment = VerticalAlignment.Top,
                     HorizontalAlignment = HorizontalAlignment.Right,
-                    FontSize = _largeFontSize,
+                    FontSize = _extraLargeFontSize,
                 };
                 Grid.SetColumn(textBlock, 2);
-                MinimizedRoot.Children.Add(textBlock);
+                detailsRoot.Children.Add(textBlock);
             }
 
+            // Add vehicle icons etc.
             var vehiclesStack = new VariableSizedWrapGrid
             {
                 Orientation = Orientation.Horizontal,
-                MaximumRowsOrColumns = 7
+                Margin = new Thickness(-5, 0, -5, 0),
             };
-            Grid.SetColumn(vehiclesStack, 1);
+            Grid.SetRow(vehiclesStack, 1);
             MinimizedRoot.Children.Add(vehiclesStack);
             foreach (var partRoute in route.Routes)
             {
@@ -259,7 +321,7 @@ namespace Reitit
                     var detailsStack = new StackPanel
                     {
                         VerticalAlignment = VerticalAlignment.Center,
-                        Margin = new Thickness(6, 6, 6, 6)
+                        Margin = new Thickness(5, 5, 5, 5)
                     };
                     vehiclesStack.Children.Add(detailsStack);
 
@@ -273,9 +335,9 @@ namespace Reitit
                     var textContainer = new Border
                     {
                         BorderThickness = new Thickness(0),
-                        Margin = new Thickness(0, 0, -12, 0),
+                        Margin = new Thickness(0, 0, -10, 0),
                         HorizontalAlignment = HorizontalAlignment.Left,
-                        MinWidth = 35, // The size of the icon above
+                        MinWidth = 40, // The size of the icon above
                     };
                     detailsStack.Children.Add(textContainer);
 
@@ -306,7 +368,89 @@ namespace Reitit
             ExpandedRoot.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
             ExpandedRoot.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
 
-            int row = -1;
+            ExpandedRoot.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+
+            var topMiscGrid = new Grid();
+            topMiscGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+            topMiscGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+            topMiscGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+            topMiscGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+            topMiscGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+            Grid.SetColumnSpan(topMiscGrid, 3);
+            ExpandedRoot.Children.Add(topMiscGrid);
+
+            // Add route details
+            double totalLength = 0, walkLength = 0;
+            TimeSpan totalTime = TimeSpan.Zero;
+            TimeSpan totalWaitTime = TimeSpan.Zero;
+            foreach (var subRoute in route.Routes)
+            {
+                totalLength += subRoute.Length;
+                totalTime += subRoute.Duration;
+                foreach (var leg in subRoute.Legs)
+                {
+                    if (leg.Type == "walk")
+                    {
+                        walkLength += leg.Length;
+                    }
+                    var legWait = leg.Locs[0].DepTime - leg.Locs[0].ArrTime;
+                    if (legWait > TimeSpan.FromMinutes(1))
+                        totalWaitTime += legWait;
+                }
+            }
+            string timeDescription;
+            if (totalWaitTime.TotalMinutes < 1)
+            {
+                timeDescription = string.Format(Utils.GetString("RouteDetailsTimesFormatNoWaiting"), Utils.FormatTimeSpan(totalTime));
+            }
+            else
+            {
+                timeDescription = string.Format(Utils.GetString("RouteDetailsTimesFormatWithWaiting"), Utils.FormatTimeSpan(totalTime), Utils.FormatTimeSpan(totalWaitTime));
+            }
+            var timeBlock = new TextBlock
+            {
+                Text = timeDescription,
+                VerticalAlignment = VerticalAlignment.Bottom,
+                FontSize = _normalFontSize,
+                Foreground = _subtleBrush,
+                TextWrapping = TextWrapping.WrapWholeWords,
+            };
+            Grid.SetRow(timeBlock, 1);
+            topMiscGrid.Children.Add(timeBlock);
+            string distanceDescription = string.Format(Utils.GetString("RouteDetailsDistancesFormat"), Utils.FormatDistance(totalLength), Utils.FormatDistance(walkLength));
+            var distanceBlock = new TextBlock
+            {
+                Text = distanceDescription,
+                VerticalAlignment = VerticalAlignment.Bottom,
+                FontSize = _normalFontSize,
+                Foreground = _subtleBrush,
+                TextWrapping = TextWrapping.WrapWholeWords,
+            };
+            Grid.SetRow(distanceBlock, 2);
+            topMiscGrid.Children.Add(distanceBlock);
+
+            // Add focus all button
+            var focusAll = new FocusAllButton
+            {
+                Margin = new Thickness(10, -7.5, 0, -7.5),
+                VerticalAlignment = VerticalAlignment.Bottom,
+            };
+            focusAll.FocusAll += () =>
+            {
+                FocusedLeg = null;
+            };
+            var binding = new Binding
+            {
+                Path = new PropertyPath("FocusedLeg"),
+                Converter = new NotNullConverter(),
+                Source = this,
+            };
+            focusAll.SetBinding(FocusAllButton.ShownProperty, binding);
+            Grid.SetRowSpan(focusAll, 3);
+            Grid.SetColumn(focusAll, 1);
+            topMiscGrid.Children.Add(focusAll);
+
+            int row = 0;
             int locationNum = 1;
             foreach (var partRoute in route.Routes)
             {
@@ -321,7 +465,7 @@ namespace Reitit
                         ExpandedRoot.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
                         row += 1;
 
-                        var waitTime = AddTime(leg, row, start: true, arrival: true, endpoint: isFirst || isLast);
+                        var waitTime = AddTime(leg, row, start: true, arrival: true, endpoint: isFirst);
 
                         showWait = waitTime > TimeSpan.FromMinutes(1);
 
@@ -346,7 +490,7 @@ namespace Reitit
                             ExpandedRoot.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
                             row += 1;
 
-                            AddTime(leg, row, start: true, arrival: false, endpoint: isFirst || isLast);
+                            AddTime(leg, row, start: true, arrival: false);
 
                             AddDotLine(leg, false, false, true, true, row);
                         }
@@ -366,7 +510,7 @@ namespace Reitit
                         ExpandedRoot.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
                         row += 1;
 
-                        AddTime(leg, row, start: false, arrival: true, endpoint: isFirst || isLast);
+                        AddTime(leg, row, start: false, arrival: true, endpoint: true);
 
                         AddDotLine(leg, false, isLast, true, false, row);
                         locationNum += 1;
@@ -381,7 +525,7 @@ namespace Reitit
             }
         }
 
-        private TimeSpan AddTime(Leg leg, int row, bool start, bool arrival, bool endpoint)
+        private TimeSpan AddTime(Leg leg, int row, bool start, bool arrival, bool endpoint = false)
         {
             TimeSpan waitDuration = TimeSpan.Zero;
             string timeString = null;
@@ -419,8 +563,8 @@ namespace Reitit
                 Text = timeString,
                 VerticalAlignment = VerticalAlignment.Center,
                 HorizontalAlignment = endpoint ? HorizontalAlignment.Left : HorizontalAlignment.Right,
-                FontSize = endpoint ? _largeFontSize : _normalFontSize,
-                Margin = new Thickness(0, 12, 12, 12)
+                FontSize = endpoint ? _extraLargeFontSize : _largeFontSize,
+                Margin = new Thickness(0, 10, 0, 10)
             };
             Grid.SetRow(timeTextBlock, row);
             Grid.SetColumn(timeTextBlock, 0);
@@ -431,7 +575,11 @@ namespace Reitit
 
         private void AddDotLine(Leg leg, bool isFirst, bool isLast, bool isLocation, bool isSmall, int row)
         {
-            var canvas = new Canvas { Width = 40 };
+            var canvas = new Canvas
+            {
+                Width = 40,
+                Background = _transparent,
+            };
 
             Grid.SetRow(canvas, row);
             Grid.SetColumn(canvas, 1);
@@ -480,6 +628,23 @@ namespace Reitit
                     canvas.Children.Add(circle);
                 }
             }
+
+            var legFocuser = new Rectangle
+            {
+                Fill = _transparent,
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                VerticalAlignment = VerticalAlignment.Stretch,
+            };
+
+            Grid.SetRow(legFocuser, row);
+            Grid.SetColumn(legFocuser, 0);
+            Grid.SetColumnSpan(legFocuser, 2);
+            ExpandedRoot.Children.Add(legFocuser);
+
+            legFocuser.Tapped += (s, e) =>
+            {
+                FocusedLeg = leg;
+            };
         }
 
         private void AddLocationDetails(LegLocation location, bool isFirst, bool isLast, int row)
@@ -487,14 +652,15 @@ namespace Reitit
             var locationName = new TextBlock
             {
                 VerticalAlignment = VerticalAlignment.Center,
-                TextWrapping = TextWrapping.Wrap,
-                FontSize = _largeFontSize,
-                Margin = new Thickness(12, 6, 0, 6)
+                TextWrapping = TextWrapping.WrapWholeWords,
+                FontSize = _extraLargeFontSize,
+                Margin = new Thickness(0, 10, 0, 10)
             };
 
             if (isFirst || isLast)
             {
-                var binding = new Binding {
+                var binding = new Binding
+                {
                     Path = new PropertyPath(isFirst ? "From" : "To"),
                     Converter = new DefaultIfNullConverter(),
                     ConverterParameter = location.Name,
@@ -531,8 +697,8 @@ namespace Reitit
                 Text = waitText,
                 VerticalAlignment = VerticalAlignment.Center,
                 FontSize = _normalFontSize,
-                Margin = new Thickness(12, 0, 0, 0),
-                TextWrapping = TextWrapping.Wrap,
+                Margin = new Thickness(0, 0, 0, 5),
+                TextWrapping = TextWrapping.WrapWholeWords,
             };
             Grid.SetRow(lengthTextBlock, row);
             Grid.SetColumn(lengthTextBlock, 2);
@@ -547,7 +713,7 @@ namespace Reitit
                 {
                     Orientation = Orientation.Horizontal,
                     VerticalAlignment = VerticalAlignment.Center,
-                    Margin = new Thickness(12, 6, 0, 6)
+                    Margin = new Thickness(0, 5, 0, 5)
                 };
 
                 var iconControl = new ModeIcon
@@ -559,11 +725,11 @@ namespace Reitit
                 var lengthTextBlock = new TextBlock
                 {
                     Text = Utils.FormatDistance(leg.Length),
-                    VerticalAlignment = VerticalAlignment.Bottom,
+                    VerticalAlignment = VerticalAlignment.Center,
                     FontSize = _normalFontSize,
                     Foreground = _subtleBrush,
-                    Margin = new Thickness(12, 0, 0, 0),
-                    TextWrapping = TextWrapping.Wrap,
+                    Margin = new Thickness(10, 0, 0, 0),
+                    TextWrapping = TextWrapping.WrapWholeWords,
                 };
                 detailsStack.Children.Add(lengthTextBlock);
 
@@ -584,7 +750,7 @@ namespace Reitit
                 {
                     Orientation = Orientation.Horizontal,
                     VerticalAlignment = VerticalAlignment.Center,
-                    Margin = new Thickness(12, 6, 0, 6),
+                    Margin = new Thickness(0, 5, 0, 5),
                     Background = _transparent,
                 };
 
@@ -601,7 +767,7 @@ namespace Reitit
                 if (leg.Line != null)
                 {
                     foreground = _accentBrush;
-                    mode = leg.Line.ShortName;
+                    mode = Utils.GetDescriptiveShortLineName(leg.Line);
                 }
                 else
                 {
@@ -613,18 +779,17 @@ namespace Reitit
                 {
                     Text = mode,
                     Foreground = foreground,
-                    VerticalAlignment = VerticalAlignment.Bottom,
+                    VerticalAlignment = VerticalAlignment.Center,
                     FontSize = _largeFontSize,
-                    Margin = new Thickness(12, 0, 0, 0),
-                    TextWrapping = TextWrapping.Wrap,
+                    Margin = new Thickness(10, 0, 0, 0),
+                    TextWrapping = TextWrapping.WrapWholeWords,
                 };
                 detailsStack.Children.Add(modeTextBlock);
 
                 var stopsStack = new StackPanel
                 {
-                    Margin = new Thickness(0, 0, 0, 6)
+                    Margin = new Thickness(0, 5, 0, 5)
                 };
-
                 for (int i = 1; i < leg.Locs.Length - 1; i += 1)
                 {
                     var loc = leg.Locs[i];
@@ -635,10 +800,14 @@ namespace Reitit
                     {
                         Text = stopText,
                         FontSize = _normalFontSize,
-                        Margin = new Thickness(12, 0, 0, 0),
-                        TextWrapping = TextWrapping.Wrap,
+                        Margin = new Thickness(0, 0, 0, 0),
+                        TextWrapping = TextWrapping.WrapWholeWords,
                     };
                     stopsStack.Children.Add(stopTextBlock);
+                }
+                if (stopsStack.Children.Count == 0)
+                {
+                    stopsStack.Visibility = Visibility.Collapsed;
                 }
 
                 if (hasTime)

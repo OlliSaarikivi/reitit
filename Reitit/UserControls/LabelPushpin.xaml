@@ -12,16 +12,29 @@
     d:DesignWidth="400"
     maps:MapControl.NormalizedAnchorPoint="0,1">
 
-    <Grid>
-        <Polygon Points="0,0 18,0 18,26 0,44" Fill="{Binding Background, ElementName=ThisControl}"/>
-        <Border Height="26"
+    <UserControl.Resources>
+        <ScaleTransform x:Key="FlipTransform" x:Name="FlipTransform"/>
+    </UserControl.Resources>
+
+    <Grid RenderTransform="{StaticResource FlipTransform}">
+        <Polygon x:Name="ArrowPart"
+                 Points="0,0 18,0 18,26 0,44"
+                 Fill="{Binding Background, ElementName=ThisControl}"
+                 HorizontalAlignment="Left"/>
+        <Border x:Name="LabelPart"
+                Height="26"
                 VerticalAlignment="Top"
+                HorizontalAlignment="Left"
                 Background="{Binding Background, ElementName=ThisControl}">
             <TextBlock Foreground="White"
                        Text="{Binding Label, ElementName=ThisControl}"
                        FontSize="18"
+                       FontWeight="SemiBold"
                        Margin="3,0,3,0"
-                       VerticalAlignment="Center"/>
+                       TextLineBounds="Tight"
+                       VerticalAlignment="Center"
+                       RenderTransformOrigin="0.5,0.5"
+                       RenderTransform="{StaticResource FlipTransform}"/>
         </Border>
     </Grid>
 </UserControl>

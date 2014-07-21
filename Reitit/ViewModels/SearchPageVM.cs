@@ -75,8 +75,9 @@ namespace Reitit
             if (Type == SearchResultType.Line)
             {
                 string typeId = Line.Lines[0].TransportTypeId.ToString();
-                IconBackground = Utils.GetStrokeForType(typeId);
-                Icon = Utils.GetIconForType(typeId);
+                //IconBackground = Utils.GetStrokeForType(typeId);
+                //Icon = Utils.GetIconForType(typeId);
+                throw new NotImplementedException();
             }
         }
     }

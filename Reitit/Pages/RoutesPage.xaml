@@ -10,8 +10,9 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
-    MapHeight="100">
-
+    MapHeight="140"
+    MapElementsSource="{Binding SelectedRoute.Route, Converter={StaticResource RouteToElementsConverter}}">
+    
     <Page.Resources>
         <ExponentialEase x:Key="Ease" Exponent="3"/>
         <Storyboard x:Name="ScrollBoard">
@@ -21,8 +22,7 @@
                              Storyboard.TargetName="ScrollCorrectionTransform"
                              Storyboard.TargetProperty="Y"
                              EasingFunction="{StaticResource Ease}"
-                             Duration="0:0:0.15"
-                             EnableDependentAnimation="True"/>
+                             Duration="0:0:0.15"/>
         </Storyboard>
     </Page.Resources>
 
@@ -33,7 +33,7 @@
             <!--<RowDefinition Height="72"/>-->
         </Grid.RowDefinitions>
 
-        <TextBlock Foreground="{StaticResource PhoneAccentBrush}" Grid.Row="0" Margin="24,17,0,28" Style="{ThemeResource TitleTextBlockStyle}">
+        <TextBlock Foreground="{StaticResource PhoneAccentBrush}" Grid.Row="0" Margin="20,15,0,20" Style="{ThemeResource TitleTextBlockStyle}">
             <TextBlock.Inlines>
                 <Run Text="{Binding Loader.From, Converter={StaticResource ToUpperCaseConverter}}"/>
                 <Run x:Uid="RoutesTitleSeparator"/>
@@ -47,7 +47,7 @@
                     <StackPanel.RenderTransform>
                         <TranslateTransform x:Name="ScrollCorrectionTransform"/>
                     </StackPanel.RenderTransform>
-                    <StackPanel Margin="0,6,0,6" Visibility="{Binding Loader.InitialStatus, Converter={StaticResource NegNullToVisibilityConverter}}">
+                    <StackPanel Margin="0,0,0,5" Visibility="{Binding Loader.InitialStatus, Converter={StaticResource NegNullToVisibilityConverter}}">
                         <Button Style="{StaticResource RoundButtonStyle}"
                             HorizontalAlignment="Center">
                             <SymbolIcon Symbol="Refresh">
@@ -63,7 +63,7 @@
                         </Button>
                         <ProgressBar IsIndeterminate="{Binding Loader.PreviousStatus, Converter={StaticResource NotNullConverter}}"
 						Opacity="{Binding Loader.PreviousStatus, Converter={StaticResource TransparentIfNullConverter}}"
-						Margin="0,-6,0,6"/>
+						Margin="0,5,0,-5"/>
                     </StackPanel>
                     <ListView Name="RoutesListView"
                               HorizontalContentAlignment="Stretch"
@@ -71,23 +71,34 @@
                               SelectedItem="{Binding SelectedRoute, Mode=TwoWay}"
                               ScrollViewer.VerticalScrollBarVisibility="Disabled"
                               ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                        <ListView.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel/>
+                            </ItemsPanelTemplate>
+                        </ListView.ItemsPanel>
                         <ListView.ItemContainerTransitions>
                             <TransitionCollection/>
                         </ListView.ItemContainerTransitions>
+                        <ListView.ItemContainerStyle>
+                            <Style TargetType="ListViewItem">
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                            </Style>
+                        </ListView.ItemContainerStyle>
                         <ListView.ItemTemplate>
                             <DataTemplate>
-                                <local:ExpandingRouteControl Margin="24,0,24,0"
-                                                      HorizontalAlignment="Stretch"
-						                              From="{Binding DataContext.Loader.From, ElementName=ThisPage}"
-						                              To="{Binding DataContext.Loader.To, ElementName=ThisPage}"
-						                              Route="{Binding Route}" Expanded="{Binding Selected}"/>
+                                <local:ExpandingRouteControl Margin="20,2.5,20,2.5"
+						                                     From="{Binding DataContext.Loader.From, ElementName=ThisPage}"
+						                                     To="{Binding DataContext.Loader.To, ElementName=ThisPage}"
+						                                     Route="{Binding Route}"
+                                                             Expanded="{Binding Selected}"
+                                                             FocusedLeg="{Binding FocusedLeg, Mode=TwoWay}"/>
                             </DataTemplate>
                         </ListView.ItemTemplate>
                     </ListView>
-                    <StackPanel Name="Footer" Margin="0,6,0,6" Visibility="{Binding Loader.InitialStatus, Converter={StaticResource NegNullToVisibilityConverter}}">
+                    <StackPanel Name="Footer" Margin="0,5,0,0" Visibility="{Binding Loader.InitialStatus, Converter={StaticResource NegNullToVisibilityConverter}}">
                         <ProgressBar IsIndeterminate="{Binding Loader.NextStatus, Converter={StaticResource NotNullConverter}}"
 						Opacity="{Binding Loader.NextStatus, Converter={StaticResource TransparentIfNullConverter}}"
-						Margin="0,-6,0,6"/>
+						Margin="0,-5,0,5"/>
                         <Button Style="{StaticResource RoundButtonStyle}"
                             HorizontalAlignment="Center">
                             <SymbolIcon Symbol="Refresh">
@@ -107,9 +118,44 @@
         </ScrollViewer>
 
         <StackPanel Grid.Row="1" Visibility="{Binding Loader.InitialStatus, Converter={StaticResource NullToVisibilityConverter}}" VerticalAlignment="Center">
-            <ProgressBar IsIndeterminate="True" Margin="-12,0,-12,0"/>
-            <TextBlock x:Name="Status" TextWrapping="Wrap" Style="{ThemeResource BaseTextBlockStyle}" TextAlignment="Center" Margin="6"
-				Text="{Binding Loader.InitialStatus}"/>
+            <ProgressBar IsIndeterminate="True"/>
+            <TextBlock x:Name="Status" TextWrapping="Wrap" Style="{ThemeResource BaseTextBlockStyle}" TextAlignment="Center"
+				Text="{Binding Loader.InitialStatus}" Margin="5,5,5,50"/>
         </StackPanel>
     </Grid>
+
+    <local:PageBase.MapItems>
+        <local:LabelPushpin local:ReititMap.PushpinCoordinate="{Binding Loader.CachedFrom}"
+                            Visibility="{Binding Loader.CachedFrom, Converter={StaticResource NullToVisibilityConverter}}"
+                            Opacity="{Binding SelectedRoute, Converter={StaticResource OpaqueIfNullConverter}}"
+                            Background="{StaticResource StartBrush}"
+                            local:ReititMap.InAutofocus="{Binding SelectedRoute, Converter={StaticResource IsNullConverter}}"/>
+        
+        <local:ToPushpin local:ReititMap.PushpinCoordinate="{Binding Loader.CachedTo}"
+                         Visibility="{Binding Loader.CachedTo, Converter={StaticResource NullToVisibilityConverter}}"
+                         local:ReititMap.InAutofocus="{Binding SelectedRoute, Converter={StaticResource IsNullConverter}}"/>
+        
+        <local:ReititMapItemsControl ItemsSource="{Binding SelectedRoute.Pushpins}">
+            <local:ReititMapItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <local:LabelPushpin Label="{Binding Label}"
+                                        Background="{Binding Background}"
+                                        local:ReititMap.PushpinCoordinate="{Binding Coordinate}"
+                                        local:ReititMap.InAutofocus="False"/>
+                </DataTemplate>
+            </local:ReititMapItemsControl.ItemTemplate>
+        </local:ReititMapItemsControl>
+        
+        <local:ReititMapItemsControl ItemsSource="{Binding SelectedRoute.FocusPushpins}">
+            <local:ReititMapItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Rectangle Width="0" 
+                               Height="0" 
+                               Opacity="0"
+                               local:ReititMap.PushpinCoordinate="{Binding Coordinate}"
+                               local:ReititMap.InAutofocus="{Binding InAutofocus}"/>
+                </DataTemplate>
+            </local:ReititMapItemsControl.ItemTemplate>
+        </local:ReititMapItemsControl>
+    </local:PageBase.MapItems>
 </local:MapContentPage>

@@ -10,6 +10,7 @@ using Windows.ApplicationModel.Activation;
 using Windows.Devices.Geolocation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -80,7 +81,6 @@ namespace Reitit
                 this.DebugSettings.EnableFrameRateCounter = true;
             }
 #endif
-
             await _initTask;
 
             Frame rootFrame = Window.Current.Content as Frame;
@@ -144,6 +144,8 @@ namespace Reitit
 
             // Ensure the current window is active.
             Window.Current.Activate();
+
+            OnAllActivations();
         }
 
         /// <summary>
@@ -169,6 +171,26 @@ namespace Reitit
             await SuspensionManager.SaveAsync();
             await Settings.Save(Settings);
             deferral.Complete();
+        }
+
+        private void OnAllActivations()
+        {
+            Frame rootFrame = Window.Current.Content as Frame;
+            rootFrame.Navigated += (s, e) =>
+            {
+                if (e.SourcePageType == typeof(MapPage))
+                {
+                    var statusBar = StatusBar.GetForCurrentView();
+                    statusBar.BackgroundOpacity = 0.6666666;
+                    statusBar.BackgroundColor = (Color)App.Current.Resources["PhoneBackgroundColor"];
+                }
+                else
+                {
+
+                    var statusBar = StatusBar.GetForCurrentView();
+                    statusBar.BackgroundOpacity = 0;
+                }
+            };
         }
     }
 }

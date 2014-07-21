@@ -1,4 +1,5 @@
 ﻿using GalaSoft.MvvmLight.Command;
+using GalaSoft.MvvmLight.Messaging;
 using Reitit.API;
 using System;
 using System.Collections.Generic;
@@ -13,10 +14,16 @@ namespace Reitit
     [DataContract]
     class MapPageVM : ViewModelBase
     {
+        static MapPageVM() { SuspensionManager.KnownTypes.Add(typeof(MapPageVM)); }
+
         public bool ContentMaximized
         {
             get { return _contentMaximized; }
-            set { Set(() => ContentMaximized, ref _contentMaximized, value); }
+            set
+            {
+                Set(() => ContentMaximized, ref _contentMaximized, value);
+                StopTracking();
+            }
         }
         [DataMember]
         public bool _contentMaximized = true;
@@ -40,7 +47,19 @@ namespace Reitit
         public ReittiCoordinate MyLocation
         {
             get { return _myLocation; }
-            set { Set(() => MyLocation, ref _myLocation, value); }
+            set
+            {
+                Set(() => MyLocation, ref _myLocation, value);
+
+                if (_myLocation != null && _trackMyLocation)
+                {
+                    Messenger.Default.Send(new MapSetViewMessage { Center = _myLocation, });
+
+                    /* Disable after first time for now because I could not find a way to detect when 
+                     * the user has panned the map vs when I have changed the center myself. */
+                    _trackMyLocation = false;
+                }
+            }
         }
         [DataMember]
         public ReittiCoordinate _myLocation;
@@ -64,41 +83,59 @@ namespace Reitit
         [DataMember]
         public bool _showMyLocationExplicit = false;
 
+        public bool ShowMyLocationImplicit
+        {
+            get { return _showMyLocationImplicit; }
+            set { Set(() => ShowMyLocationImplicit, ref _showMyLocationImplicit, value); }
+        }
         [DataMember]
         public bool _showMyLocationImplicit = false;
+
+        [DataMember]
+        public bool _trackMyLocation = false;
 
         public MapPageVM()
         {
         }
 
-        public RelayCommand ShowMyLocationExplicit
+        public RelayCommand ShowMyLocationExplicitCommand
         {
             get
             {
                 return new RelayCommand(() =>
                 {
                     _showMyLocationExplicit = true;
+                    _trackMyLocation = true;
                     StartGPS();
+                    if (MyLocation != null)
+                    {
+                        Messenger.Default.Send(new MapSetViewMessage { Center = _myLocation, });
+                    }
                 });
             }
+        }
+
+        public void StopTracking()
+        {
+            _trackMyLocation = false;
         }
 
         public async Task ClearShowMyLocation()
         {
             _showMyLocationExplicit = false;
-            _showMyLocationImplicit = false;
+            ShowMyLocationImplicit = false;
             await UpdateGPS();
         }
 
-        public async Task ShowMyLocationImplicit()
+        public async Task SetShowMyLocationImplicit()
         {
-            _showMyLocationImplicit = true;
+            ShowMyLocationImplicit = true;
             await UpdateGPS();
         }
 
         public void ClearShowMyLocationImplicit()
         {
-            _showMyLocationImplicit = false;
+            ShowMyLocationImplicit = false;
             Utils.OnCoreDispatcher(async () =>
             {
                 await UpdateGPS();
@@ -110,12 +147,13 @@ namespace Reitit
 
         async Task UpdateGPS()
         {
-            if (_showMyLocationExplicit || _showMyLocationImplicit)
+            if (_showMyLocationExplicit || ShowMyLocationImplicit)
             {
                 StartGPS();
             }
             else
             {
+                StopTracking();
                 await StopGPS();
             }
         }

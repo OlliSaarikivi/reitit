@@ -19,14 +19,19 @@ using Windows.UI.Xaml.Controls.Primitives;
 using GalaSoft.MvvmLight.Command;
 using Windows.Devices.Geolocation;
 using Reitit.API;
+using Windows.Storage.Streams;
+using Windows.Foundation;
+using Windows.UI.Notifications;
+using Windows.Data.Xml.Dom;
 
 namespace Reitit
 {
     static class Utils
     {
         public static readonly double MapEpsilon = 0.0000001;
-        public static readonly double MinZoomedLatitudeDiff = 0.004;
-        public static readonly double MinZoomedLongitudeDiff = 0.01;
+        public static readonly double MinZoomedLatitudeDiff = 0.0025;
+        public static readonly double MinZoomedLongitudeDiff = 0.00666;
+        public static readonly double PushpinAvoidDiff = 0.025;
 
         public static readonly Color FromColor = Color.FromArgb(255, 0, 160, 0);
         public static readonly Color ToColor = Color.FromArgb(255, 160, 15, 0);
@@ -34,6 +39,7 @@ namespace Reitit
         public static readonly ReittiCoordinate HelsinkiCoordinate = new ReittiCoordinate(60.1708, 24.9375);
         public static readonly ReittiCoordinate DefaultViewCoordinate = new ReittiCoordinate(60.188057413324714, 24.890878032892942);
         public static readonly double DefaultViewZoom = 10.00100040435791;
+        public static readonly double ShowLocationZoom = 15;
 
         public static async Task OnCoreDispatcher(DispatchedHandler handler, CoreDispatcherPriority priority = CoreDispatcherPriority.Normal)
         {
@@ -134,70 +140,6 @@ namespace Reitit
                 );
         }
 
-        public static readonly Brush TrainStroke = new SolidColorBrush(Color.FromArgb(255, 233, 0, 26));
-        public static readonly Brush FerryStroke = new SolidColorBrush(Color.FromArgb(255, 90, 197, 216));
-        public static readonly Brush TramStroke = new SolidColorBrush(Color.FromArgb(255, 0, 175, 46));
-        public static readonly Brush MetroStroke = new SolidColorBrush(Color.FromArgb(255, 238, 62, 12));
-        public static readonly Brush BusStroke = new SolidColorBrush(Color.FromArgb(255, 25, 54, 149));
-        public static readonly Brush WalkStroke = new SolidColorBrush(Color.FromArgb(255, 0, 99, 255));
-
-        public static Brush GetStrokeForType(string type)
-        {
-            if (type == "walk")
-            {
-                return WalkStroke;
-            }
-            else if (type == "2")
-            {
-                return TramStroke;
-            }
-            else if (type == "6")
-            {
-                return MetroStroke;
-            }
-            else if (type == "7")
-            {
-                return FerryStroke;
-            }
-            else if (type == "12")
-            {
-                return TrainStroke;
-            }
-            else // Buses and everything else
-            {
-                return BusStroke;
-            }
-        }
-
-        public static ImageSource GetIconForType(string type)
-        {
-            throw new NotImplementedException();
-            //if (type == "walk")
-            //{
-            //    return (ImageSource)new ImageSourceConverter().ConvertFromString("/Assets/Walk.png");
-            //}
-            //else if (type == "2")
-            //{
-            //    return (ImageSource)new ImageSourceConverter().ConvertFromString("/Assets/Tram.png");
-            //}
-            //else if (type == "6")
-            //{
-            //    return (ImageSource)new ImageSourceConverter().ConvertFromString("/Assets/Metro.png");
-            //}
-            //else if (type == "7")
-            //{
-            //    return (ImageSource)new ImageSourceConverter().ConvertFromString("/Assets/Ferry.png");
-            //}
-            //else if (type == "12")
-            //{
-            //    return (ImageSource)new ImageSourceConverter().ConvertFromString("/Assets/Train.png");
-            //}
-            //else // Buses and everything else
-            //{
-            //    return (ImageSource)new ImageSourceConverter().ConvertFromString("/Assets/Bus.png");
-            //}
-        }
-
         public static string FormatDistance(double distance)
         {
             if (distance < 1000)
@@ -219,6 +161,21 @@ namespace Reitit
             else
             {
                 return (distance / 1000).ToString("0.0") + "\u2006km";
+            }
+        }
+
+        public static string FormatTimeSpan(TimeSpan time)
+        {
+            if (time.TotalHours < 1)
+            {
+                return time.ToString("m'\u00A0min'");
+            }
+            else
+            {
+                if (time.Minutes == 0)
+                    return time.ToString("h'\u00A0h'");
+                else
+                    return time.ToString("h'\u00A0h 'm'\u00A0min'");
             }
         }
 
@@ -345,16 +302,99 @@ namespace Reitit
             }
             return results;
         }
-        public static void IterateChildren(this DependencyObject depObj)
-        {
-            if (depObj == null) return;
 
-            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(depObj); i++)
+        public static Brush BrushForType(string type)
+        {
+            string key = "BusBrush";
+            if (type == "walk" || type == "wait")
             {
-                var child = VisualTreeHelper.GetChild(depObj, i);
-                IterateChildren(child);
+                key = "WalkBrush";
             }
-            return;
+            else if (type == "tram" || type == "2")
+            {
+                key = "TramBrush";
+            }
+            else if (type == "metro" || type == "6")
+            {
+                key = "MetroBrush";
+            }
+            else if (type == "ferry" || type == "7")
+            {
+                key = "FerryBrush";
+            }
+            else if (type == "train" || type == "12")
+            {
+                key = "TrainBrush";
+            }
+            return (Brush)App.Current.Resources[key];
+        }
+
+        public static Color ColorForType(string type)
+        {
+            return (BrushForType(type) as SolidColorBrush).Color;
+        }
+
+        public static RandomAccessStreamReference MapIconImageForType(string type)
+        {
+            string elementIconName = "BusStop";
+            if (type == "walk" || type == "wait")
+            {
+                elementIconName = "DefaultStop";
+            }
+            else if (type == "tram" || type == "2")
+            {
+                elementIconName = "TramStop";
+            }
+            else if (type == "metro" || type == "6")
+            {
+                elementIconName = "MetroStop";
+            }
+            else if (type == "ferry" || type == "7")
+            {
+                elementIconName = "FerryStop";
+            }
+            else if (type == "train" || type == "12")
+            {
+                elementIconName = "TrainStop";
+            }
+            return RandomAccessStreamReference.CreateFromUri(new Uri("ms-appx:///Assets/MapElements/" + elementIconName + ".png"));
+        }
+
+        public static string GetDescriptiveShortLineName(Line line)
+        {
+            if (line.Code.StartsWith("13") && line.LineEnd != null)
+            {
+                return line.ShortName + Utils.GetString("MetroDestinationSeparator") + line.LineEnd;
+            }
+            else
+            {
+                return line.ShortName;
+            }
+        }
+
+        public static ReittiBoundingBox GetBoundingBox(IEnumerable<ReittiCoordinate> coordinates)
+        {
+            bool atLeastOne = false;
+            double maxLatitude = double.MinValue, minLatitude = double.MaxValue, maxLongitude = double.MinValue, minLongitude = double.MaxValue;
+            foreach (var c in coordinates)
+            {
+                if (c != null)
+                {
+                    atLeastOne = true;
+                    if (c.Latitude > maxLatitude) maxLatitude = c.Latitude;
+                    if (c.Latitude < minLatitude) minLatitude = c.Latitude;
+                    if (c.Longitude > maxLongitude) maxLongitude = c.Longitude;
+                    if (c.Longitude < minLongitude) minLongitude = c.Longitude;
+                }
+            }
+            return atLeastOne ? new ReittiBoundingBox(minLongitude, maxLatitude, maxLongitude, minLatitude) : null;
+        }
+
+        public static double SquaredDistanceTo(this ReittiCoordinate coordinate, ReittiCoordinate other)
+        {
+            var latDiff = coordinate.Latitude - other.Latitude;
+            var longDiff = coordinate.Longitude - other.Longitude;
+            return latDiff * latDiff + longDiff * longDiff;
         }
     }
 }

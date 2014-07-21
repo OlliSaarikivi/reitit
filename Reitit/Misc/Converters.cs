@@ -118,13 +118,31 @@ namespace Reitit
                 return o != null ? 1 : 0;
             }) { }
     }
-    
+
     public class OpaqueIfNullConverter : LambdaConverter<object, double, object>
     {
         public OpaqueIfNullConverter()
             : base((o, p, language) =>
             {
                 return o == null ? 1 : 0;
+            }) { }
+    }
+
+    public class TransparentIfTrueConverter : LambdaConverter<bool, double, object>
+    {
+        public TransparentIfTrueConverter()
+            : base((o, p, language) =>
+            {
+                return o ? 0 : 1;
+            }) { }
+    }
+
+    public class OpaqueIfTrueConverter : LambdaConverter<bool, double, object>
+    {
+        public OpaqueIfTrueConverter()
+            : base((o, p, language) =>
+            {
+                return o ? 1 : 0;
             }) { }
     }
 
@@ -161,6 +179,15 @@ namespace Reitit
             : base((o, p, language) =>
             {
                 return o != null;
+            }) { }
+    }
+
+    public class IsNullConverter : LambdaConverter<object, bool, object>
+    {
+        public IsNullConverter()
+            : base((o, p, language) =>
+            {
+                return o == null;
             }) { }
     }
 

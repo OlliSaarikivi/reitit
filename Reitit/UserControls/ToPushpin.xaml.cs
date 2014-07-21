@@ -17,11 +17,16 @@ using Windows.UI.Xaml.Navigation;
 
 namespace Reitit
 {
-    public sealed partial class ToPushpin : UserControl
+    public sealed partial class ToPushpin : UserControl, IFlippable
     {
         public ToPushpin()
         {
             this.InitializeComponent();
+        }
+
+        public void SetFlip(FlipPreference preference)
+        {
+            FlipTransform.ScaleX = preference == FlipPreference.West ? -1 : 1;
         }
     }
 }

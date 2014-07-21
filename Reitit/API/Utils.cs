@@ -235,5 +235,22 @@ namespace Reitit.API
             list.Add(newStops);
             return true;
         }
+
+
+        public static void BubbleSort<T>(this ObservableCollection<T> o, IComparer<T> comparer)
+        {
+            for (int i = o.Count - 1; i >= 0; i--)
+            {
+                for (int j = 1; j <= i; j++)
+                {
+                    T o1 = o[j - 1];
+                    T o2 = o[j];
+                    if (comparer.Compare(o1, o2) > 0)
+                    {
+                        o.Move(j - 1, j);
+                    }
+                }
+            }
+        }
     }
 }

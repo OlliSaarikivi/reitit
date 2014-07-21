@@ -91,8 +91,14 @@
                                     <GroupStyle HidesIfEmpty="True">
                                         <GroupStyle.HeaderTemplate>
                                             <DataTemplate>
-                                                <TextBlock Text="{Binding Key}"
-                                                           Style="{ThemeResource GroupHeaderTextBlockStyle}"/>
+                                                <Border BorderBrush="{ThemeResource PhoneAccentBrush}"
+                                                        BorderThickness="{ThemeResource PhoneBorderThickness}"
+                                                        Padding="5,5,5,5"
+                                                        Margin="0,0,0,10">
+                                                    <TextBlock Text="{Binding Key}"
+                                                               Style="{ThemeResource ListViewItemTextBlockStyle}"
+                                                               Foreground="{ThemeResource PhoneAccentBrush}"/>
+                                                </Border>
                                                 <!--Foreground="{Binding Path=DataContext.JumpingEnabled, ElementName=ThisPopup, Converter={StaticResource SelectedBrushConverter}, ConverterParameter={ThemeResource ApplicationSecondaryForegroundThemeBrush}}"-->
                                             </DataTemplate>
                                         </GroupStyle.HeaderTemplate>
@@ -110,9 +116,10 @@
                                 <ListView.ItemTemplate>
                                     <DataTemplate>
                                         <TextBlock Text="{Binding Group.Key}"
-                                                            Style="{ThemeResource ListViewItemTextBlockStyle}"
-                                                            Padding="0,10,0,10"
-                                                            HorizontalAlignment="Stretch"/>
+                                                   Style="{ThemeResource ListViewItemTextBlockStyle}"
+                                                   Padding="0,10,0,10"
+                                                   HorizontalAlignment="Stretch"
+                                                   Foreground="{ThemeResource PhoneAccentBrush}"/>
                                         <!--Foreground="{Binding Path=DataContext.JumpingEnabled, ElementName=ThisPopup, Converter={StaticResource SelectedBrushConverter}, ConverterParameter={ThemeResource ApplicationSecondaryForegroundThemeBrush}}"-->
                                     </DataTemplate>
                                 </ListView.ItemTemplate>
@@ -186,11 +193,12 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <TextBlock HorizontalAlignment="Left"
-                           x:Uid="LocationPickerPlaceholder"
-                           Foreground="{ThemeResource ComboBoxInlinePlaceholderTextForegroundThemeBrush}"
-                           FontWeight="{ThemeResource ComboBoxInlinePlaceholderTextThemeFontWeight}"
-                           Opacity="{Binding Value, ElementName=ThisControl, Converter={StaticResource OpaqueIfNullConverter}}"/>
+
+                <!--<TextBlock HorizontalAlignment="Left"
+                                                       x:Name="Placeholder"
+                                                       x:Uid="LocationPickerPlaceholder"
+                                                       Foreground="{ThemeResource ComboBoxInlinePlaceholderTextForegroundThemeBrush}"
+                                                       FontWeight="{ThemeResource ComboBoxInlinePlaceholderTextThemeFontWeight}"/>-->
                 <TextBlock HorizontalAlignment="Left"
                            Text="{Binding Value, ElementName=ThisControl, Converter={StaticResource LocationPickerConverter}}"
                            FontWeight="Normal"/>

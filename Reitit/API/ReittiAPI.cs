@@ -212,7 +212,7 @@ namespace Reitit.API
             ReittiCoordinate coordinate,
             int? limit = null,
             int? radius = null,
-            IEnumerable<string> resultContains = null,
+            string resultContains = null,
             CancellationToken? cancellationToken = null)
         {
             string addressLang = GetAddressLang();
@@ -245,7 +245,7 @@ namespace Reitit.API
             }
             if (resultContains != null)
             {
-                query.Append("&result_contains=").AppendList(resultContains);
+                query.Append("&result_contains=").Append(resultContains);
             }
 
             var uriBuilder = new UriBuilder(BaseUri);

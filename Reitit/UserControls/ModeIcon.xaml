@@ -7,6 +7,6 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    d:DesignHeight="30"
-    d:DesignWidth="30"
-    Width="30" Height="30"/>
+    d:DesignHeight="40"
+    d:DesignWidth="40"
+    Width="40" Height="40"/>

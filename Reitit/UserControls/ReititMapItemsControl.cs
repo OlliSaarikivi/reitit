@@ -11,7 +11,7 @@ using Windows.UI.Xaml.Controls;
 
 namespace Reitit
 {
-    class ReititMapItemsControl : DependencyObject, INotifyCollectionChanged
+    class ReititMapItemsControl : FrameworkElement, INotifyCollectionChanged
     {
         public object ItemsSource
         {

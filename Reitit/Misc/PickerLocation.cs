@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Windows.Devices.Geolocation;
 using GalaSoft.MvvmLight;
 using System.Runtime.Serialization;
+using Windows.Services.Maps;
 
 namespace Reitit
 {
@@ -40,6 +41,11 @@ namespace Reitit
     [DataContract]
     public class MapLocation : ExtendedObservableObject, IPickerLocation
     {
+        public ReittiCoordinate Coordinate
+        {
+            get { return _coordinate; }
+            set { Set(() => Coordinate, ref _coordinate, value); }
+        }
         [DataMember]
         public ReittiCoordinate _coordinate;
 
@@ -53,14 +59,35 @@ namespace Reitit
 
         public string Detail { get { return null; } }
 
-        public MapLocation(ReittiCoordinate coordinate)
-        {
-            _coordinate = coordinate;
-        }
-        
         public Task<ReittiCoordinate> GetCoordinates()
         {
-            return Task.FromResult(_coordinate);
+            return Task.FromResult(Coordinate);
+        }
+
+        public async Task UpdateNameFromReverseGeocode()
+        {
+            try
+            {
+                var result = await App.Current.ReittiClient.ReverseGeocodeAsync(Coordinate, limit: 1);
+                string nearestName = null;
+                double nearestDistance = double.MaxValue;
+                foreach (var location in result.GetAllLocations())
+                {
+                    double distance = Coordinate.SquaredDistanceTo(location.Coords);
+                    if (distance < nearestDistance)
+                    {
+                        nearestName = location.Name;
+                        nearestDistance = distance;
+                    }
+                }
+                if (nearestName != null)
+                {
+                    Name = nearestName;
+                }
+            }
+            catch (ReittiAPIException e) {
+                return;
+            }
         }
     }
 

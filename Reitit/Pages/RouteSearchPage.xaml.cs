@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Reitit.API;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -22,6 +23,8 @@ namespace Reitit
     /// </summary>
     public sealed partial class RouteSearchPage : MapContentPage
     {
+        private MapLocation _currentMenuLocation;
+
         public RouteSearchPage()
         {
             this.InitializeComponent();
@@ -40,6 +43,26 @@ namespace Reitit
         protected override void OnMaximized()
         {
             CommandBar.Visibility = Visibility.Visible;
+        }
+
+        public override void OnMapTapped(FrameworkElement source, ReittiCoordinate coordinate)
+        {
+            _currentMenuLocation = new MapLocation
+            {
+                Coordinate = coordinate,
+            };
+            _currentMenuLocation.UpdateNameFromReverseGeocode();
+            MapFlyout.ShowAt(source);
+        }
+
+        private void MapFlyoutFromItem_Click(object sender, RoutedEventArgs e)
+        {
+            ((RouteSearchPageVM)DataContext).From = _currentMenuLocation;
+        }
+
+        private void MapFlyoutToItem_Click(object sender, RoutedEventArgs e)
+        {
+            ((RouteSearchPageVM)DataContext).To = _currentMenuLocation;
         }
     }
 }

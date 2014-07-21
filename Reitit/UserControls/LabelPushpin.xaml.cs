@@ -7,6 +7,7 @@ using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Controls.Maps;
 using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
@@ -17,7 +18,7 @@ using Windows.UI.Xaml.Navigation;
 
 namespace Reitit
 {
-    public sealed partial class LabelPushpin : UserControl
+    public sealed partial class LabelPushpin : UserControl, IFlippable
     {
         public string Label
         {
@@ -30,6 +31,11 @@ namespace Reitit
         public LabelPushpin()
         {
             this.InitializeComponent();
+        }
+
+        public void SetFlip(FlipPreference preference)
+        {
+            FlipTransform.ScaleX = preference == FlipPreference.West ? -1 : 1;
         }
     }
 }

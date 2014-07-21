@@ -11,6 +11,27 @@ namespace Reitit.API
 {
 
     [DataContract]
+    public class ReittiBoundingBox
+    {
+        [DataMember]
+        public double East;
+        [DataMember]
+        public double North;
+        [DataMember]
+        public double West;
+        [DataMember]
+        public double South;
+
+        public ReittiBoundingBox(double east, double north, double west, double south)
+        {
+            East = east;
+            North = north;
+            West = west;
+            South = south;
+        }
+    }
+
+    [DataContract]
     public class ReittiCoordinate
     {
         public ReittiCoordinate() { }
@@ -63,7 +84,7 @@ namespace Reitit.API
             throw new FormatException("Not enough parts");
         }
 
-        public static implicit operator Geopoint(ReittiCoordinate c)
+        public static implicit operator BasicGeoposition(ReittiCoordinate c)
         {
             var position = new BasicGeoposition
             {
@@ -74,12 +95,22 @@ namespace Reitit.API
             {
                 position.Altitude = c.Altitude.Value;
             }
-            return new Geopoint(position);
+            return position;
+        }
+
+        public static implicit operator Geopoint(ReittiCoordinate c)
+        {
+            return new Geopoint(c);
+        }
+
+        public static explicit operator ReittiCoordinate(BasicGeoposition c)
+        {
+            return new ReittiCoordinate(c.Latitude, c.Longitude, c.Altitude);
         }
 
         public static explicit operator ReittiCoordinate(Geopoint c)
         {
-            return new ReittiCoordinate(c.Position.Latitude, c.Position.Longitude, c.Position.Altitude);
+            return (ReittiCoordinate)c.Position;
         }
 
         public static explicit operator ReittiCoordinate(Geocoordinate c)

@@ -342,4 +342,43 @@
   <data name="NoLocationDataTrayStatus" xml:space="preserve">
     <value>Waiting for location data...</value>
   </data>
+  <data name="RoutesTitleSeparator.Text" xml:space="preserve">
+    <value> TO </value>
+  </data>
+  <data name="RouteDetailsDistancesFormat" xml:space="preserve">
+    <value>{0} of which {1} on foot.</value>
+  </data>
+  <data name="RouteDetailsOnStopFormat" xml:space="preserve">
+    <value>{0} on stop.</value>
+  </data>
+  <data name="RouteDetailsTimesFormatNoWaiting" xml:space="preserve">
+    <value>{0} with no waiting.</value>
+  </data>
+  <data name="RouteDetailsTimesFormatWithWaiting" xml:space="preserve">
+    <value>{0} with {1} of waiting.</value>
+  </data>
+  <data name="RouteTimesTo" xml:space="preserve">
+    <value>to</value>
+  </data>
+  <data name="RouteDetailsShortTimeFormat" xml:space="preserve">
+    <value>{0}.</value>
+  </data>
+  <data name="RouteLoaderLoadingStatus" xml:space="preserve">
+    <value>Loading</value>
+  </data>
+  <data name="RouteLoaderLocatingStatus" xml:space="preserve">
+    <value>Getting your location</value>
+  </data>
+  <data name="MetroDestinationSeparator" xml:space="preserve">
+    <value> to </value>
+  </data>
+  <data name="MapFlyoutFromItem.Text" xml:space="preserve">
+    <value>from</value>
+  </data>
+  <data name="MapFlyoutToItem.Text" xml:space="preserve">
+    <value>to</value>
+  </data>
+  <data name="MapLocationPlaceholderText" xml:space="preserve">
+    <value>From map</value>
+  </data>
 </root>

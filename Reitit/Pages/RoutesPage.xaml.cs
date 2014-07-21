@@ -22,9 +22,6 @@ namespace Reitit
 
     public class KeepScrollMessage { }
 
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
     public sealed partial class RoutesPage : MapContentPage
     {
         public RoutesPage()
@@ -42,19 +39,7 @@ namespace Reitit
             base.OnNavigatedTo(e);
             Messenger.Default.Register<KeepScrollMessage>(this, async m =>
             {
-                Panel.SizeChanged += Panel_SizeChanged;
-                //double footerOldOffset = Footer.TransformToVisual(Scroll).TransformPoint(new Point(0, 0)).Y;
-                //double oldScrollOffset = Scroll.VerticalOffset;
-
-                //await Utils.OnCoreDispatcher(() =>
-                //{
-                //    double footerNewOffset = Footer.TransformToVisual(Scroll).TransformPoint(new Point(0, 0)).Y;
-                //    Scroll.ScrollToVerticalOffset(oldScrollOffset + footerNewOffset - footerOldOffset);
-                //    //if (_scrollAnimation != null)
-                //    //{
-                //    //    _scrollAnimation.To += footerPosition - footerOldPosition;
-                //    //}
-                //});
+                RoutesListView.SizeChanged += Panel_SizeChanged;
             });
             Messenger.Default.Register<ScrollToCurrentMessage>(this, async m =>
             {
@@ -72,7 +57,7 @@ namespace Reitit
                     from = Math.Max(0, from);
                     from = Math.Min(from, Scroll.ExtentHeight - Scroll.ViewportHeight);
 
-                    Scroll.ScrollToVerticalOffset(to);
+                    Scroll.ChangeView(null, to, null, true);
                     ScrollAnimation.From = to - from;
                     ScrollAnimation.To = 0;
                     ScrollBoard.Begin();
@@ -83,11 +68,8 @@ namespace Reitit
         private void Panel_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             var offset = e.NewSize.Height - e.PreviousSize.Height;
-            Utils.OnCoreDispatcher(() =>
-            {
-                Scroll.ScrollToVerticalOffset(Scroll.VerticalOffset + offset);
-            });
-            Panel.SizeChanged -= Panel_SizeChanged;
+            Scroll.ChangeView(null, Scroll.VerticalOffset + offset, null, true);
+            RoutesListView.SizeChanged -= Panel_SizeChanged;
         }
     }
 }

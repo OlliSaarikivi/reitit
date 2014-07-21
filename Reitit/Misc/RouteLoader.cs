@@ -41,8 +41,22 @@ namespace Reitit
         public string From { get { return _parameters.From.Name; } }
         public string To { get { return _parameters.To.Name; } }
 
+        public ReittiCoordinate CachedFrom
+        {
+            get { return _cachedFrom; }
+            set { Set(() => CachedFrom, ref _cachedFrom, value); }
+        }
         [DataMember]
-        public ReittiCoordinate _cachedFrom, _cachedTo;
+        public ReittiCoordinate _cachedFrom;
+
+        public ReittiCoordinate CachedTo
+        {
+            get { return _cachedTo; }
+            set { Set(() => CachedTo, ref _cachedTo, value); }
+        }
+        [DataMember]
+        public ReittiCoordinate _cachedTo;
+
 
         [DataMember]
         public RouteSearchParameters _parameters;
@@ -161,22 +175,48 @@ namespace Reitit
 
         private async Task<List<CompoundRoute>> LoadRoutes(CancellationToken token, Action<string> updateStatus, DateTime? dateTime = null, string timetype = null)
         {
-            if (_cachedFrom == null)
+            ReittiCoordinate cachedFrom = CachedFrom, cachedTo = CachedTo;
+            var tasks = new List<Task<ReittiCoordinate>>();
+            Task<ReittiCoordinate> fromTask = null, toTask = null;
+            if (cachedFrom == null)
             {
                 updateStatus(Utils.GetString("RouteLoaderLocatingStatus"));
-                _cachedFrom = await _parameters.From.GetCoordinates();
+                fromTask = _parameters.From.GetCoordinates();
+                tasks.Add(fromTask);
             }
-            if (_cachedTo == null)
+            if (cachedTo == null)
             {
                 updateStatus(Utils.GetString("RouteLoaderLocatingStatus"));
-                _cachedTo = await _parameters.To.GetCoordinates();
+                toTask = _parameters.To.GetCoordinates();
+                tasks.Add(toTask);
             }
-            updateStatus(Utils.GetString("RouteLoaderLocatingStatus"));
+            while (tasks.Count > 0)
+            {
+                var task = await Task.WhenAny<ReittiCoordinate>(tasks);
+                tasks.Remove(task);
+                if (task == fromTask)
+                {
+                    cachedFrom = await task;
+                    Utils.OnCoreDispatcher(() =>
+                    {
+                        CachedFrom = cachedFrom;
+                    });
+                }
+                else if (task == toTask)
+                {
+                    cachedTo = await task;
+                    Utils.OnCoreDispatcher(() =>
+                    {
+                        CachedTo = cachedTo;
+                    });
+                }
+            }
+            updateStatus(Utils.GetString("RouteLoaderLoadingStatus"));
             try
             {
                 var routes = await App.Current.ReittiClient.RouteAsync(
-                    _cachedFrom,
-                    _cachedTo,
+                    cachedFrom,
+                    cachedTo,
                     dateTime: dateTime ?? _parameters.DateTime,
                     timetype: timetype ?? _parameters.Timetype,
                     transportTypes: _parameters.TransportTypes,
@@ -184,7 +224,7 @@ namespace Reitit
                     changeMargin: _parameters.ChangeMargin,
                     walkSpeed: _parameters.WalkSpeed,
                     detail: "full",
-                    show: 5,
+                    show: LoadedRoutes.Count == 0 ? 3 : 5,
                     cancellationToken: token);
                 token.ThrowIfCancellationRequested();
                 return routes;

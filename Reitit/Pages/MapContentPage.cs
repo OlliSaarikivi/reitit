@@ -1,4 +1,5 @@
 ﻿using GalaSoft.MvvmLight.Messaging;
+using Reitit.API;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -87,6 +88,8 @@ namespace Reitit
         protected virtual void OnMinimized() { }
 
         protected virtual void OnMaximized() { }
+
+        public virtual void OnMapTapped(FrameworkElement source, ReittiCoordinate coordinate) { }
 
         protected override NavigationHelper ConstructNavigation()
         {
