@@ -10,14 +10,124 @@
     mc:Ignorable="d">
 
     <Page.Resources>
-        <DataTemplate x:Key="HubSectionHeaderTemplate">
-            <TextBlock Margin="0,0,0,-9.5" Text="{Binding}"/>
+        <Style x:Key="ReititHubStyle" TargetType="Hub">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Hub">
+                        <Grid x:Name="HubRoot">
+                            <Grid.Projection>
+                                <PlaneProjection x:Name="EntranceAnimationProjection"/>
+                            </Grid.Projection>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup x:Name="BackgroundImageLoadStates">
+                                    <VisualState x:Name="BackgroundHidden">
+                                        <Storyboard>
+                                            <FadeOutThemeAnimation Storyboard.TargetName="Background"/>
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="BackgroundImageFadingIn">
+                                        <Storyboard>
+                                            <FadeInThemeAnimation Storyboard.TargetName="Background"/>
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="BackgroundShowing">
+                                        <Storyboard>
+                                            <DoubleAnimation To="1" Storyboard.TargetProperty="Opacity" Storyboard.TargetName="Background"/>
+                                        </Storyboard>
+                                    </VisualState>
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+                            <Canvas Grid.RowSpan="2">
+                                <Canvas.Clip>
+                                    <RectangleGeometry x:Name="BackgroundClipRect"/>
+                                </Canvas.Clip>
+                                <Grid x:Name="Background">
+                                    <Grid.RenderTransform>
+                                        <CompositeTransform x:Name="BackgroundParallaxTransform"/>
+                                    </Grid.RenderTransform>
+                                    <Border x:Name="WrapBackground" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}">
+                                        <Border.RenderTransform>
+                                            <CompositeTransform x:Name="WrapBackgroundParallaxTransform"/>
+                                        </Border.RenderTransform>
+                                    </Border>
+                                    <Border x:Name="MainBackground" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}"/>
+                                </Grid>
+                            </Canvas>
+                            <ScrollViewer x:Name="ScrollViewer" HorizontalScrollMode="Auto" HorizontalSnapPointsType="None" HorizontalAlignment="Left" HorizontalScrollBarVisibility="Hidden" Grid.RowSpan="2" Template="{StaticResource ScrollViewerScrollBarlessTemplate}" VerticalScrollBarVisibility="Disabled" VerticalScrollMode="Disabled" ZoomMode="Disabled">
+                                <ItemsStackPanel x:Name="Panel" CacheLength="6" Orientation="{TemplateBinding Orientation}"/>
+                            </ScrollViewer>
+                            <Canvas Grid.Row="0">
+                                <Canvas.Clip>
+                                    <RectangleGeometry x:Name="HeaderClipRect"/>
+                                </Canvas.Clip>
+                                <Border x:Name="HeaderHost" Margin="{StaticResource HubHeaderMarginThickness}">
+                                    <Border.RenderTransform>
+                                        <TransformGroup>
+                                            <CompositeTransform x:Name="HeaderParallaxTransform"/>
+                                            <TranslateTransform x:Name="HeaderFlyinFlyoutTransform"/>
+                                        </TransformGroup>
+                                    </Border.RenderTransform>
+
+                                    <Viewbox Height="220.4" Margin="-49.1,-50,0,-40" UseLayoutRounding="False">
+                                        <Canvas Width="820.216" Height="274.915" UseLayoutRounding="False">
+                                            <Path Width="79.3604" Height="102.69" Canvas.Left="67.5135" Canvas.Top="98.4939" Stretch="Fill" Fill="{ThemeResource PhoneForegroundBrush}" Data="F1 M 146.874,201.184L 126.959,201.184L 110.551,173.684C 109.069,171.147 107.625,168.986 106.22,167.198C 104.814,165.411 103.382,163.944 101.923,162.798C 100.464,161.652 98.8749,160.816 97.1562,160.289C 95.4374,159.762 93.5086,159.498 91.3697,159.498L 84.4947,159.498L 84.4947,201.184L 67.5135,201.184L 67.5135,98.4939L 101.316,98.4939C 106.143,98.4939 110.585,99.0668 114.642,100.213C 118.698,101.358 122.231,103.089 125.241,105.403C 128.25,107.718 130.603,110.605 132.299,114.066C 133.995,117.526 134.843,121.571 134.843,126.2C 134.843,129.836 134.304,133.167 133.227,136.192C 132.15,139.217 130.622,141.913 128.644,144.281C 126.665,146.649 124.278,148.67 121.482,150.343C 118.686,152.016 115.547,153.303 112.063,154.204L 112.063,154.479C 113.927,155.533 115.551,156.695 116.933,157.963C 118.316,159.231 119.63,160.533 120.875,161.87C 122.12,163.207 123.35,164.723 124.565,166.419C 125.779,168.115 127.127,170.086 128.609,172.331L 146.874,201.184 Z M 84.4947,112.313L 84.4947,145.679L 98.6801,145.679C 101.293,145.679 103.71,145.274 105.933,144.465C 108.156,143.655 110.081,142.486 111.708,140.959C 113.335,139.431 114.6,137.567 115.501,135.367C 116.402,133.167 116.853,130.707 116.853,127.988C 116.853,123.068 115.302,119.226 112.201,116.461C 109.1,113.695 104.638,112.313 98.8176,112.313L 84.4947,112.313 Z "/>
+                                            <Path Width="57.6583" Height="102.69" Canvas.Left="158.447" Canvas.Top="98.4939" Stretch="Fill" Fill="{ThemeResource PhoneForegroundBrush}" Data="F1 M 216.105,201.184L 158.447,201.184L 158.447,98.4939L 213.813,98.4939L 213.813,112.954L 175.497,112.954L 175.497,142.036L 210.811,142.036L 210.811,156.427L 175.497,156.427L 175.497,186.792L 216.105,186.792L 216.105,201.184 Z "/>
+                                            <Rectangle Width="17.5542" Height="102.69" Canvas.Left="234.645" Canvas.Top="98.4939" Stretch="Fill" Fill="{ThemeResource PhoneForegroundBrush}"/>
+                                            <Path Width="75.9688" Height="102.69" Canvas.Left="267.163" Canvas.Top="98.4939" Stretch="Fill" Fill="{ThemeResource PhoneForegroundBrush}" Data="F1 M 343.132,112.954L 313.638,112.954L 313.638,201.184L 296.588,201.184L 296.588,112.954L 267.163,112.954L 267.163,98.4939L 343.132,98.4939L 343.132,112.954 Z "/>
+
+                                            <Path Width="38.0497" Height="16.8051" Canvas.Left="456.741" Canvas.Top="166.257" Stretch="Fill" Fill="#FF2AD7F5" Data="F1 M 457.306,183.062L 494.791,181.692L 494.227,166.257L 456.741,167.627L 457.306,183.062 Z "/>
+                                            <Path Width="40.4432" Height="26.2369" Canvas.Left="409.83" Canvas.Top="169.488" Stretch="Fill" Fill="#FF00AF2E" Data="F1 M 414.582,195.725L 450.273,184.185L 445.521,169.488L 409.83,181.029L 414.582,195.725 Z "/>
+                                            <Path Width="40.2732" Height="31.8136" Canvas.Left="367.602" Canvas.Top="184.38" Stretch="Fill" Fill="#FFE73400" Data="F1 M 375.154,216.194L 407.876,197.854L 400.324,184.38L 367.602,202.72L 375.154,216.194 Z "/>
+                                            <Path Width="39.4073" Height="34.584" Canvas.Left="329.901" Canvas.Top="207.175" Stretch="Fill" Fill="#FFFF65C6" Data="F1 M 339.003,241.759L 369.308,219.653L 360.206,207.175L 329.901,229.28L 339.003,241.759 Z "/>
+                                            <Path Width="39.8307" Height="22.5865" Canvas.Left="156.179" Canvas.Top="251.35" Stretch="Fill" Fill="#FFE73400" Data="F1 M 156.179,266.488L 192.943,273.937L 196.01,258.799L 159.246,251.35L 156.179,266.488 Z "/>
+                                            <Path Width="40.4066" Height="31.0049" Canvas.Left="290.722" Canvas.Top="232.801" Stretch="Fill" Fill="#FFFED100" Data="F1 M 297.846,263.806L 331.129,246.505L 324.005,232.801L 290.722,250.101L 297.846,263.806 Z "/>
+                                            <Path Width="39.7318" Height="22.1645" Canvas.Left="247.573" Canvas.Top="252.18" Stretch="Fill" Fill="#FF2AD7F5" Data="F1 M 250.451,274.344L 287.305,267.355L 284.427,252.18L 247.573,259.169L 250.451,274.344 Z "/>
+                                            <Path Width="37.5519" Height="15.546" Canvas.Left="203.166" Canvas.Top="259.369" Stretch="Fill" Fill="#FF00AF2E" Data="F1 M 203.207,274.915L 240.718,274.814L 240.676,259.369L 203.166,259.469L 203.207,274.915 Z "/>
+                                            <Path Width="39.8151" Height="22.5183" Canvas.Left="502.334" Canvas.Top="167.122" Stretch="Fill" Fill="#FFFED100" Data="F1 M 502.334,182.267L 539.113,189.641L 542.149,174.497L 505.371,167.122L 502.334,182.267 Z "/>
+                                            <Path Width="38.8054" Height="18.9303" Canvas.Left="594.003" Canvas.Top="191.299" Stretch="Fill" Fill="#FFE73400" Data="F1 M 632.808,194.853L 595.467,191.299L 594.003,206.675L 631.345,210.229L 632.808,194.853 Z "/>
+                                            <Path Width="39.1327" Height="19.9654" Canvas.Left="639.931" Canvas.Top="190.392" Stretch="Fill" Fill="#FF00AF2E" Data="F1 M 677.154,190.392L 639.931,195.031L 641.841,210.358L 679.064,205.72L 677.154,190.392 Z "/>
+                                            <Path Width="40.5234" Height="29.8573" Canvas.Left="682.761" Canvas.Top="172.769" Stretch="Fill" Fill="#FF2AD7F5" Data="F1 M 716.754,172.769L 682.761,188.629L 689.292,202.626L 723.284,186.766L 716.754,172.769 Z "/>
+                                            <Path Width="40.4785" Height="26.6098" Canvas.Left="547.337" Canvas.Top="177.699" Stretch="Fill" Fill="#FFFF65C6" Data="F1 M 582.886,204.309L 547.337,192.337L 552.266,177.699L 587.815,189.671L 582.886,204.309 Z "/>
+                                            <Path Width="121.557" Height="123.221" Canvas.Left="698.658" Canvas.Top="100.311" Stretch="Fill" Fill="{ThemeResource PhoneForegroundBrush}" Data="F1 M 709.468,124.557L 753.982,149.813L 766.975,100.311L 795.97,116.871L 772.376,157.297L 820.216,174.379L 808.193,198.073L 764.892,175.692L 747.811,223.531L 724.117,211.509L 746.498,168.208L 698.658,151.127L 709.468,124.557 Z "/>
+                                            <Path Width="40.4024" Height="31.0348" Canvas.Left="111.279" Canvas.Top="232.04" Stretch="Fill" Fill="#FFFF65C6" Data="F1 M 144.542,263.075L 111.279,245.737L 118.419,232.04L 151.682,249.379L 144.542,263.075 Z "/>
+                                            <Path Width="25.6142" Height="40.3722" Canvas.Left="2.95365" Canvas.Top="91.4033" Stretch="Fill" Fill="#FFE73400" Data="F1 M 2.95365,95.861L 13.7796,131.775L 28.5679,127.318L 17.742,91.4033L 2.95365,95.861 Z "/>
+                                            <Path Width="39.3022" Height="34.8088" Canvas.Left="72.4209" Canvas.Top="206.501" Stretch="Fill" Fill="#FFFED100" Data="F1 M 81.6561,206.501L 111.723,228.929L 102.488,241.31L 72.4209,218.882L 81.6561,206.501 Z "/>
+                                            <Path Width="35.5984" Height="38.8782" Canvas.Left="40.6208" Canvas.Top="172.923" Stretch="Fill" Fill="#FF2AD7F5" Data="F1 M 40.6208,182.637L 64.2102,211.802L 76.2193,202.088L 52.6299,172.923L 40.6208,182.637 Z "/>
+                                            <Path Width="31.4194" Height="40.3439" Canvas.Left="17.7726" Canvas.Top="133.939" Stretch="Fill" Fill="#FF00AF2E" Data="F1 M 17.7726,141.281L 35.603,174.283L 49.192,166.941L 31.3616,133.939L 17.7726,141.281 Z "/>
+                                            <Path Width="15.9011" Height="37.6959" Canvas.Left="-1.14441e-005" Canvas.Top="46.2979" Stretch="Fill" Fill="#FFFF65C6" Data="F1 M 0.456657,83.9937L -1.14441e-005,46.4859L 15.4444,46.2979L 15.9011,83.8058L 0.456657,83.9937 Z "/>
+                                            <Path Width="19.2364" Height="38.9051" Canvas.Left="0.243305" Canvas.Top="-3.05176e-005" Stretch="Fill" Fill="#FFFED100" Data="F1 M 19.4797,1.59491L 15.6063,38.905L 0.243305,37.3101L 4.11671,-3.05176e-005L 19.4797,1.59491 Z "/>
+                                            <Rectangle Width="17.5542" Height="102.69" Canvas.Left="357.845" Canvas.Top="98.4939" Stretch="Fill" Fill="{ThemeResource PhoneForegroundBrush}"/>
+                                            <Path Width="75.9688" Height="102.69" Canvas.Left="390.363" Canvas.Top="98.4939" Stretch="Fill" Fill="{ThemeResource PhoneForegroundBrush}" Data="F1 M 466.332,112.954L 436.838,112.954L 436.838,201.184L 419.788,201.184L 419.788,112.954L 390.363,112.954L 390.363,98.4939L 466.332,98.4939L 466.332,112.954 Z "/>
+                                        </Canvas>
+                                    </Viewbox>
+                                </Border>
+                            </Canvas>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <DataTemplate x:Key="SectionHeaderTemplate">
+            <TextBlock Style="{ThemeResource HeaderTextBlockStyle}" Text="{Binding}"/>
         </DataTemplate>
+        <MenuFlyout x:Name="FavoriteMenu">
+            <MenuFlyoutItem x:Uid="FavoriteMenuEdit" Click="EditFavoriteItem_Click"/>
+            <MenuFlyoutItem x:Uid="FavoriteMenuDelete" Click="DeleteFavoriteItem_Click"/>
+            <MenuFlyoutItem x:Uid="FavoriteMenuReorder" Click="ReorderFavoriteItem_Click"/>
+        </MenuFlyout>
+        <local:ValidityToStringConverter x:Key="ValidityToStringConverter"/>
     </Page.Resources>
 
-    <StackPanel x:Name="LayoutRoot">
-        <Hub x:Name="Hub" x:Uid="Hub" Header="Reitit">
-            <HubSection x:Uid="MenuSection">
+    <Grid x:Name="LayoutRoot">
+        <Hub x:Name="Hub"
+             Style="{StaticResource ReititHubStyle}"
+             SectionsInViewChanged="Hub_SectionsInViewChanged"
+             Tapped="Hub_Tapped">
+            <HubSection x:Uid="MenuSection" HeaderTemplate="{StaticResource SectionHeaderTemplate}">
                 <DataTemplate>
                     <ListView
                         ItemsSource="{Binding MenuItems}"
@@ -30,14 +140,102 @@
                         </i:Interaction.Behaviors>
                         <ListView.ItemTemplate>
                             <DataTemplate>
-                                <StackPanel Margin="0,0,0,27.5">
-                                    <TextBlock Text="{Binding Title}" Style="{ThemeResource ListViewItemTextBlockStyle}" />
+                                <StackPanel Margin="0,0,0,20">
+                                    <TextBlock Text="{Binding Title}" Style="{ThemeResource ListViewItemTextBlockStyle}" FontSize="38"/>
                                 </StackPanel>
                             </DataTemplate>
                         </ListView.ItemTemplate>
                     </ListView>
                 </DataTemplate>
             </HubSection>
+            <HubSection x:Name="FavoritesSection" x:Uid="FavoritesSection">
+                <HubSection.HeaderTemplate>
+                    <DataTemplate>
+                        <Grid Grid.Row="1" Margin="0,0,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Style="{ThemeResource HeaderTextBlockStyle}" Text="{Binding}"/>
+                            <Button Style="{StaticResource RoundButtonStyle}"
+                                    Grid.Column="1"
+                                    Margin="30,18,0,0"
+                                    Click="AddFavoriteButton_Click">
+                                <SymbolIcon Symbol="Add"/>
+                            </Button>
+                        </Grid>
+                        <!--<AppBarButton x:Uid="AddFavoriteButton" Icon="Add" Click="AddFavoriteButton_Click"/>-->
+                    </DataTemplate>
+                </HubSection.HeaderTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <ListView Loaded="FavoritesListView_Loaded"
+                                  ItemsSource="{Binding Favorites}"
+                                  IsItemClickEnabled="True"
+                                  ItemClick="FavoritesListView_ItemClick"
+                                  Margin="0,0,-15,0">
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="0,0,15,10"
+                                          Holding="Favorite_Holding"
+                                          HorizontalAlignment="Stretch"
+                                          Background="Transparent">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <local:FavIcon IconName="{Binding IconName}"
+                                                       Background="{ThemeResource PhoneAccentBrush}"/>
+                                        <TextBlock Grid.Column="1"
+                                                   Text="{Binding Name}"
+                                                   Style="{ThemeResource ListViewItemTextBlockStyle}"
+                                                   TextWrapping="WrapWholeWords"
+                                                   Margin="10,-5,0,0"
+                                                   VerticalAlignment="Center"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                            <ListView.ItemContainerStyle>
+                                <Style TargetType="ListViewItem">
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                </Style>
+                            </ListView.ItemContainerStyle>
+                        </ListView>
+                        <TextBlock x:Uid="NoFavoritesHint"
+                                   Loaded="NoFavoritesHint_Loaded"
+                                   Margin="0,0,15,0"
+                                   Style="{ThemeResource ListViewEmptyStaticTextBlockStyle}"/>
+                    </Grid>
+                </DataTemplate>
+            </HubSection>
+            <HubSection x:Uid="TrafficInfoSection" HeaderTemplate="{StaticResource SectionHeaderTemplate}">
+                <DataTemplate>
+                    <ScrollViewer Name="TrafficInfoScrollViewer" Loaded="TrafficInfoScrollViewer_Loaded" Margin="0,0,-15,0">
+                        <StackPanel Margin="0,0,15,80">
+                            <ProgressBar IsIndeterminate="{Binding DisruptionsLoader.Loading}" Opacity="{Binding DisruptionsLoader.Loading, Converter={StaticResource OpaqueIfTrueConverter}}"/>
+                            <ListView ItemsSource="{Binding Disruptions}">
+                                <ListView.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel/>
+                                    </ItemsPanelTemplate>
+                                </ListView.ItemsPanel>
+                                <ListView.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Margin="0,0,0,10">
+                                            <TextBlock Style="{ThemeResource BodyTextBlockStyle}"
+                                                       Foreground="{ThemeResource PhoneAccentBrush}"
+                                                       Text="{Binding Validity, Converter={StaticResource ValidityToStringConverter}}"/>
+                                            <TextBlock Style="{ThemeResource BodyTextBlockStyle}"
+                                                       Text="{Binding Info}"
+                                                       FontSize="{ThemeResource TextStyleMediumFontSize}"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+                        </StackPanel>
+                    </ScrollViewer>
+                </DataTemplate>
+            </HubSection>
         </Hub>
-    </StackPanel>
+    </Grid>
 </local:PageBase>

@@ -27,6 +27,7 @@ namespace Reitit
         public RoutesPage()
         {
             this.InitializeComponent();
+            Tombstoners.Add(new ScrollViewerTombstoner(Scroll));
         }
 
         protected override object ConstructVM(object parameter)
@@ -34,10 +35,9 @@ namespace Reitit
             return new RoutesPageVM((RouteLoader)parameter);
         }
 
-        protected override void OnNavigatedTo(NavigationEventArgs e)
+        protected override void OnShown()
         {
-            base.OnNavigatedTo(e);
-            Messenger.Default.Register<KeepScrollMessage>(this, async m =>
+            Messenger.Default.Register<KeepScrollMessage>(this, m =>
             {
                 RoutesListView.SizeChanged += Panel_SizeChanged;
             });

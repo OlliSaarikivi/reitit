@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.Storage;
@@ -100,7 +101,7 @@ namespace Reitit
         /// <returns>An asynchronous task that reflects when session state has been read.  The
         /// content of <see cref="SessionState"/> should not be relied upon until this task
         /// completes.</returns>
-        public static async Task RestoreAsync(String sessionBaseKey = null)
+        public static async Task LoadAsync(String sessionBaseKey = null)
         {
             _sessionState = new Dictionary<String, Object>();
 
@@ -114,16 +115,21 @@ namespace Reitit
                     DataContractSerializer serializer = new DataContractSerializer(typeof(Dictionary<string, object>), _knownTypes);
                     _sessionState = (Dictionary<string, object>)serializer.ReadObject(inStream.AsStreamForRead());
                 }
+            }
+            catch (Exception e)
+            {
+                throw new SuspensionManagerException(e);
+            }
+        }
 
-                // Restore any registered frames to their saved state
-                foreach (var weakFrameReference in _registeredFrames)
+        public static void RestoreFrame(Frame frame, String sessionBaseKey = null)
+        {
+            try
+            {
+                if ((string)frame.GetValue(FrameSessionBaseKeyProperty) == sessionBaseKey)
                 {
-                    Frame frame;
-                    if (weakFrameReference.TryGetTarget(out frame) && (string)frame.GetValue(FrameSessionBaseKeyProperty) == sessionBaseKey)
-                    {
-                        frame.ClearValue(FrameSessionStateProperty);
-                        RestoreFrameNavigationState(frame);
-                    }
+                    frame.ClearValue(FrameSessionStateProperty);
+                    RestoreFrameNavigationState(frame);
                 }
             }
             catch (Exception e)
@@ -198,6 +204,8 @@ namespace Reitit
                 Frame testFrame;
                 return !weakFrameReference.TryGetTarget(out testFrame) || testFrame == frame;
             });
+            frame.ClearValue(FrameSessionStateKeyProperty);
+            frame.ClearValue(FrameSessionStateProperty);
         }
 
         /// <summary>

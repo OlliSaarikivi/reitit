@@ -29,6 +29,8 @@ namespace Reitit
         public SearchPage()
         {
             this.InitializeComponent();
+
+            Loaded += SearchPage_Loaded;
         }
 
         protected override object ConstructVM(object parameter)
@@ -36,15 +38,8 @@ namespace Reitit
             return new SearchPageVM();
         }
 
-        private void SearchBox_TextChanged(object sender, AutoSuggestBoxTextChangedEventArgs e)
+        void SearchPage_Loaded(object sender, RoutedEventArgs e)
         {
-            var binding = (sender as TextBox).GetBindingExpression(TextBox.TextProperty);
-            binding.UpdateSource();
-        }
-
-        protected override void OnNavigatedTo(NavigationEventArgs e)
-        {
-            base.OnNavigatedTo(e);
             Messenger.Default.Register<NewResults>(this, m =>
             {
                 UpdateLayout();
@@ -57,6 +52,12 @@ namespace Reitit
                     Focus(FocusState.Programmatic);
                 }
             });
+        }
+
+        private void SearchBox_TextChanged(object sender, AutoSuggestBoxTextChangedEventArgs e)
+        {
+            var binding = (sender as TextBox).GetBindingExpression(TextBox.TextProperty);
+            binding.UpdateSource();
         }
     }
 }

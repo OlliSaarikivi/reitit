@@ -21,12 +21,27 @@ namespace Reitit.API
     [DataContract]
     public class Disruptions
     {
+        public string Info
+        {
+            get { return _info; }
+            set { _info = value; }
+        }
         [DataMember]
-        public string Info;
+        public string _info;
+        public List<AdvanceDisruption> AdvanceDisruptions
+        {
+            get { return _advanceDisruptions; }
+            set { _advanceDisruptions = value; }
+        }
         [DataMember]
-        public List<AdvanceDisruption> AdvanceDisruptions;
+        public List<AdvanceDisruption> _advanceDisruptions;
+        public List<SuddenDisruption> SuddenDisruptions
+        {
+            get { return _suddenDisruptions; }
+            set { _suddenDisruptions = value; }
+        }
         [DataMember]
-        public List<SuddenDisruption> SuddenDisruptions;
+        public List<SuddenDisruption> _suddenDisruptions;
 
         public static Disruptions Parse(XElement ele)
         {
@@ -51,19 +66,39 @@ namespace Reitit.API
     [DataContract]
     public abstract class Disruption
     {
+        public int Id
+        {
+            get { return _id; }
+            set { _id = value; }
+        }
         [DataMember]
-        public int Id;
+        public int _id;
+        public string Info
+        {
+            get { return _info; }
+            set { _info = value; }
+        }
         [DataMember]
-        public string Info;
+        public string _info;
+        public Validity Validity
+        {
+            get { return _validity; }
+            set { _validity = value; }
+        }
         [DataMember]
-        public Validity Validity;
+        public Validity _validity;
     }
 
     [DataContract]
     public class AdvanceDisruption : Disruption
     {
+        public List<int> TransportTypeIds
+        {
+            get { return _transportTypeIds; }
+            set { _transportTypeIds = value; }
+        }
         [DataMember]
-        public List<int> TransportTypeIds;
+        public List<int> _transportTypeIds;
 
         public static AdvanceDisruption Parse(XElement ele)
         {
@@ -84,15 +119,20 @@ namespace Reitit.API
     [DataContract]
     public class SuddenDisruption : Disruption
     {
+        public List<Line> Lines
+        {
+            get { return _lines; }
+            set { _lines = value; }
+        }
         [DataMember]
-        public List<Line> Lines;
+        public List<Line> _lines;
 
         public static SuddenDisruption Parse(XElement ele)
         {
             var lines = from targets in ele.Descendants("TARGETS")
                         from lineEle in targets.Descendants("LINE")
-                        let code = lineEle.Attribute("id").Value
-                        select ModelCache.GetOrCreate(code, () => new Line(code));
+                        let name = lineEle.Attribute("id").Value
+                        select ModelCache.GetOrCreate(name, () => new Line(null, name));
             return new SuddenDisruption
             {
                 Id = int.Parse(ele.Attribute("id").Value),
@@ -107,10 +147,20 @@ namespace Reitit.API
     [DataContract]
     public class Validity
     {
+        public DateTime From
+        {
+            get { return _from; }
+            set { _from = value; }
+        }
         [DataMember]
-        public DateTime From;
+        public DateTime _from;
+        public DateTime To
+        {
+            get { return _to; }
+            set { _to = value; }
+        }
         [DataMember]
-        public DateTime To;
+        public DateTime _to;
 
         public static Validity Parse(XElement ele)
         {

@@ -37,11 +37,11 @@ namespace Reitit
         public static readonly DependencyProperty ItemTemplateSelectorProperty =
             DependencyProperty.Register("ItemTemplateSelector", typeof(DataTemplateSelector), typeof(ReititMapItemsControl), new PropertyMetadata(null, ItemTemplateSelectorChanged));
 
-        public ObservableCollection<UIElement> GeneratedElements { get; private set; }
+        public ObservableCollection<FrameworkElement> GeneratedElements { get; private set; }
 
         public ReititMapItemsControl()
         {
-            GeneratedElements = new ObservableCollection<UIElement>();
+            GeneratedElements = new ObservableCollection<FrameworkElement>();
         }
 
         private static void ItemsSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -126,7 +126,7 @@ namespace Reitit
             }
         }
 
-        private UIElement GenerateElement(object item)
+        private FrameworkElement GenerateElement(object item)
         {
             FrameworkElement element;
             var template = GetDataTemplate(item);

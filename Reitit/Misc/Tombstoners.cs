@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 
 namespace Reitit
 {
@@ -137,7 +139,71 @@ namespace Reitit
             var namespacedState = new NamespacingDictionary<object>(state, _id);
             RestoreState(namespacedState);
         }
+        public abstract void ResetState();
         protected abstract void SaveState(IDictionary<string, object> state);
         protected abstract void RestoreState(IDictionary<string, object> state);
+    }
+
+    public abstract class FrameworkElementTombstoner<T> : Tombstoner where T : FrameworkElement
+    {
+        protected T _element;
+
+        public FrameworkElementTombstoner(T element, string id = null)
+            : base(id ?? element.Name)
+        {
+            _element = element;
+        }
+    }
+
+    public class ScrollViewerTombstoner : FrameworkElementTombstoner<ScrollViewer>
+    {
+        public ScrollViewerTombstoner(ScrollViewer scroll, string id = null)
+            : base(scroll, id) { }
+
+        protected override void SaveState(IDictionary<string, object> state)
+        {
+            if (_element.VerticalOffset != 0)
+            {
+                state["Y"] = _element.VerticalOffset;
+            }
+            if (_element.HorizontalOffset != 0)
+            {
+                state["X"] = _element.HorizontalOffset;
+            }
+            if (_element.ZoomFactor != 1.0)
+            {
+                state["Z"] = _element.ZoomFactor;
+            }
+        }
+
+        protected override void RestoreState(IDictionary<string, object> state)
+        {
+            double? y = null, x = null;
+            float? z = null;
+            if (state.ContainsKey("Y"))
+            {
+                y = (double)state["Y"];
+            }
+            if (state.ContainsKey("X"))
+            {
+                x = (double)state["X"];
+            }
+            if (state.ContainsKey("Z"))
+            {
+                z = (float)state["Z"];
+            }
+            RoutedEventHandler onLoaded = null;
+            onLoaded = (s, e) =>
+            {
+                _element.ChangeView(x, y, z);
+                _element.Loaded -= onLoaded;
+            };
+            _element.Loaded += onLoaded;
+        }
+
+        public override void ResetState()
+        {
+            var result = _element.ChangeView(0, 0, 1, true);
+        }
     }
 }

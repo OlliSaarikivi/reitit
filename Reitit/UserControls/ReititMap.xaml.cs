@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Windows.Devices.Geolocation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.System.Threading;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Maps;
@@ -25,9 +26,9 @@ namespace Reitit
     {
         public Point CoordinateToAngledPoint(ReittiCoordinate coordinate)
         {
-            var angle = ((-Map.Heading + 90) / 360) * Math.PI * 2;
-            var xo = coordinate.Longitude - Utils.HelsinkiCoordinate.Longitude;
-            var yo = coordinate.Latitude - Utils.HelsinkiCoordinate.Latitude;
+            var xo = coordinate.Longitude;
+            var yo = Math.Log(Math.Tan(Math.PI / 4.0 + (coordinate.Latitude / 180 * Math.PI) / 2.0)) / Math.PI * 180;
+            var angle = (Map.Heading / 180) * Math.PI;
             var x = xo * Math.Cos(angle) - yo * Math.Sin(angle);
             var y = xo * Math.Sin(angle) + yo * Math.Cos(angle);
             return new Point(x, y);
@@ -35,14 +36,13 @@ namespace Reitit
 
         public MapControl Map { get; set; }
 
-        public int Compare(DependencyObject x, DependencyObject y)
+        public int Compare(DependencyObject a, DependencyObject b)
         {
-
-            var xCoordinate = ReititMap.GetPushpinCoordinate(x);
-            double xLatitude = xCoordinate != null ? xCoordinate.Latitude : 0;
-            var yCoordinate = ReititMap.GetPushpinCoordinate(y);
-            double yLatitude = yCoordinate != null ? yCoordinate.Latitude : 0;
-            return xLatitude.CompareTo(yLatitude);
+            var aCoordinate = ReititMap.GetPushpinCoordinate(a) ?? ReittiCoordinate.Zero;
+            double aY = CoordinateToAngledPoint(aCoordinate).Y;
+            var bCoordinate = ReititMap.GetPushpinCoordinate(b) ?? ReittiCoordinate.Zero;
+            double bY = CoordinateToAngledPoint(bCoordinate).Y;
+            return aY.CompareTo(bY);
         }
     }
 
@@ -157,14 +157,13 @@ namespace Reitit
             }
         }
 
-        public double BottomObscuredHeight { get; set; }
+        private double _contentHeight;
 
-        public event Action<ReittiCoordinate, Point> ReititTapped;
+        public event Action<ReittiCoordinate, Point> ReititHolding;
 
         MapItemComparer _itemComparer;
         Dictionary<ObservableCollection<object>, MapItemsRegistration> _itemRegistrations = new Dictionary<ObservableCollection<object>, MapItemsRegistration>();
-        ObservableCollection<UIElement> _pageMapItems = new ObservableCollection<UIElement>();
-        List<Canvas> _mapCanvases = new List<Canvas>();
+        List<FrameworkElement> _sortedMapItems = new List<FrameworkElement>();
 
         Dictionary<ObservableCollection<MapElement>, MapElementsRegistration> _elementRegistrations = new Dictionary<ObservableCollection<MapElement>, MapElementsRegistration>();
 
@@ -172,13 +171,20 @@ namespace Reitit
         {
             this.InitializeComponent();
             _itemComparer = new MapItemComparer { Map = Map };
-            PageLayerItemsControl.ItemsSource = _pageMapItems;
             CoerceZoomLevelConverter.MaxZoomLevel = Map.MaxZoomLevel;
             CoerceZoomLevelConverter.MinZoomLevel = Map.MinZoomLevel;
+            Map.Loaded += (s, e) =>
+            {
+                if (Autofocus)
+                {
+                    AutofocusView();
+                }
+            };
         }
 
         public void UpdateMapTransform(double contentHeight)
         {
+            _contentHeight = contentHeight;
             var screenHeight = Window.Current.Bounds.Height;
             var point = new Point(0.5, 1 - (double)(screenHeight + contentHeight) / (2 * screenHeight));
             if (point.Y < 0.001)
@@ -186,17 +192,19 @@ namespace Reitit
                 point.Y = 0.001;
             }
             Map.TransformOrigin = point;
-            //await Map.TrySetViewAsync(Map.Center.Jiggle(), Map.ZoomLevel, Map.Heading, Map.DesiredPitch, MapAnimationKind.None);
         }
 
         public async Task SetView(ReittiCoordinate center, double zoomLevel)
         {
-            await Map.TrySetViewAsync(center, zoomLevel, 0, null, MapAnimationKind.Bow);
+            if (!await Map.TrySetViewAsync(center, zoomLevel, 0, null, MapAnimationKind.Bow))
+            {
+                await Map.TrySetViewAsync(center, zoomLevel, 0, 0, MapAnimationKind.Bow);
+            }
         }
 
-        private void Map_MapTapped(MapControl sender, MapInputEventArgs args)
+        private void Map_MapHolding(MapControl sender, MapInputEventArgs args)
         {
-            var handler = ReititTapped;
+            var handler = ReititHolding;
             if (handler != null)
             {
                 handler((ReittiCoordinate)args.Location, args.Position);
@@ -219,11 +227,11 @@ namespace Reitit
             });
         }
 
-        async Task DoAutofocusView()
+        public async Task DoAutofocusView()
         {
             bool atLeastOne = false;
             double maxLatitude = double.MinValue, minLatitude = double.MaxValue, maxLongitude = double.MinValue, minLongitude = double.MaxValue;
-            foreach (var element in _pageMapItems)
+            foreach (var element in _sortedMapItems)
             {
                 if (ReititMap.GetInAutofocus(element))
                 {
@@ -242,7 +250,7 @@ namespace Reitit
             {
                 double latitudeMargin = Math.Max(Utils.MinZoomedLatitudeDiff - (maxLatitude - minLatitude), 0) / 2;
                 double longitudeMargin = Math.Max(Utils.MinZoomedLongitudeDiff - (maxLongitude - minLongitude), 0) / 2;
-                await Map.TrySetViewBoundsAsync(new GeoboundingBox(
+                var bounds = new GeoboundingBox(
                     new BasicGeoposition
                 {
                     Latitude = maxLatitude + latitudeMargin,
@@ -251,7 +259,15 @@ namespace Reitit
                 {
                     Latitude = minLatitude - latitudeMargin,
                     Longitude = maxLongitude + longitudeMargin
-                }), new Thickness(40, 50, 40, BottomObscuredHeight + 12), MapAnimationKind.Linear);
+                });
+                var margin = new Thickness(40, 50, 40, _contentHeight + 12);
+                var viewSet = await Map.TrySetViewBoundsAsync(bounds, margin, MapAnimationKind.Linear);
+                if (!viewSet)
+                {
+                    Map.DesiredPitch = 0;
+                    Map.Heading = 0;
+                    await Map.TrySetViewBoundsAsync(bounds, margin, MapAnimationKind.Linear);
+                }
             }
         }
 
@@ -269,32 +285,42 @@ namespace Reitit
             });
         }
 
-        private void Map_HeadingChanged(MapControl sender, object args)
+        private async void Map_HeadingChanged(MapControl sender, object args)
         {
-            _pageMapItems.BubbleSort(_itemComparer);
-            EnsureOrder();
+            await SortDelayed();
+        }
+
+        private Task _sortTask;
+        private async Task SortDelayed()
+        {
+            if (_sortTask == null)
+            {
+                _sortTask = Task.Delay(TimeSpan.FromSeconds(0.05)).ContinueWith(async s =>
+                {
+                    await Utils.OnCoreDispatcher(() =>
+                    {
+                        _sortTask = null;
+                        _sortedMapItems.Sort(_itemComparer);
+                        EnsureOrder();
+                    });
+                });
+            }
+            await _sortTask;
         }
 
         void SetZIndices()
         {
-            if (_mapCanvases.Count == 0)
+            foreach (var c in Map.GetChildrenOfType<ContentPresenter>())
             {
-                _mapCanvases.AddRange(Map.GetChildrenOfType<Canvas>());
-            }
-            foreach (var canvas in _mapCanvases)
-            {
-                for (int i = 0; i < VisualTreeHelper.GetChildrenCount(canvas); ++i)
+                var child = c.Content as FrameworkElement;
+                if (child != null)
                 {
-                    var child = VisualTreeHelper.GetChild(canvas, i) as ContentPresenter;
-                    if (child != null)
+                    int i = _sortedMapItems.IndexOf(child);
+                    if (i >= 0)
                     {
-                        var content = child.Content as UIElement;
-                        if (content != null)
-                        {
-                            int zLayer = ReititMap.GetZLayer(content);
-                            int zIndex = _pageMapItems.IndexOf(content) - zLayer * _pageMapItems.Count;
-                            Canvas.SetZIndex(child, -zIndex);
-                        }
+                        int zLayer = ReititMap.GetZLayer(_sortedMapItems[i]);
+                        int zIndex = i - zLayer * _sortedMapItems.Count;
+                        Canvas.SetZIndex(c, -zIndex);
                     }
                 }
             }
@@ -303,18 +329,18 @@ namespace Reitit
 
         void SetFlippings()
         {
-            var flipped = new bool[_pageMapItems.Count];
+            var flipped = new bool[_sortedMapItems.Count];
             var someFlipped = true;
             Func<Point, int, int, bool> tryFlip = (iPoint, i, j) =>
             {
-                var otherFlippable = _pageMapItems[j] is IFlippable;
-                var jCoord = ReititMap.GetPushpinCoordinate(_pageMapItems[j]);
+                var otherFlippable = _sortedMapItems[j] is IFlippable;
+                var jCoord = ReititMap.GetPushpinCoordinate(_sortedMapItems[j]);
                 if (jCoord == null || !otherFlippable)
                 {
-                    return true;
+                    return false;
                 }
                 var jPoint = _itemComparer.CoordinateToAngledPoint(jCoord);
-                if (iPoint.Y - jPoint.Y > Utils.PushpinAvoidDiff)
+                if (Math.Abs(iPoint.Y - jPoint.Y) > Utils.PushpinAvoidDiff)
                 {
                     return true;
                 }
@@ -333,10 +359,10 @@ namespace Reitit
             while (someFlipped)
             {
                 someFlipped = false;
-                for (int i = 0; i < _pageMapItems.Count; ++i)
+                for (int i = 0; i < _sortedMapItems.Count; ++i)
                 {
-                    var flippable = _pageMapItems[i] is IFlippable;
-                    var iCoord = ReititMap.GetPushpinCoordinate(_pageMapItems[i]);
+                    var flippable = _sortedMapItems[i] is IFlippable;
+                    var iCoord = ReititMap.GetPushpinCoordinate(_sortedMapItems[i]);
                     if (flippable && iCoord != null && !flipped[i])
                     {
                         var iPoint = _itemComparer.CoordinateToAngledPoint(iCoord);
@@ -351,7 +377,7 @@ namespace Reitit
                         {
                             break;
                         }
-                        for (int j = i + 1; j < _pageMapItems.Count; ++j)
+                        for (int j = i + 1; j < _sortedMapItems.Count; ++j)
                         {
                             if (tryFlip(iPoint, i, j))
                             {
@@ -361,9 +387,9 @@ namespace Reitit
                     }
                 }
             }
-            for (int i = 0; i < _pageMapItems.Count; ++i)
+            for (int i = 0; i < _sortedMapItems.Count; ++i)
             {
-                var flippable = _pageMapItems[i] as IFlippable;
+                var flippable = _sortedMapItems[i] as IFlippable;
                 if (flippable != null)
                 {
                     flippable.SetFlip(flipped[i] ? FlipPreference.West : FlipPreference.East);
@@ -393,14 +419,12 @@ namespace Reitit
             }
         }
 
-        void AddElement(UIElement element)
+        void AddElement(FrameworkElement element)
         {
             InsertElement(element);
-            _pushpinCoordinateChangedActions.Add(element, () =>
+            _pushpinCoordinateChangedActions.Add(element, async () =>
             {
-                _pageMapItems.Remove(element);
-                InsertElement(element);
-                EnsureOrder();
+                await SortDelayed();
                 if (Autofocus && ReititMap.GetInAutofocus(element))
                 {
                     AutofocusView();
@@ -420,16 +444,19 @@ namespace Reitit
             }
         }
 
-        void InsertElement(UIElement element)
+        void InsertElement(FrameworkElement element)
         {
-            int insertIndex = _pageMapItems.UpperBound(element, _itemComparer);
-            _pageMapItems.Insert(insertIndex, element);
+            Map.Children.Add(element);
+            int insertIndex = _sortedMapItems.UpperBound(element, _itemComparer);
+            _sortedMapItems.Insert(insertIndex, element);
         }
 
-        void RemoveElement(UIElement element)
+        void RemoveElement(FrameworkElement element)
         {
             _pushpinCoordinateChangedActions.Remove(element);
-            _pageMapItems.Remove(element);
+            _inAutofocusChangedActions.Remove(element);
+            Map.Children.Remove(element);
+            _sortedMapItems.Remove(element);
             EnsureOrder();
             if (Autofocus && ReititMap.GetInAutofocus(element))
             {
@@ -508,7 +535,7 @@ namespace Reitit
                 }
                 else
                 {
-                    var element = item as UIElement;
+                    var element = item as FrameworkElement;
                     _map.AddElement(element);
                 }
                 _currentItems.Add(item, true);
@@ -528,7 +555,7 @@ namespace Reitit
                 }
                 else
                 {
-                    var element = item as UIElement;
+                    var element = item as FrameworkElement;
                     _map.RemoveElement(element);
                 }
                 _currentItems.Remove(item);
@@ -546,8 +573,8 @@ namespace Reitit
             class ItemsControlRegistration : IDisposable
             {
                 ReititMap _map;
-                ObservableCollection<UIElement> _generatedElements;
-                Dictionary<UIElement, bool> _currentElements = new Dictionary<UIElement, bool>();
+                ObservableCollection<FrameworkElement> _generatedElements;
+                Dictionary<FrameworkElement, bool> _currentElements = new Dictionary<FrameworkElement, bool>();
 
                 public ItemsControlRegistration(ReititMap map, ReititMapItemsControl itemsControl)
                 {
@@ -567,7 +594,7 @@ namespace Reitit
                         case NotifyCollectionChangedAction.Add:
                             foreach (var item in e.NewItems)
                             {
-                                var element = (UIElement)item;
+                                var element = (FrameworkElement)item;
                                 _map.AddElement(element);
                                 _currentElements.Add(element, true);
                             }
@@ -575,7 +602,7 @@ namespace Reitit
                         case NotifyCollectionChangedAction.Remove:
                             foreach (var item in e.OldItems)
                             {
-                                var element = (UIElement)item;
+                                var element = (FrameworkElement)item;
                                 _map.RemoveElement(element);
                                 _currentElements.Remove(element);
                             }
@@ -583,13 +610,13 @@ namespace Reitit
                         case NotifyCollectionChangedAction.Replace:
                             foreach (var item in e.OldItems)
                             {
-                                var element = (UIElement)item;
+                                var element = (FrameworkElement)item;
                                 _map.RemoveElement(element);
                                 _currentElements.Remove(element);
                             }
                             foreach (var item in e.NewItems)
                             {
-                                var element = (UIElement)item;
+                                var element = (FrameworkElement)item;
                                 _map.AddElement(element);
                                 _currentElements.Add(element, true);
                             }

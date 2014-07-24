@@ -126,9 +126,6 @@
   <data name="Header.Text" xml:space="preserve">
     <value>application name</value>
   </data>
-  <data name="Hub.Header" xml:space="preserve">
-    <value>Reitit</value>
-  </data>
   <data name="HubSection1" xml:space="preserve">
     <value>SECTION 1</value>
   </data>
@@ -380,5 +377,74 @@
   </data>
   <data name="MapLocationPlaceholderText" xml:space="preserve">
     <value>From map</value>
+  </data>
+  <data name="FavoritesSection.Header" xml:space="preserve">
+    <value>favorites</value>
+  </data>
+  <data name="MenuSection.Header" xml:space="preserve">
+    <value>find</value>
+  </data>
+  <data name="TrafficInfoSection.Header" xml:space="preserve">
+    <value>traffic info</value>
+  </data>
+  <data name="HubLinesMenuItem" xml:space="preserve">
+    <value>lines</value>
+  </data>
+  <data name="HubRoutesMenuItem" xml:space="preserve">
+    <value>routes</value>
+  </data>
+  <data name="HubStopsMenuItem" xml:space="preserve">
+    <value>stops</value>
+  </data>
+  <data name="FavEditTitle" xml:space="preserve">
+    <value>EDIT FAVORITE</value>
+  </data>
+  <data name="FavAccept.Label" xml:space="preserve">
+    <value>save</value>
+  </data>
+  <data name="FavCancel.Label" xml:space="preserve">
+    <value>cancel</value>
+  </data>
+  <data name="FavPicker.Header" xml:space="preserve">
+    <value>Location</value>
+  </data>
+  <data name="FavName.Header" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="OperationFailedErrorMessage" xml:space="preserve">
+    <value>The operation could not be completed. Try again or contact the app creator if the problem persists.</value>
+  </data>
+  <data name="OperationFailedErrorTitle" xml:space="preserve">
+    <value>Something went wrong</value>
+  </data>
+  <data name="FavoriteMenuDelete.Text" xml:space="preserve">
+    <value>delete</value>
+  </data>
+  <data name="FavoriteMenuEdit.Text" xml:space="preserve">
+    <value>edit</value>
+  </data>
+  <data name="FavIconsGridHeader.Text" xml:space="preserve">
+    <value>Icon</value>
+  </data>
+  <data name="FavNewTitle" xml:space="preserve">
+    <value>NEW FAVORITE</value>
+  </data>
+  <data name="MapFlyoutFavItem.Text" xml:space="preserve">
+    <value>select</value>
+  </data>
+  <data name="FavoriteMenuReorder.Text" xml:space="preserve">
+    <value>move</value>
+  </data>
+  <data name="NoFavoritesHint.Text" xml:space="preserve">
+    <value>What are your favorite places to be? Tap the plus sign above to add some.</value>
+  </data>
+  <data name="AddFavoriteButton.Label" xml:space="preserve">
+    <value>add</value>
+  </data>
+  <data name="DisruptionsLoaderLoadingStatus" xml:space="preserve">
+    <value>Loading</value>
+  </data>
+  <data name="ValidityFormat" xml:space="preserve">
+    <value>From {0} to {1}</value>
   </data>
 </root>

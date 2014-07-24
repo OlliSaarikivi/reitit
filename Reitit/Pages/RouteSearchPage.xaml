@@ -139,7 +139,7 @@
     </Grid>
 
     <Page.BottomAppBar>
-        <CommandBar x:Name="CommandBar">
+        <CommandBar x:Name="AppBar">
             <AppBarButton x:Uid="RouteSearchButton" Icon="Forward" Command="{Binding SearchCommand}" IsEnabled="{Binding SearchPossible}"/>
         </CommandBar>
     </Page.BottomAppBar>

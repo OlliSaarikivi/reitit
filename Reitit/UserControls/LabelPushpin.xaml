@@ -8,8 +8,8 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    d:DesignHeight="300"
-    d:DesignWidth="400"
+    d:DesignHeight="44"
+    d:DesignWidth="100"
     maps:MapControl.NormalizedAnchorPoint="0,1">
 
     <UserControl.Resources>
@@ -21,20 +21,28 @@
                  Points="0,0 18,0 18,26 0,44"
                  Fill="{Binding Background, ElementName=ThisControl}"
                  HorizontalAlignment="Left"/>
-        <Border x:Name="LabelPart"
-                Height="26"
-                VerticalAlignment="Top"
-                HorizontalAlignment="Left"
-                Background="{Binding Background, ElementName=ThisControl}">
+        <Grid x:Name="LabelPart"
+              Height="26"
+              VerticalAlignment="Top"
+              HorizontalAlignment="Left"
+              Background="{Binding Background, ElementName=ThisControl}"
+              MinWidth="16"
+              Margin="1,0,0,0">
+            <Ellipse Fill="White"
+                     Width="10"
+                     Height="10"
+                     VerticalAlignment="Center"
+                     HorizontalAlignment="Center"
+                     Visibility="{Binding Label, ElementName=ThisControl, Converter={StaticResource NegNullToVisibilityConverter}}"/>
             <TextBlock Foreground="White"
                        Text="{Binding Label, ElementName=ThisControl}"
                        FontSize="18"
                        FontWeight="SemiBold"
-                       Margin="3,0,3,0"
+                       Margin="2,0,3,0"
                        TextLineBounds="Tight"
                        VerticalAlignment="Center"
                        RenderTransformOrigin="0.5,0.5"
                        RenderTransform="{StaticResource FlipTransform}"/>
-        </Border>
+        </Grid>
     </Grid>
 </UserControl>

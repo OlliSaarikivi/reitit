@@ -1,5 +1,6 @@
 ﻿using Reitit.API;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -258,5 +259,23 @@ namespace Reitit
                 return (ReittiCoordinate)s;
             })
         { }
+    }
+
+    public class HiddenIfEmptyConverter : LambdaConverter<IList, Visibility, object>
+    {
+        public HiddenIfEmptyConverter()
+            : base((s, p, language) =>
+            {
+                return s.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
+            }) { }
+    }
+
+    public class VisibleIfEmptyConverter : LambdaConverter<IList, Visibility, object>
+    {
+        public VisibleIfEmptyConverter()
+            : base((s, p, language) =>
+            {
+                return s.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
+            }) { }
     }
 }

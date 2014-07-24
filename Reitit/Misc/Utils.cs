@@ -28,6 +28,8 @@ namespace Reitit
 {
     static class Utils
     {
+        public static readonly string DefaultFavIcon = "FavPoi";
+
         public static readonly double MapEpsilon = 0.0000001;
         public static readonly double MinZoomedLatitudeDiff = 0.0025;
         public static readonly double MinZoomedLongitudeDiff = 0.00666;
@@ -395,6 +397,16 @@ namespace Reitit
             var latDiff = coordinate.Latitude - other.Latitude;
             var longDiff = coordinate.Longitude - other.Longitude;
             return latDiff * latDiff + longDiff * longDiff;
+        }
+
+        public static async Task ShowOperationFailedError()
+        {
+            await ShowMessageDialog(Utils.GetString("OperationFailedErrorMessage"), Utils.GetString("OperationFailedErrorTitle"));
+        }
+
+        public static void D(string msg)
+        {
+            System.Diagnostics.Debug.WriteLine(msg);
         }
     }
 }

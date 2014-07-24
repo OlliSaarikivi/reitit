@@ -14,8 +14,6 @@ namespace Reitit
     [DataContract]
     class MapPageVM : ViewModelBase
     {
-        static MapPageVM() { SuspensionManager.KnownTypes.Add(typeof(MapPageVM)); }
-
         public bool ContentMaximized
         {
             get { return _contentMaximized; }
@@ -94,8 +92,23 @@ namespace Reitit
         [DataMember]
         public bool _trackMyLocation = false;
 
+        [DataMember]
+        private bool _locating = false;
+
+        private TrayStatus _locatingStatus;
+
         public MapPageVM()
         {
+        }
+
+        protected override void Initialize()
+        {
+            _locatingStatus = new TrayStatus();
+            if (_locating)
+            {
+                _locating = false;
+                StartGPS();
+            }
         }
 
         public RelayCommand ShowMyLocationExplicitCommand
@@ -141,9 +154,6 @@ namespace Reitit
                 await UpdateGPS();
             });
         }
-
-        private TrayStatus _locatingStatus = new TrayStatus();
-        private bool _locating = false;
 
         async Task UpdateGPS()
         {

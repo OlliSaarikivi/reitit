@@ -1,4 +1,5 @@
-﻿using Reitit.API;
+﻿using GalaSoft.MvvmLight.Messaging;
+using Reitit.API;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -14,18 +15,13 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
-// The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkID=390556
-
 namespace Reitit
 {
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
-    public sealed partial class RouteSearchPage : MapContentPage
+    public sealed partial class EditFavPage : MapContentPage
     {
         private MapLocation _currentMenuLocation;
 
-        public RouteSearchPage()
+        public EditFavPage()
         {
             this.InitializeComponent();
             Tombstoners.Add(new ScrollViewerTombstoner(ContentScroll));
@@ -33,8 +29,12 @@ namespace Reitit
 
         protected override object ConstructVM(object parameter)
         {
-            var to = parameter as IPickerLocation;
-            return new RouteSearchPageVM { To = to };
+            return new EditFavPageVM(parameter as FavoriteLocation);
+        }
+
+        public override void OnIsMaximizedChanged()
+        {
+            AppBar.Visibility = IsMaximized ? Visibility.Visible : Visibility.Collapsed;
         }
 
         public override void OnMapHolding(FrameworkElement source, ReittiCoordinate coordinate)
@@ -47,19 +47,9 @@ namespace Reitit
             MapFlyout.ShowAt(source);
         }
 
-        public override void OnIsMaximizedChanged()
+        private void MapFlyoutFavItem_Click(object sender, RoutedEventArgs e)
         {
-            AppBar.Visibility = IsMaximized ? Visibility.Visible : Visibility.Collapsed;
-        }
-
-        private void MapFlyoutFromItem_Click(object sender, RoutedEventArgs e)
-        {
-            ((RouteSearchPageVM)DataContext).From = _currentMenuLocation;
-        }
-
-        private void MapFlyoutToItem_Click(object sender, RoutedEventArgs e)
-        {
-            ((RouteSearchPageVM)DataContext).To = _currentMenuLocation;
+            ((EditFavPageVM)DataContext).Coordinate = _currentMenuLocation;
         }
     }
 }

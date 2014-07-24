@@ -8,6 +8,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Graphics.Display;
 using Windows.Phone.UI.Input;
 using Windows.UI;
 using Windows.UI.ViewManagement;
@@ -54,6 +55,8 @@ namespace Reitit
 
         protected object NavigationParameter { get; private set; }
 
+        private bool _shown = false;
+
         protected List<Tombstoner> Tombstoners
         {
             get
@@ -65,7 +68,8 @@ namespace Reitit
 
         public PageBase()
         {
-            HardwareButtons.BackPressed += HardwareButtons_BackPressed;
+            NavigationCacheMode = NavigationCacheMode.Enabled;
+
             NavigationHelper = ConstructNavigation();
             NavigationHelper.LoadState += this.NavigationHelper_LoadState;
             NavigationHelper.SaveState += this.NavigationHelper_SaveState;
@@ -75,6 +79,30 @@ namespace Reitit
             DataContextChanged += MapContentPage_DataContextChanged;
 
             MapElements = new ObservableCollection<MapElement>();
+
+            Loaded += (s, e) =>
+            {
+                HardwareButtons.BackPressed += HardwareButtons_BackPressed;
+                if (!_shown)
+                {
+                    _shown = true;
+                    Utils.D("OnShowing");
+                    OnShowing();
+                    Utils.D("OnShown");
+                    OnShown();
+                }
+            };
+            Unloaded += (s, e) =>
+            {
+                HardwareButtons.BackPressed -= HardwareButtons_BackPressed;
+                if (_shown)
+                {
+                    _shown = false;
+                    Utils.D("OnHiding");
+                    OnHiding();
+                }
+                Messenger.Default.Unregister(this);
+            };
         }
 
         void MapItems_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -104,6 +132,7 @@ namespace Reitit
         void HardwareButtons_BackPressed(object sender, BackPressedEventArgs e)
         {
             OnBackPressed(e);
+            NavigationHelper.HardwareButtons_BackPressed(sender, e);
         }
 
         protected virtual void OnBackPressed(BackPressedEventArgs e) { }
@@ -145,6 +174,10 @@ namespace Reitit
         protected virtual void LoadState(IDictionary<string, object> state) { }
         protected virtual void SaveState(IDictionary<string, object> state) { }
 
+        protected virtual void OnShowing() { }
+        protected virtual void OnShown() { }
+        protected virtual void OnHiding() { }
+
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             if (e.Parameter is int)
@@ -153,13 +186,37 @@ namespace Reitit
                 App.Current.ParamCache.TryGetParam((int)e.Parameter, out _navigationParameter);
                 NavigationParameter = _navigationParameter;
             }
+            if (!_shown)
+            {
+                Utils.D("OnShowing");
+                OnShowing();
+            }
             NavigationHelper.OnNavigatedTo(e);
+            if (!_shown)
+            {
+                _shown = true;
+                Utils.D("OnShown");
+                OnShown();
+            }
         }
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)
         {
+            if (_shown)
+            {
+                _shown = false;
+                Utils.D("OnHiding");
+                OnHiding();
+            }
             NavigationHelper.OnNavigatedFrom(e);
-            Messenger.Default.Unregister(this);
+            if (e.NavigationMode == NavigationMode.Back)
+            {
+                DataContext = null;
+                foreach (var stoner in Tombstoners)
+                {
+                    stoner.ResetState();
+                }
+            }
         }
     }
 }

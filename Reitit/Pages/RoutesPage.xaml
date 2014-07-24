@@ -30,7 +30,6 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
-            <!--<RowDefinition Height="72"/>-->
         </Grid.RowDefinitions>
 
         <TextBlock Foreground="{StaticResource PhoneAccentBrush}" Grid.Row="0" Margin="20,15,0,20" Style="{ThemeResource TitleTextBlockStyle}">
@@ -95,7 +94,7 @@
                             </DataTemplate>
                         </ListView.ItemTemplate>
                     </ListView>
-                    <StackPanel Name="Footer" Margin="0,5,0,0" Visibility="{Binding Loader.InitialStatus, Converter={StaticResource NegNullToVisibilityConverter}}">
+                    <StackPanel Name="Footer" Margin="0,5,0,60" Visibility="{Binding Loader.InitialStatus, Converter={StaticResource NegNullToVisibilityConverter}}">
                         <ProgressBar IsIndeterminate="{Binding Loader.NextStatus, Converter={StaticResource NotNullConverter}}"
 						Opacity="{Binding Loader.NextStatus, Converter={StaticResource TransparentIfNullConverter}}"
 						Margin="0,-5,0,5"/>

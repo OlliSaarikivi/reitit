@@ -31,22 +31,13 @@ namespace Reitit
         }
         public static readonly DependencyProperty IsMaximizedProperty =
             DependencyProperty.Register("IsMaximized", typeof(bool), typeof(MapContentPage), new PropertyMetadata(true, IsMaximizedChanged));
-        public static void IsMaximizedChanged(DependencyObject s, DependencyPropertyChangedEventArgs e)
+
+        private static void IsMaximizedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var page = s as MapContentPage;
+            var page = d as MapContentPage;
             if (page != null)
             {
-                if ((bool)e.NewValue != (bool)e.OldValue)
-                {
-                    if ((bool)e.NewValue)
-                    {
-                        page.OnMaximized();
-                    }
-                    else
-                    {
-                        page.OnMinimized();
-                    }
-                }
+                page.OnIsMaximizedChanged();
             }
         }
 
@@ -85,11 +76,9 @@ namespace Reitit
             SetBinding(MapHeightProperty, binding);
         }
 
-        protected virtual void OnMinimized() { }
+        public virtual void OnIsMaximizedChanged() { }
 
-        protected virtual void OnMaximized() { }
-
-        public virtual void OnMapTapped(FrameworkElement source, ReittiCoordinate coordinate) { }
+        public virtual void OnMapHolding(FrameworkElement source, ReittiCoordinate coordinate) { }
 
         protected override NavigationHelper ConstructNavigation()
         {

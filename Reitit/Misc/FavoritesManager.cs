@@ -11,64 +11,99 @@ using GalaSoft.MvvmLight;
 namespace Reitit
 {
     [DataContract]
-    public class FavoriteLocation
+    public class FavoriteLocation : ExtendedObservableObject
     {
+        public string Name
+        {
+            get { return _name; }
+            set { Set(() => Name, ref _name, value); }
+        }
         [DataMember]
-        public string Name { get; set; }
+        public string _name;
+        public string IconName
+        {
+            get { return _iconName; }
+            set { Set(() => IconName, ref _iconName, value); }
+        }
         [DataMember]
-        public int IconIndex { get; set; }
+        public string _iconName;
+        public string LocationName
+        {
+            get { return _locationName; }
+            set { Set(() => LocationName, ref _locationName, value); }
+        }
         [DataMember]
-        public string LocationName { get; set; }
+        public string _locationName;
+        public ReittiCoordinate Coordinate
+        {
+            get { return _coordinate; }
+            set { Set(() => Coordinate, ref _coordinate, value); }
+        }
         [DataMember]
-        public ReittiCoordinate Coordinate;
+        public ReittiCoordinate _coordinate;
+        public int Id
+        {
+            get { return _id; }
+            set { Set(() => Id, ref _id, value); }
+        }
+        [DataMember]
+        public int _id;
+
+        public FavoriteLocation()
+        {
+            IconName = Utils.DefaultFavIcon;
+        }
     }
 
     [DataContract]
     public class FavoritesManagerSettings
     {
         [DataMember]
-        public Dictionary<int, FavoriteLocation> FavoriteLocations = new Dictionary<int, FavoriteLocation>();
+        public ObservableCollection<FavoriteLocation> FavoriteLocations = new ObservableCollection<FavoriteLocation>();
         [DataMember]
         public int NextFavoriteId = 0;
     }
 
     public class FavoritesManager
     {
-        public FavoriteLocation this[int id]
-        {
-            get
-            {
-                return _locations[id];
-            }
-        }
-
         public ObservableCollection<FavoriteLocation> SortedLocations { get; private set; }
-
-        private Dictionary<int, FavoriteLocation> _locations;
 
         public FavoritesManager()
         {
-            _locations = App.Current.Settings.Favorites.FavoriteLocations;
-
-            SortedLocations = new ObservableCollection<FavoriteLocation>(from loc in _locations.Values
-                                     orderby loc.Name
-                                     select loc);
+            SortedLocations = App.Current.Settings.Favorites.FavoriteLocations;
         }
 
-        public int Add(FavoriteLocation location)
+        public int Add(FavoriteLocation location, int index = -1)
         {
             int id = GetUniqueId();
-            _locations[id] = location;
-            int insertIndex = SortedLocations.IndexOf(SortedLocations.FirstOrDefault(loc => loc.Name.CompareTo(location.Name) >= 0));
-            insertIndex = insertIndex == -1 ? SortedLocations.Count : insertIndex;
-            SortedLocations.Insert(insertIndex, location);
+            location.Id = id;
+            if (index >= 0 && index < SortedLocations.Count)
+            {
+                SortedLocations.Insert(index, location);
+            }
+            else
+            {
+                SortedLocations.Add(location);
+            }
             return id;
         }
 
-        public void Remove(int id)
+        public int Remove(int id)
         {
-            SortedLocations.Remove(_locations[id]);
-            _locations.Remove(id);
+            var result = SortedLocations.FirstOrDefault(fav => fav.Id == id);
+            if (result != null)
+            {
+                var index = SortedLocations.IndexOf(result);
+                SortedLocations.RemoveAt(index);
+                return index;
+            }
+            return -1;
+        }
+
+        public void ReplaceOrAdd(int id, FavoriteLocation newLocation)
+        {
+            var index = Remove(id);
+            Add(newLocation, index);
         }
 
         public IEnumerable<FavoriteLocation> LocationsWithPrefix(string prefix)
@@ -82,13 +117,13 @@ namespace Reitit
             }
         }
 
-        public bool Contains(FavoriteLocation location, out int id)
+        public bool Contains(FavoriteLocation search, out int id)
         {
-            foreach (var entry in _locations)
+            foreach (var location in SortedLocations)
             {
-                if (entry.Value == location)
+                if (location == search)
                 {
-                    id = entry.Key;
+                    id = location.Id;
                     return true;
                 }
             }

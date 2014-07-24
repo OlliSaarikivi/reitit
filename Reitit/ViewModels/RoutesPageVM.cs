@@ -142,8 +142,6 @@ namespace Reitit
     [DataContract]
     public class RoutesPageVM : ViewModelBase
     {
-        static RoutesPageVM() { SuspensionManager.KnownTypes.Add(typeof(RoutesPageVM)); }
-
         public RouteLoader Loader { get { return _loader; } }
         [DataMember]
         public RouteLoader _loader;
@@ -172,6 +170,9 @@ namespace Reitit
             }
         }
         private RouteVM _selectedRoute;
+
+        [DataMember]
+        public int _selectedIndex = -2;
 
         public RelayCommand PreviousCommand
         {
@@ -203,18 +204,23 @@ namespace Reitit
             Initialize();
         }
 
-        [OnDeserialized]
-        public void OnDeserialized(StreamingContext context)
-        {
-            Initialize();
-        }
-
-        private void Initialize()
+        protected override void Initialize()
         {
             NoResultsProperty = CreateDerivedProperty(() => NoResults,
                 () => Loader.LoadedRoutes.Count == 0 && Loader.InitialStatus == null);
 
             _routeVMs = new TransformObservableCollection<RouteVM, CompoundRoute>(Loader.LoadedRoutes, r => new RouteVM(r));
+            SelectedRoute = _selectedIndex >= 0 && _selectedIndex < RouteVMs.Count ? RouteVMs[_selectedIndex] : null;
+            _selectedIndex = -2;
+        }
+
+        [OnSerializing]
+        private void OnSerializing(StreamingContext c)
+        {
+            if (SelectedRoute != null)
+            {
+                _selectedIndex = RouteVMs.IndexOf(SelectedRoute);
+            }
         }
     }
 }

@@ -109,6 +109,8 @@ namespace Reitit
         public override string Name { get { return _location.Name; } }
         public override string Detail { get { return null; } }
 
+        public string IconName { get { return _location.IconName; } }
+
         public override bool Selected
         {
             get { return _selected; }

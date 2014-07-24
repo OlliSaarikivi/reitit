@@ -10,6 +10,7 @@ using Windows.ApplicationModel.Activation;
 using Windows.Devices.Geolocation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Graphics.Display;
 using Windows.UI;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
@@ -30,11 +31,25 @@ namespace Reitit
     /// </summary>
     public sealed partial class App : Application
     {
+        static App()
+        {
+            SuspensionManager.KnownTypes.AddRange(new Type[] {
+                typeof(ViewModelBase),
+                typeof(HubPageVM),
+                typeof(MapPageVM),
+                typeof(RouteSearchPageVM),
+                typeof(RoutesPageVM),
+                typeof(SearchPageVM),
+            });
+        }
+
         public new static App Current { get { return (App)Application.Current; } }
         public Settings Settings { get; private set; }
         public StackIndicatorManager IndicatorManager { get; private set; }
         public ModelCache ModelCache { get; private set; }
         public ReittiAPIClient ReittiClient { get; private set; }
+        public PoikkeusinfoAPIClient PoikkeusinfoClient { get; private set; }
+        public DisruptionsLoader DisruptionsLoader { get; private set; }
         public FavoritesManager Favorites { get; private set; }
         public RecentManager Recent { get; private set; }
         public SearchHistoryManager SearchHistory { get; private set; }
@@ -52,6 +67,9 @@ namespace Reitit
         {
             this.InitializeComponent();
             this.Suspending += this.OnSuspending;
+            this.Resuming += OnResuming;
+
+            DisplayInformation.AutoRotationPreferences = DisplayOrientations.Portrait;
 
             _initTask = Settings.Load().ContinueWith(t =>
             {
@@ -59,6 +77,8 @@ namespace Reitit
                 IndicatorManager = new StackIndicatorManager();
                 ModelCache = new ModelCache(AppConfiguration.ModelCacheSize);
                 ReittiClient = new ReittiAPIClient(AppConfiguration.ReittiAPIUser, AppConfiguration.ReittiAPIPass);
+                PoikkeusinfoClient = new PoikkeusinfoAPIClient { Language = PoikkeusinfoLanguage.En };
+                DisruptionsLoader = new DisruptionsLoader();
                 Favorites = new FavoritesManager();
                 Recent = new RecentManager();
                 SearchHistory = new SearchHistoryManager();
@@ -96,20 +116,25 @@ namespace Reitit
                 SuspensionManager.RegisterFrame(rootFrame, "AppFrame");
 
                 // TODO: Change this value to a cache size that is appropriate for your application.
-                rootFrame.CacheSize = 1;
+                rootFrame.CacheSize = 5;
 
                 if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
                 {
                     // Restore the saved session state only when appropriate.
+#if !DEBUG
                     try
                     {
-                        await SuspensionManager.RestoreAsync();
+#endif
+                    await SuspensionManager.LoadAsync();
+                    SuspensionManager.RestoreFrame(rootFrame);
+#if !DEBUG
                     }
                     catch (SuspensionManagerException)
                     {
                         // Something went wrong restoring state.
                         // Assume there is no state and continue.
                     }
+#endif
                 }
 
                 // Place the frame in the current Window.
@@ -173,6 +198,11 @@ namespace Reitit
             deferral.Complete();
         }
 
+        private void OnResuming(object sender, object e)
+        {
+            return;
+        }
+
         private void OnAllActivations()
         {
             Frame rootFrame = Window.Current.Content as Frame;
@@ -186,7 +216,6 @@ namespace Reitit
                 }
                 else
                 {
-
                     var statusBar = StatusBar.GetForCurrentView();
                     statusBar.BackgroundOpacity = 0;
                 }

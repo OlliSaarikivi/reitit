@@ -15,26 +15,27 @@ using Windows.UI;
 
 namespace Reitit
 {
-    [KnownType(typeof(FavoritePickerLocation))]
+    [KnownType(typeof(MeLocation))]
     [KnownType(typeof(MapLocation))]
+    [KnownType(typeof(SelectableLocation))]
+    [KnownType(typeof(FavoritePickerLocation))]
+    [KnownType(typeof(RecentPickerLocation))]
     [KnownType(typeof(ReittiLocation))]
     [KnownType(typeof(ReittiStopsLocation))]
-    [KnownType(typeof(MeLocation))]
     [DataContract]
     public class RouteSearchPageVM : ViewModelBase
     {
-        static RouteSearchPageVM() { SuspensionManager.KnownTypes.Add(typeof(RouteSearchPageVM)); }
         protected override void Initialize()
         {
             SelectedTimeTypeProperty = CreateDerivedProperty(
                 () => SelectedTimeType,
-                () => TimeTypes[SelectedTimeTypeIndex]);
+                () => SelectedTimeTypeIndex >= 0 ? TimeTypes[SelectedTimeTypeIndex] : null);
             SelectedSpeedProperty = CreateDerivedProperty(
                 () => SelectedSpeed,
-                () => WalkingSpeeds[SelectedSpeedIndex]);
+                () => SelectedSpeedIndex >= 0 ? WalkingSpeeds[SelectedSpeedIndex] : null);
             SelectedRouteTypeProperty = CreateDerivedProperty(
                 () => SelectedRouteType,
-                () => RouteTypes[SelectedRouteTypeIndex]);
+                () => SelectedRouteTypeIndex >= 0 ? RouteTypes[SelectedRouteTypeIndex] : null);
             SearchPossibleProperty = CreateDerivedProperty(
                 () => SearchPossible,
                 () => From != null && To != null);
@@ -231,7 +232,7 @@ namespace Reitit
             set { Set(() => TransferMargin, ref _transferMargin, value); }
         }
         [DataMember]
-        public int _transferMargin;
+        public int _transferMargin = 3;
 
         //public bool ShowAdvanced
         //{

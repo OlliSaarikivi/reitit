@@ -11,6 +11,13 @@ using System.Windows;
 
 namespace Reitit
 {
+    [KnownType(typeof(MeLocation))]
+    [KnownType(typeof(MapLocation))]
+    [KnownType(typeof(SelectableLocation))]
+    [KnownType(typeof(FavoritePickerLocation))]
+    [KnownType(typeof(RecentPickerLocation))]
+    [KnownType(typeof(ReittiLocation))]
+    [KnownType(typeof(ReittiStopsLocation))]
     [DataContract]
     public class RouteLoader : ExtendedObservableObject
     {
@@ -155,8 +162,7 @@ namespace Reitit
                     _loadNext = null;
                 }
             }
-            catch (OperationCanceledException)
-            { }
+            catch (OperationCanceledException) { }
         }
 
         private async Task DoLoadNext()
@@ -248,17 +254,12 @@ namespace Reitit
         [DataMember]
         public string Timetype;
         [DataMember]
-        public List<string> TransportTypes;
+        public List<string> TransportTypes = new List<string>();
         [DataMember]
         public string Optimize;
         [DataMember]
         public int? ChangeMargin;
         [DataMember]
         public int? WalkSpeed;
-
-        public RouteSearchParameters()
-        {
-            TransportTypes = new List<string>();
-        }
     }
 }

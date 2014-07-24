@@ -60,8 +60,8 @@ namespace Reitit
     [Windows.Foundation.Metadata.WebHostHidden]
     public class NavigationHelper : DependencyObject
     {
-        private Page Page { get; set; }
-        private Frame Frame { get { return this.Page.Frame; } }
+        public Page Page { get; set; }
+        public Frame Frame { get { return this.Page.Frame; } }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NavigationHelper"/> class.
@@ -72,40 +72,6 @@ namespace Reitit
         public NavigationHelper(Page page)
         {
             this.Page = page;
-
-            // When this page is part of the visual tree make two changes:
-            // 1) Map application view state to visual state for the page
-            // 2) Handle hardware navigation requests
-            this.Page.Loaded += (sender, e) =>
-            {
-#if WINDOWS_PHONE_APP
-                Windows.Phone.UI.Input.HardwareButtons.BackPressed += HardwareButtons_BackPressed;
-#else
-                // Keyboard and mouse navigation only apply when occupying the entire window
-                if (this.Page.ActualHeight == Window.Current.Bounds.Height &&
-                    this.Page.ActualWidth == Window.Current.Bounds.Width)
-                {
-                    // Listen to the window directly so focus isn't required
-                    Window.Current.CoreWindow.Dispatcher.AcceleratorKeyActivated +=
-                        CoreDispatcher_AcceleratorKeyActivated;
-                    Window.Current.CoreWindow.PointerPressed +=
-                        this.CoreWindow_PointerPressed;
-                }
-#endif
-            };
-
-            // Undo the same changes when the page is no longer visible
-            this.Page.Unloaded += (sender, e) =>
-            {
-#if WINDOWS_PHONE_APP
-                Windows.Phone.UI.Input.HardwareButtons.BackPressed -= HardwareButtons_BackPressed;
-#else
-                Window.Current.CoreWindow.Dispatcher.AcceleratorKeyActivated -=
-                    CoreDispatcher_AcceleratorKeyActivated;
-                Window.Current.CoreWindow.PointerPressed -=
-                    this.CoreWindow_PointerPressed;
-#endif
-            };
         }
 
         #region Navigation support
@@ -207,7 +173,7 @@ namespace Reitit
         /// </summary>
         /// <param name="sender">Instance that triggered the event.</param>
         /// <param name="e">Event data describing the conditions that led to the event.</param>
-        private void HardwareButtons_BackPressed(object sender, Windows.Phone.UI.Input.BackPressedEventArgs e)
+        public void HardwareButtons_BackPressed(object sender, Windows.Phone.UI.Input.BackPressedEventArgs e)
         {
             if (!e.Handled && this.GoBackCommand.CanExecute(null))
             {
@@ -318,7 +284,12 @@ namespace Reitit
         public void OnNavigatedTo(NavigationEventArgs e)
         {
             var frameState = SuspensionManager.SessionStateForFrame(this.Frame);
-            this._pageKey = "Page-" + this.Frame.BackStackDepth;
+            var depth = this.Frame.BackStackDepth;
+            if (depth > 0 && Frame.BackStack[0].SourcePageType == typeof(DummyPage))
+            {
+                depth -= 1;
+            }
+            this._pageKey = "Page-" + depth;
 
             if (e.NavigationMode == NavigationMode.New)
             {
@@ -360,12 +331,19 @@ namespace Reitit
         public void OnNavigatedFrom(NavigationEventArgs e)
         {
             var frameState = SuspensionManager.SessionStateForFrame(this.Frame);
-            var pageState = new Dictionary<String, Object>();
-            if (this.SaveState != null)
+            if (e.NavigationMode != NavigationMode.Back)
             {
-                this.SaveState(this, new SaveStateEventArgs(pageState));
+                var pageState = new Dictionary<String, Object>();
+                if (this.SaveState != null)
+                {
+                    this.SaveState(this, new SaveStateEventArgs(pageState));
+                }
+                frameState[_pageKey] = pageState;
             }
-            frameState[_pageKey] = pageState;
+            else
+            {
+                frameState.Remove(_pageKey);
+            }
         }
 
         #endregion

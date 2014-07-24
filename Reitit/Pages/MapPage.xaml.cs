@@ -35,6 +35,8 @@ namespace Reitit
         public object Parameter { get; set; }
     }
 
+    public class MapPageGoBackMessage { }
+
     public class ShowMyLocationImplicitMessage
     {
         public bool Show { get; set; }
@@ -50,7 +52,15 @@ namespace Reitit
     /// </summary>
     public sealed partial class MapPage : PageBase
     {
-        private MapPageVM _vm;
+        private bool _frameRegistered = false;
+
+        private MapPageVM VM
+        {
+            get
+            {
+                return DataContext as MapPageVM;
+            }
+        }
 
         public MapPage()
         {
@@ -58,9 +68,88 @@ namespace Reitit
             ContentFrame.SizeChanged += ContentFrame_SizeChanged;
         }
 
+        protected override void OnShown()
+        {
+            Messenger.Default.Register<MapPageNavigateMessage>(this, HandleMapPageNavigateMessage);
+            Messenger.Default.Register<MapSetViewMessage>(this, HandleSetViewMessgage);
+            Messenger.Default.Register<MapPageGoBackMessage>(this, HandleGoBackMessage);
+
+            if (VM.ContentMaximized)
+            {
+                Maximize(false);
+            }
+            else
+            {
+                Minimize(false);
+            }
+
+            Map.RegisterItems(MapItems);
+            Map.RegisterMapElements(MapElements);
+        }
+
+        protected override void OnHiding()
+        {
+            VM.ClearShowMyLocation();
+
+            var page = ContentFrame.Content as MapContentPage;
+            if (page != null)
+            {
+                Map.UnregisterItems(page.MapItems);
+                Map.UnregisterMapElements(page.MapElements);
+            }
+
+            Map.UnregisterItems(MapItems);
+            Map.UnregisterMapElements(MapElements);
+        }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            bool setupBindings = false;
+            if (!_frameRegistered)
+            {
+                _frameRegistered = true;
+                SuspensionManager.RegisterFrame(ContentFrame, "MapContentFrame-" + Frame.BackStackDepth);
+                if (e.NavigationMode == NavigationMode.Back)
+                {
+#if !DEBUG
+                    try
+                    {
+#endif
+                    SuspensionManager.RestoreFrame(ContentFrame);
+                    setupBindings = true;
+#if !DEBUG
+                    }
+                    catch (SuspensionManagerException)
+                    {
+                        // Something went wrong restoring state.
+                        // Assume there is no state and continue.
+                    }
+#endif
+                }
+            }
+            base.OnNavigatedTo(e);
+            if (setupBindings)
+            {
+                SetupBindings();
+            }
+        }
+
+        protected override void OnNavigatedFrom(NavigationEventArgs e)
+        {
+            base.OnNavigatedFrom(e);
+            if (e.NavigationMode == NavigationMode.Back && _frameRegistered)
+            {
+                _frameRegistered = false;
+                ContentFrame.BackStack.Clear();
+                ContentFrame.BackStack.Add(new PageStackEntry(typeof(DummyPage), null, null));
+                ContentFrame.GoBack();
+                SuspensionManager.UnregisterFrame(ContentFrame);
+            }
+        }
+
         protected override void OnBackPressed(BackPressedEventArgs e)
         {
-            if (DataContext != null && !_vm.ContentMaximized)
+            if (DataContext != null && !VM.ContentMaximized)
             {
                 Maximize();
                 e.Handled = true;
@@ -74,14 +163,18 @@ namespace Reitit
 
         void ContentFrame_Navigated(object sender, NavigationEventArgs e)
         {
+            SetupBindings();
+        }
+
+        void SetupBindings()
+        {
             var page = ContentFrame.Content as MapContentPage;
             if (page != null)
             {
                 ((HostingNavigationHelper)NavigationHelper).HostedHelper = page.NavigationHelper;
                 ContentFrame.Height = page.Height;
-                Map.BottomObscuredHeight = page.Height;
-                _vm.ContentMinimizedHeight = page.MinimizedHeight;
-                _vm.ContentMinimizedOffset = page.Height - page.MinimizedHeight;
+                VM.ContentMinimizedHeight = page.MinimizedHeight;
+                VM.ContentMinimizedOffset = page.Height - page.MinimizedHeight;
                 Binding binding = new Binding
                 {
                     Path = new PropertyPath("ContentMaximized"),
@@ -94,6 +187,10 @@ namespace Reitit
                 Messenger.Default.Register<ShowMyLocationImplicitMessage>(this, page, ShowMyLocationImplicitChanged);
                 Messenger.Default.Send(new ShowMyLocationImplicitMessage { Show = page.ShowMyLocationImplicit }, page);
             }
+            else if (ContentFrame.Content is DummyPage)
+            {
+                // It's alright
+            }
             else
             {
                 throw new Exception("Invalid navigation: MapPage content pages must extend MapContentPage");
@@ -104,11 +201,11 @@ namespace Reitit
         {
             if (message.Show)
             {
-                await _vm.SetShowMyLocationImplicit();
+                await VM.SetShowMyLocationImplicit();
             }
             else
             {
-                _vm.ClearShowMyLocationImplicit();
+                VM.ClearShowMyLocationImplicit();
             }
         }
 
@@ -130,50 +227,12 @@ namespace Reitit
 
         protected override object ConstructVM(object parameter)
         {
-            _vm = new MapPageVM();
             // A bit ugly, but it works
-            DataContext = _vm;
+            DataContext = new MapPageVM();
             var message = (MapPageNavigateMessage)parameter;
-            ContentFrame.BackStack.Clear();
             HandleMapPageNavigateMessage(message);
+            ContentFrame.BackStack.Clear();
             return DataContext;
-        }
-
-        protected override void OnNavigatedTo(NavigationEventArgs e)
-        {
-            base.OnNavigatedTo(e);
-
-            Messenger.Default.Register<MapPageNavigateMessage>(this, HandleMapPageNavigateMessage);
-            Messenger.Default.Register<MapSetViewMessage>(this, HandleSetViewMessgage);
-
-            if (_vm.ContentMaximized)
-            {
-                Maximize(false);
-            }
-            else
-            {
-                Minimize(false);
-            }
-
-            Map.RegisterItems(MapItems);
-            Map.RegisterMapElements(MapElements);
-        }
-
-        protected override void OnNavigatedFrom(NavigationEventArgs e)
-        {
-            base.OnNavigatedFrom(e);
-
-            _vm.ClearShowMyLocation();
-
-            var page = ContentFrame.Content as MapContentPage;
-            if (page != null)
-            {
-                Map.UnregisterItems(page.MapItems);
-                Map.UnregisterMapElements(page.MapElements);
-            }
-
-            Map.UnregisterItems(MapItems);
-            Map.UnregisterMapElements(MapElements);
         }
 
         private void HandleMapPageNavigateMessage(MapPageNavigateMessage message)
@@ -186,11 +245,17 @@ namespace Reitit
             await Map.SetView(message.Center, Utils.ShowLocationZoom);
         }
 
+        private void HandleGoBackMessage(MapPageGoBackMessage obj)
+        {
+            NavigationHelper.GoBack();
+        }
+
         private void Minimize(bool animate = true)
         {
             VisualStateManager.GoToState(this, "ContentMinimized", animate);
-            _vm.ContentMaximized = false;
+            VM.ContentMaximized = false;
             UpdateMapTransform();
+            Map.DoAutofocusView();
         }
 
         private void MaximizerRectangle_Tapped(object sender, TappedRoutedEventArgs e)
@@ -201,29 +266,29 @@ namespace Reitit
         private void Maximize(bool animate = true)
         {
             VisualStateManager.GoToState(this, "ContentMaximized", animate);
-            _vm.ContentMaximized = true;
+            VM.ContentMaximized = true;
             UpdateMapTransform();
         }
 
         private void UpdateMapTransform()
         {
-            Map.UpdateMapTransform(ContentFrame.ActualHeight - (_vm.ContentMaximized ? 0 : _vm.ContentMinimizedOffset));
+            Map.UpdateMapTransform(ContentFrame.ActualHeight - (VM.ContentMaximized ? 0 : VM.ContentMinimizedOffset));
         }
 
         private void Minimizer_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
-            _vm.StopTracking();
+            VM.StopTracking();
             Minimize();
         }
 
-        private void Map_ReititTapped(ReittiCoordinate coordinate, Point position)
+        private void Map_ReititHolding(ReittiCoordinate coordinate, Point position)
         {
             var page = ContentFrame.Content as MapContentPage;
             if (page != null)
             {
                 Canvas.SetLeft(MenuPositioner, position.X);
                 Canvas.SetTop(MenuPositioner, position.Y);
-                page.OnMapTapped(MenuPositioner, coordinate);
+                page.OnMapHolding(MenuPositioner, coordinate);
             }
         }
     }

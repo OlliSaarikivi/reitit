@@ -32,39 +32,42 @@ namespace Reitit
             var icon = d as ModeIcon;
             if (icon != null)
             {
-                var template = IconTemplateForType(e.NewValue as string);
-                icon.Content = template.LoadContent() as UIElement;
+                var template = IconTemplateForType(e.NewValue as string ?? "");
+                if (template != null)
+                {
+                    icon.Content = template.LoadContent() as UIElement;
+                }
             }
         }
         private static DataTemplate IconTemplateForType(string type)
         {
             if (type == "walk")
             {
-                return (DataTemplate)App.Current.Resources["WalkIcon"];
+                return App.Current.Resources["WalkIcon"] as DataTemplate;
             }
             else if (type == "wait")
             {
-                return (DataTemplate)App.Current.Resources["WaitIcon"];
+                return App.Current.Resources["WaitIcon"] as DataTemplate;
             }
             else if (type == "tram" || type == "2")
             {
-                return (DataTemplate)App.Current.Resources["TramIcon"];
+                return App.Current.Resources["TramIcon"] as DataTemplate;
             }
             else if (type == "metro" || type == "6")
             {
-                return (DataTemplate)App.Current.Resources["MetroIcon"];
+                return App.Current.Resources["MetroIcon"] as DataTemplate;
             }
             else if (type == "ferry" || type == "7")
             {
-                return (DataTemplate)App.Current.Resources["FerryIcon"];
+                return App.Current.Resources["FerryIcon"] as DataTemplate;
             }
             else if (type == "train" || type == "12")
             {
-                return (DataTemplate)App.Current.Resources["TrainIcon"];
+                return App.Current.Resources["TrainIcon"] as DataTemplate;
             }
             else // Buses and everything else
             {
-                return (DataTemplate)App.Current.Resources["BusIcon"];
+                return App.Current.Resources["BusIcon"] as DataTemplate;
             }
         }
 

@@ -28,6 +28,8 @@ namespace Reitit
         public DerivedProperty<bool> ShowResultsProperty;
         public bool ShowResults { get { return ShowResultsProperty.Get(); } }
 
+        private bool _isInFavoriteMode;
+
         public LocationPickerFlyoutVM()
         {
             NoResultsProperty = CreateDerivedProperty(() => NoResults,
@@ -42,11 +44,12 @@ namespace Reitit
                 Source = ResultLocationGroups,
                 IsSourceGrouped = true,
             };
-            Clear();
+            Clear(false);
         }
 
-        public void Clear()
+        public void Clear(bool isInFavoriteMode)
         {
+            _isInFavoriteMode = isInFavoriteMode;
             SearchTerm = "";
             SearchMessage = "";
             ResultLocationGroups.Clear();
@@ -322,12 +325,15 @@ namespace Reitit
 
         private void AddFavorites(string prefix = "")
         {
-            var favoritesGroup = new LocationGroup { Key = Utils.GetString("LocationPickerFavoritesHeader") };
-            favoritesGroup.AddRange<SelectableLocation>(from favorite in App.Current.Favorites.LocationsWithPrefix(prefix)
-                                                        select new FavoritePickerLocation(favorite));
-            if (favoritesGroup.Count > 0)
+            if (!_isInFavoriteMode)
             {
-                ResultLocationGroups.Add(favoritesGroup);
+                var favoritesGroup = new LocationGroup { Key = Utils.GetString("LocationPickerFavoritesHeader") };
+                favoritesGroup.AddRange<SelectableLocation>(from favorite in App.Current.Favorites.LocationsWithPrefix(prefix)
+                                                            select new FavoritePickerLocation(favorite));
+                if (favoritesGroup.Count > 0)
+                {
+                    ResultLocationGroups.Add(favoritesGroup);
+                }
             }
         }
 

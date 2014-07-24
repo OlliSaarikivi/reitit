@@ -394,7 +394,7 @@ namespace Reitit.API
                 }
             }
 
-            var correctedNames = new Dictionary<string,string>();
+            var correctedNames = new Dictionary<string, string>();
             foreach (var name in NamesByLang)
             {
                 string city;
@@ -474,10 +474,17 @@ namespace Reitit.API
         [DataMember]
         public TimeSpan[] StopTimes;
 
-        public Line(string code)
+        public Line(string code, string shortName = null)
         {
-            Code = code;
-            ParseCode();
+            if (code != null)
+            {
+                Code = code;
+                ParseCode();
+            }
+            else
+            {
+                ShortName = shortName;
+            }
             NamesByLang = new Dictionary<string, string>();
             LineShape = EmptyReittiCoordinates;
             StopTimes = EmptyStopTimes;

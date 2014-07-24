@@ -250,7 +250,9 @@ namespace Reitit
                 var textBlock = new TextBlock
                 {
                     Text = timeString,
-                    VerticalAlignment = VerticalAlignment.Top,
+                    VerticalAlignment = VerticalAlignment.Bottom,
+                    TextLineBounds = TextLineBounds.TrimToBaseline,
+                    Margin = new Thickness(0, 0, 0, 5),
                     HorizontalAlignment = HorizontalAlignment.Left,
                     FontSize = _extraLargeFontSize,
                 };
@@ -282,7 +284,9 @@ namespace Reitit
             var detailsBlock = new TextBlock
             {
                 Text = description,
-                VerticalAlignment = VerticalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Bottom,
+                TextLineBounds = TextLineBounds.TrimToBaseline,
+                Margin = new Thickness(0,0,0,5),
                 FontSize = _normalFontSize,
                 Foreground = _subtleBrush,
                 TextWrapping = TextWrapping.WrapWholeWords,
@@ -296,7 +300,9 @@ namespace Reitit
                 var textBlock = new TextBlock
                 {
                     Text = timeString,
-                    VerticalAlignment = VerticalAlignment.Top,
+                    VerticalAlignment = VerticalAlignment.Bottom,
+                    TextLineBounds = TextLineBounds.TrimToBaseline,
+                    Margin = new Thickness(0, 0, 0, 5),
                     HorizontalAlignment = HorizontalAlignment.Right,
                     FontSize = _extraLargeFontSize,
                 };

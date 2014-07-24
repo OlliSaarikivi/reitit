@@ -26,7 +26,7 @@ namespace Reitit
             set { SetValue(LabelProperty, value); }
         }
         public static readonly DependencyProperty LabelProperty =
-            DependencyProperty.Register("Label", typeof(string), typeof(LabelPushpin), new PropertyMetadata(""));
+            DependencyProperty.Register("Label", typeof(string), typeof(LabelPushpin), new PropertyMetadata(null));
 
         public LabelPushpin()
         {

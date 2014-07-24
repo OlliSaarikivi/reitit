@@ -34,6 +34,8 @@ namespace Reitit.API
     [DataContract]
     public class ReittiCoordinate
     {
+        public static readonly ReittiCoordinate Zero = new ReittiCoordinate(0, 0);
+
         public ReittiCoordinate() { }
 
         public ReittiCoordinate(double latitude, double longitude, double? altitude = null)

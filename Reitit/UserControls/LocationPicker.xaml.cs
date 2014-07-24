@@ -34,12 +34,12 @@ namespace Reitit
         public Contact Contact { get; set; }
     }
 
-    public class LocationPickerFavoriteVisibilityConverter : LambdaConverter<IPickerLocation, Visibility, object>
+    public class LocationPickerFavoriteOpacityConverter : LambdaConverter<IPickerLocation, double, object>
     {
-        public LocationPickerFavoriteVisibilityConverter()
+        public LocationPickerFavoriteOpacityConverter()
             : base((s, p, language) =>
             {
-                return ShouldBeVisible(s) ? Visibility.Visible : Visibility.Collapsed;
+                return ShouldBeVisible(s) ? 1 : 0;
             }) { }
 
         public static bool ShouldBeVisible(IPickerLocation location)
@@ -57,6 +57,16 @@ namespace Reitit
         private LocationPickerFlyoutVM _flyoutVM = new LocationPickerFlyoutVM();
         private bool _closingTemporarily;
         private string _searchWith;
+
+        public bool IsInFavoriteMode
+        {
+            get { return (bool)GetValue(IsInFavoriteModeProperty); }
+            set { SetValue(IsInFavoriteModeProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for IsInFavoriteMode.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty IsInFavoriteModeProperty =
+            DependencyProperty.Register("IsInFavoriteMode", typeof(bool), typeof(LocationPicker), new PropertyMetadata(false));
 
         public IPickerLocation Value
         {
@@ -114,7 +124,7 @@ namespace Reitit
                     Flyout.Hide();
                 }),
             });
-            _commandBar.PrimaryCommands.Add(new AppBarButton
+            var meButton = new AppBarButton
             {
                 Icon = new SymbolIcon(Symbol.Target),
                 Label = Utils.GetString("PickerMe"),
@@ -123,14 +133,23 @@ namespace Reitit
                     Value = MeLocation.Instance;
                     Flyout.Hide();
                 }),
-            });
+            };
+            _commandBar.PrimaryCommands.Add(meButton);
+            Binding binding = new Binding
+            {
+                Path = new PropertyPath("IsInFavoriteMode"),
+                Source = this,
+                Mode = BindingMode.OneWay,
+                Converter = new NegVisibilityConverter(),
+            };
+            meButton.SetBinding(AppBarButton.VisibilityProperty, binding);
 
             FlyoutRoot.DataContext = _flyoutVM;
         }
 
         private void Flyout_Opening(object sender, object e)
         {
-            _flyoutVM.Clear();
+            _flyoutVM.Clear(IsInFavoriteMode);
 
             var frame = (Frame)Window.Current.Content;
             var page = (Page)frame.Content;
@@ -148,9 +167,12 @@ namespace Reitit
             {
                 LocationsListView.ScrollIntoView(m.Item, ScrollIntoViewAlignment.Default);
             });
-            Messenger.Default.Register<UnfocusTextBoxMessage>(this, _flyoutVM, m =>
+            Messenger.Default.Register<UnfocusTextBoxMessage>(this, _flyoutVM, async m =>
             {
-                this.Focus(FocusState.Programmatic);
+                await Utils.OnCoreDispatcher(() =>
+                {
+                    UnfocusButton.Focus(FocusState.Programmatic);
+                });
             });
             Messenger.Default.Register<DontStopListeningMessage>(this, _flyoutVM, m =>
             {
@@ -209,7 +231,7 @@ namespace Reitit
 
         private void Flyout_Opened(object sender, object e)
         {
-            if (_flyoutVM.SearchTerm == "")
+            if (_flyoutVM.ResultLocationGroups.Count == 0)
             {
                 SearchBox.Focus(FocusState.Programmatic);
             }
@@ -238,7 +260,7 @@ namespace Reitit
         private void FlyoutButton_Tapped(object sender, TappedRoutedEventArgs e)
         {
             var point = e.GetPosition(FlyoutButton);
-            if (point.X > FlyoutButton.ActualWidth - 45 && LocationPickerFavoriteVisibilityConverter.ShouldBeVisible(Value))
+            if (point.X > FlyoutButton.ActualWidth - 45 && LocationPickerFavoriteOpacityConverter.ShouldBeVisible(Value) && !IsInFavoriteMode)
             {
                 AddFavoriteFlyout.ShowAt(FlyoutButton);
             }
@@ -281,6 +303,7 @@ namespace Reitit
             statusBar.ForegroundColor = (Color)App.Current.Resources["PhoneForegroundColor"];
 
             AddFavoriteName.Text = Value.Name;
+            AddFavoriteName.SelectAll();
             AddFavoriteAccept.IsEnabled = (AddFavoriteName.Text.Length != 0);
         }
 
@@ -288,6 +311,23 @@ namespace Reitit
         {
             var statusBar = StatusBar.GetForCurrentView();
             statusBar.ForegroundColor = _oldStatusBarColor;
+        }
+
+        private void GroupHeaderBorder_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            SemanticZoom.IsZoomedInViewActive = false;
+        }
+
+        private void SemanticZoom_ViewChangeCompleted(object sender, SemanticZoomViewChangedEventArgs e)
+        {
+            if (e.IsSourceZoomedInView)
+                return;
+
+            var selectedGroup = e.DestinationItem.Item as LocationGroup;
+            if (selectedGroup == null)
+                return;
+
+            LocationsListView.ScrollIntoView(selectedGroup, ScrollIntoViewAlignment.Leading);
         }
     }
 }

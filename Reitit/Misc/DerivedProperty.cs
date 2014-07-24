@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
@@ -9,6 +10,29 @@ using System.Threading.Tasks;
 
 namespace Reitit
 {
+    public class CollectionNotifier : INotifyPropertyChanged
+    {
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        INotifyCollectionChanged _collectionNotifier;
+        string _propertyName;
+
+        public CollectionNotifier(INotifyCollectionChanged collectionNotifier, string propertyName)
+        {
+            _collectionNotifier = collectionNotifier;
+            _propertyName = propertyName;
+            collectionNotifier.CollectionChanged += (s, e) =>
+            {
+                var handler = PropertyChanged;
+                if (handler != null)
+                {
+                    handler(collectionNotifier, new PropertyChangedEventArgs(propertyName));
+                }
+            };
+        }
+    }
+
+
     internal class PropertyFinder<T> : ExpressionVisitor
     {
         private DerivedProperty<T> _property;
@@ -22,10 +46,16 @@ namespace Reitit
         {
             if (node.Member is PropertyInfo)
             {
-                var notifier = Expression.Lambda<Func<object>>(node.Expression).Compile()() as INotifyPropertyChanged;
+                var obj = Expression.Lambda<Func<object>>(node.Expression).Compile()();
+                var notifier = obj as INotifyPropertyChanged;
                 if (notifier != null)
                 {
                     _property.AddDependency(notifier, node.Member.Name);
+                }
+                var collectionNotifier = obj as INotifyCollectionChanged;
+                if (collectionNotifier != null)
+                {
+                    _property.AddDependency(new CollectionNotifier(collectionNotifier, node.Member.Name), node.Member.Name);
                 }
             }
             return base.VisitMember(node);

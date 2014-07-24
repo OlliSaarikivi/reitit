@@ -58,7 +58,7 @@
                          Center="{Binding MapCenter, Mode=TwoWay}"
                          ZoomLevel="{Binding MapZoomLevel, Mode=TwoWay}"
                          Autofocus="{Binding ContentMaximized}"
-                         ReititTapped="Map_ReititTapped"/>
+                         ReititHolding="Map_ReititHolding"/>
         <Rectangle HorizontalAlignment="Stretch"
                    VerticalAlignment="Stretch"
                    Fill="Transparent"

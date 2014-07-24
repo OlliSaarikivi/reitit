@@ -92,9 +92,19 @@
     <Compile Include="API\RouteSearchResults.cs" />
     <Compile Include="API\Utils.cs" />
     <Compile Include="Misc\DependencyObjectExtensions.cs" />
+    <Compile Include="Misc\DisruptionsLoader.cs" />
     <Compile Include="Misc\IFlippable.cs" />
     <Compile Include="Misc\ParamCache.cs" />
     <Compile Include="Misc\RouteToElementsConverter.cs" />
+    <Compile Include="Pages\DummyPage.xaml.cs">
+      <DependentUpon>DummyPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\EditFavPage.xaml.cs">
+      <DependentUpon>EditFavPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\FavIcon.xaml.cs">
+      <DependentUpon>FavIcon.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\FocusAllButton.xaml.cs">
       <DependentUpon>FocusAllButton.xaml</DependentUpon>
     </Compile>
@@ -134,9 +144,6 @@
     <Compile Include="Pages\HubPage.xaml.cs">
       <DependentUpon>HubPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Pages\ItemPage.xaml.cs">
-      <DependentUpon>ItemPage.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Misc\AppConfiguration.cs" />
     <Compile Include="Misc\Converters.cs" />
     <Compile Include="Misc\DerivedProperty.cs" />
@@ -162,6 +169,7 @@
     <Compile Include="UserControls\ToPushpin.xaml.cs">
       <DependentUpon>ToPushpin.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ViewModels\EditFavPageVM.cs" />
     <Compile Include="ViewModels\HubPageVM.cs" />
     <Compile Include="ViewModels\MapPageVM.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
@@ -178,9 +186,6 @@
       <DependentUpon>SearchPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Pages\SectionPage.xaml.cs">
-      <DependentUpon>SectionPage.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Strings\en-US\OldResources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -232,6 +237,28 @@
     <PRIResource Include="Strings\en-US\Resources.resw" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Assets\FavIcons.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Page>
+    <Page Include="Assets\ModeIcons.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Page>
+    <Page Include="Pages\DummyPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\EditFavPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\FavIcon.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UserControls\FocusAllButton.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -256,10 +283,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Pages\ItemPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Pages\MapPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -273,10 +296,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Pages\SearchPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Pages\SectionPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
