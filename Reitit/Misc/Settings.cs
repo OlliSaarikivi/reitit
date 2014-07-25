@@ -18,7 +18,11 @@ namespace Reitit
         [DataMember]
         public int ParamCacheNextId = 1;
         [DataMember]
-        public List<string> SearchHistory = new List<string>();
+        public List<string> PickerSearchHistory = new List<string>();
+        [DataMember]
+        public List<string> StopSearchHistory = new List<string>();
+        [DataMember]
+        public List<string> LineSearchHistory = new List<string>();
         [DataMember]
         public ObservableCollection<RecentLocation> RecentLocations = new ObservableCollection<RecentLocation>();
         [DataMember]

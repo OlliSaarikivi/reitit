@@ -28,6 +28,7 @@ using Windows.UI.Xaml.Navigation;
 namespace Reitit
 {
     public class SuspendingMessage { }
+    public class ResumingMessage { }
 
     /// <summary>
     /// Provides application-specific behavior to supplement the default Application class.
@@ -42,7 +43,7 @@ namespace Reitit
                 typeof(MapPageVM),
                 typeof(RouteSearchPageVM),
                 typeof(RoutesPageVM),
-                typeof(SearchPageVM),
+                typeof(StopSearchPageVM),
             });
         }
 
@@ -55,9 +56,23 @@ namespace Reitit
         public DisruptionsLoader DisruptionsLoader { get; private set; }
         public FavoritesManager Favorites { get; private set; }
         public RecentManager Recent { get; private set; }
-        public SearchHistoryManager SearchHistory { get; private set; }
+        public SearchHistoryManager PickerSearchHistory { get; private set; }
+        public SearchHistoryManager StopSearchHistory { get; private set; }
+        public SearchHistoryManager LineSearchHistory { get; private set; }
         public ParamCache ParamCache { get; private set; }
         public EasyGeolocator Geolocator { get; private set; }
+        public LocationPickerFlyout LocationPickerFlyout
+        {
+            get
+            {
+                if (_locationPickerFlyout == null)
+                {
+                    _locationPickerFlyout = new LocationPickerFlyout();
+                }
+                return _locationPickerFlyout;
+            }
+        }
+        private LocationPickerFlyout _locationPickerFlyout;
 
         private TransitionCollection transitions;
         private Task _initTask;
@@ -74,7 +89,7 @@ namespace Reitit
 
             DisplayInformation.AutoRotationPreferences = DisplayOrientations.Portrait;
 
-            _initTask = Settings.Load().ContinueWith(t =>
+            _initTask = Settings.Load().ContinueWith(async t =>
             {
                 Settings = t.Result;
                 IndicatorManager = new StackIndicatorManager();
@@ -84,7 +99,9 @@ namespace Reitit
                 DisruptionsLoader = new DisruptionsLoader();
                 Favorites = new FavoritesManager();
                 Recent = new RecentManager();
-                SearchHistory = new SearchHistoryManager();
+                PickerSearchHistory = new SearchHistoryManager(Settings.PickerSearchHistory);
+                StopSearchHistory = new SearchHistoryManager(Settings.StopSearchHistory);
+                LineSearchHistory = new SearchHistoryManager(Settings.LineSearchHistory);
                 ParamCache = new ParamCache();
                 Geolocator = new EasyGeolocator { DesiredAccuracy = PositionAccuracy.High, MovementThreshold = AppConfiguration.GPSMovementThreshold };
             });
@@ -204,26 +221,35 @@ namespace Reitit
 
         private void OnResuming(object sender, object e)
         {
-            return;
+            Messenger.Default.Send(new ResumingMessage());
         }
 
         private void OnAllActivations()
         {
             Frame rootFrame = Window.Current.Content as Frame;
+            if (rootFrame.Content != null)
+            {
+                SetStatusBar(rootFrame.Content.GetType());
+            }
             rootFrame.Navigated += (s, e) =>
             {
-                if (e.SourcePageType == typeof(MapPage))
-                {
-                    var statusBar = StatusBar.GetForCurrentView();
-                    statusBar.BackgroundOpacity = 0.6666666;
-                    statusBar.BackgroundColor = (Color)App.Current.Resources["PhoneBackgroundColor"];
-                }
-                else
-                {
-                    var statusBar = StatusBar.GetForCurrentView();
-                    statusBar.BackgroundOpacity = 0;
-                }
+                SetStatusBar(e.SourcePageType);
             };
+        }
+
+        private void SetStatusBar(Type pageType)
+        {
+            if (pageType == typeof(MapPage))
+            {
+                var statusBar = StatusBar.GetForCurrentView();
+                statusBar.BackgroundOpacity = 0.6666666;
+                statusBar.BackgroundColor = (Color)App.Current.Resources["PhoneBackgroundColor"];
+            }
+            else
+            {
+                var statusBar = StatusBar.GetForCurrentView();
+                statusBar.BackgroundOpacity = 0;
+            }
         }
     }
 }

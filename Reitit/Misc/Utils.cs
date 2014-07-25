@@ -31,6 +31,8 @@ namespace Reitit
 {
     public static partial class Utils
     {
+        public static readonly TimeSpan StatusBarNotificationTime = TimeSpan.FromSeconds(2);
+
         public static readonly string DefaultFavIcon = "FavPoi";
 
         public static readonly double MapEpsilon = 0.0000001;
@@ -441,6 +443,19 @@ namespace Reitit
             var timeFormatter = new DateTimeFormatter("shorttime", new[] { formattingLanguage }).Patterns[0];
             var fullFormatter = new DateTimeFormatter(timeFormatter);
             return fullFormatter;
+        }
+
+        public static ReittiCoordinate AverageCenter(this IEnumerable<ReittiCoordinate> coordinates)
+        {
+            int n = 0;
+            double latSum = 0, longSum = 0;
+            foreach (var c in coordinates)
+            {
+                latSum += c.Latitude;
+                longSum += c.Longitude;
+                ++n;
+            }
+            return new ReittiCoordinate(latSum / n, longSum / n);
         }
     }
 }

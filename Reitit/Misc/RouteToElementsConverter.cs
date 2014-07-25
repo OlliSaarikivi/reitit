@@ -36,8 +36,33 @@ namespace Reitit
                             ZIndex = 0,
                         };
                         elements.Add(polyline);
+                        if (leg.Locs.Length > 0 && leg.Shape.Length > 0 && leg.Locs[0].Coord != leg.Shape[0])
+                        {
+                            var startPolyline = new MapPolyline
+                            {
+                                StrokeColor = Utils.ColorForType(leg.Type),
+                                StrokeThickness = 5,
+                                StrokeDashed = true,
+                                Path = new Geopath(new BasicGeoposition[] { leg.Locs[0].Coord, leg.Shape[0] }),
+                                ZIndex = 0,
+                            };
+                            elements.Add(startPolyline);
+                        }
+                        if (leg.Locs.Length > 0 && leg.Shape.Length > 0 && leg.Locs.LastElement().Coord != leg.Shape.LastElement())
+                        {
+                            var startPolyline = new MapPolyline
+                            {
+                                StrokeColor = Utils.ColorForType(leg.Type),
+                                StrokeThickness = 5,
+                                StrokeDashed = true,
+                                Path = new Geopath(new BasicGeoposition[] { leg.Shape.LastElement(), leg.Locs.LastElement().Coord }),
+                                ZIndex = 0,
+                            };
+                            elements.Add(startPolyline);
+                        }
 
-                        if (leg.Type != "walk") {
+                        if (leg.Type != "walk")
+                        {
                             foreach (var loc in leg.Locs)
                             {
                                 var stopIcon = new MapIcon

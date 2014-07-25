@@ -152,7 +152,16 @@ namespace Reitit
         public SelectedBrushConverter()
             : base((b, p, language) =>
             {
-                return b ? (Brush)App.Current.Resources["PhoneAccentBrush"] : (p ?? (Brush)App.Current.Resources["ApplicationForegroundThemeBrush"]);
+                return b ? (Brush)App.Current.Resources["PhoneAccentBrush"] : (p ?? (Brush)App.Current.Resources["PhoneForegroundBrush"]);
+            }) { }
+    }
+
+    public class ForegroundBrushConverter : LambdaConverter<bool, Brush, Brush>
+    {
+        public ForegroundBrushConverter()
+            : base((b, p, language) =>
+            {
+                return b ? (Brush)App.Current.Resources["PhoneForegroundBrush"] : (p ?? (Brush)App.Current.Resources["PhoneBackgroundBrush"]);
             }) { }
     }
 

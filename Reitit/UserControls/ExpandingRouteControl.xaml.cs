@@ -240,9 +240,9 @@ namespace Reitit
             Grid.SetRow(detailsRoot, 0);
             MinimizedRoot.Children.Add(detailsRoot);
 
-            detailsRoot.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(_timeStringMaxLength + 10) });
+            detailsRoot.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
             detailsRoot.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-            detailsRoot.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(_timeStringMaxLength + 10) });
+            detailsRoot.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
 
             { // Add departure time
                 var loc = route.Routes[0].Legs[0].Locs[0];
@@ -285,8 +285,9 @@ namespace Reitit
             {
                 Text = description,
                 VerticalAlignment = VerticalAlignment.Bottom,
+                HorizontalAlignment = HorizontalAlignment.Left,
                 TextLineBounds = TextLineBounds.TrimToBaseline,
-                Margin = new Thickness(0,0,0,5),
+                Margin = new Thickness(10, 0, 0, 5),
                 FontSize = _normalFontSize,
                 Foreground = _subtleBrush,
                 TextWrapping = TextWrapping.WrapWholeWords,

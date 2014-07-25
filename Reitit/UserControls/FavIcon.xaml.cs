@@ -38,7 +38,9 @@ namespace Reitit
                 var template = resource as DataTemplate;
                 if (template != null)
                 {
-                    icon.Viewbox.Child = template.LoadContent() as UIElement;
+                    var element = template.LoadContent() as FrameworkElement;
+                    element.DataContext = icon;
+                    icon.Viewbox.Child = element;
                 }
             }
         }

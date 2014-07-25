@@ -33,7 +33,6 @@ namespace Reitit
     }
 
     [DataContract]
-    [KnownType(typeof(EditFavPageVM))]
     public class EditFavPageVM : ViewModelBase
     {
         public string Title { get { return _title; } }

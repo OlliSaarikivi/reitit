@@ -272,7 +272,7 @@ namespace Reitit
                     Latitude = minLatitude - latitudeMargin,
                     Longitude = maxLongitude + longitudeMargin
                 });
-                var margin = new Thickness(50, 50, 50, _contentHeight + 12);
+                var margin = new Thickness(50, 50, 50, _contentHeight + 5);
                 var viewSet = await Map.TrySetViewBoundsAsync(bounds, margin, MapAnimationKind.Linear);
                 if (!viewSet)
                 {

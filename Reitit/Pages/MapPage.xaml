@@ -74,27 +74,31 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <Rectangle HorizontalAlignment="Stretch"
-                       Height="40"
+                       Height="20"
                        Fill="Transparent"
+                       VerticalAlignment="Bottom"
                        Visibility="{Binding ContentMaximized, Converter={StaticResource NegVisibilityConverter}}"
                        Tapped="MaximizerRectangle_Tapped"/>
             <StackPanel Orientation="Horizontal"
-                        Margin="20,0,20,0">
-                <Button x:Name="MeButton"
-                        Style="{StaticResource RoundButtonStyle}"
-                        Foreground="Black"
-                        BorderBrush="Black"
-                        Background="#A6FFFFFF">
-                    <Button.RenderTransform>
-                        <TranslateTransform x:Name="MeButtonTranslation"/>
-                    </Button.RenderTransform>
-                    <i:Interaction.Behaviors>
-                        <core:EventTriggerBehavior EventName="Click">
-                            <core:InvokeCommandAction Command="{Binding ShowMyLocationExplicitCommand}"/>
-                        </core:EventTriggerBehavior>
-                    </i:Interaction.Behaviors>
-                    <SymbolIcon Symbol="Target"/>
-                </Button>
+                        Margin="0,0,0,0">
+                <Border Background="Transparent">
+                    <Button x:Name="MeButton"
+                            Style="{StaticResource RoundButtonStyle}"
+                            Foreground="Black"
+                            BorderBrush="Black"
+                            Background="#A6FFFFFF"
+                            Margin="20,10,20,10">
+                        <Button.RenderTransform>
+                            <TranslateTransform x:Name="MeButtonTranslation"/>
+                        </Button.RenderTransform>
+                        <i:Interaction.Behaviors>
+                            <core:EventTriggerBehavior EventName="Click">
+                                <core:InvokeCommandAction Command="{Binding ShowMyLocationExplicitCommand}"/>
+                            </core:EventTriggerBehavior>
+                        </i:Interaction.Behaviors>
+                        <SymbolIcon Symbol="Target"/>
+                    </Button>
+                </Border>
             </StackPanel>
             <Border Grid.Row="1"
                     Height="{Binding ContentMinimizedHeight}"/>

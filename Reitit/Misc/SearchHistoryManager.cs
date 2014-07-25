@@ -8,36 +8,18 @@ namespace Reitit
 {
     public class SearchHistoryManager
     {
-        public const int SearchHistorySize = 100;
+        public const int SearchHistorySize = 500;
 
         public List<string> SearchHistory { get; private set; }
 
-        public SearchHistoryManager()
+        public SearchHistoryManager(List<string> history)
         {
-            SearchHistory = App.Current.Settings.SearchHistory;
-            //for (int i = 0; i < SearchHistorySize; ++i)
-            //{
-            //    SearchHistory.Add(RandomString(5));
-            //}
-        }
-
-        Random random = new Random();
-
-        private string RandomString(int size)
-        {
-            StringBuilder builder = new StringBuilder();
-            char ch;
-            for (int i = 0; i < size; i++)
-            {
-                ch = Convert.ToChar(Convert.ToInt32(Math.Floor(26 * random.NextDouble() + 65)));
-                builder.Append(ch);
-            }
-
-            return builder.ToString();
+            SearchHistory = history;
         }
 
         public void Add(string search)
         {
+            SearchHistory.Remove(search);
             SearchHistory.Insert(0, search);
             while (SearchHistory.Count > SearchHistorySize)
             {

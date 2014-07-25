@@ -86,9 +86,7 @@ namespace Reitit
                 if (!_shown)
                 {
                     _shown = true;
-                    Utils.D("OnShowing");
                     OnShowing();
-                    Utils.D("OnShown");
                     OnShown();
                 }
             };
@@ -98,8 +96,8 @@ namespace Reitit
                 if (_shown)
                 {
                     _shown = false;
-                    Utils.D("OnHiding");
                     OnHiding();
+                    Messenger.Default.Unregister(this);
                 }
             };
         }
@@ -203,14 +201,12 @@ namespace Reitit
             }
             if (!_shown)
             {
-                Utils.D("OnShowing");
                 OnShowing();
             }
             NavigationHelper.OnNavigatedTo(e);
             if (!_shown)
             {
                 _shown = true;
-                Utils.D("OnShown");
                 OnShown();
             }
         }
@@ -220,8 +216,8 @@ namespace Reitit
             if (_shown && e.NavigationMode != NavigationMode.Forward)
             {
                 _shown = false;
-                Utils.D("OnHiding");
                 OnHiding();
+                Messenger.Default.Unregister(this);
             }
             NavigationHelper.OnNavigatedFrom(e);
             if (e.NavigationMode == NavigationMode.Back)

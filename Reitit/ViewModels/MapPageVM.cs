@@ -97,10 +97,6 @@ namespace Reitit
 
         private TrayStatus _locatingStatus;
 
-        public MapPageVM()
-        {
-        }
-
         protected override void Initialize()
         {
             _locatingStatus = new TrayStatus();
@@ -109,6 +105,14 @@ namespace Reitit
                 _locating = false;
                 StartGPS();
             }
+            Messenger.Default.Register<ResumingMessage>(this, m =>
+            {
+                if (_locating)
+                {
+                    _locating = false;
+                    StartGPS();
+                }
+            });
             Messenger.Default.Register<SuspendingMessage>(this, m =>
             {
                 if (_locating)

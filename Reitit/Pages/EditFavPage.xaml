@@ -36,7 +36,8 @@
                     <GridView.ItemTemplate>
                         <DataTemplate>
                             <local:FavIcon IconName="{Binding IconName}"
-                                           Background="{Binding Selected, Converter={StaticResource SelectedBrushConverter}, ConverterParameter={StaticResource BlackBrush}}"
+                                           Background="{Binding Selected, Converter={StaticResource SelectedBrushConverter}, ConverterParameter={ThemeResource PhoneForegroundBrush}}"
+                                           Foreground="{Binding Selected, Converter={StaticResource ForegroundBrushConverter}}"
                                            Width="82.5"
                                            Height="82.5"
                                            Margin="5"/>

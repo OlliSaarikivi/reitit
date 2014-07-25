@@ -57,6 +57,7 @@ namespace Reitit
         public HubPage()
         {
             this.InitializeComponent();
+            var flyout = App.Current.LocationPickerFlyout; // Preload the flyout
         }
 
         protected override object ConstructVM(object parameter)

@@ -38,6 +38,7 @@
             <local:TransparentIfTrueConverter x:Key="TransparentIfTrueConverter"/>
             <local:OpaqueIfTrueConverter x:Key="OpaqueIfTrueConverter"/>
             <local:SelectedBrushConverter x:Key="SelectedBrushConverter"/>
+            <local:ForegroundBrushConverter x:Key="ForegroundBrushConverter"/>
             <local:NullIfFalseConverter x:Key="NullIfFalseConverter"/>
             <local:NegationConverter x:Key="NegationConverter"/>
             <local:NotNullConverter x:Key="NotNullConverter"/>
@@ -75,7 +76,8 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     <local:FavIcon IconName="{Binding IconName}"
-                                   Background="{Binding Selected, Converter={StaticResource SelectedBrushConverter}, ConverterParameter={StaticResource BlackBrush}}"/>
+                                   Background="{Binding Selected, Converter={StaticResource SelectedBrushConverter}, ConverterParameter={ThemeResource PhoneForegroundBrush}}"
+                                   Foreground="{Binding Selected, Converter={StaticResource ForegroundBrushConverter}}"/>
                     <TextBlock Grid.Column="1"
                                Text="{Binding Name}"
                                Style="{ThemeResource ListViewItemTextBlockStyle}"

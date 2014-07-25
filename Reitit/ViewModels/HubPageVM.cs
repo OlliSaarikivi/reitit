@@ -24,7 +24,6 @@ namespace Reitit
     }
 
     [DataContract]
-    [KnownType(typeof(HubPageVM))]
     public class HubPageVM : ViewModelBase
     {
         public HubPageVM()
@@ -39,7 +38,7 @@ namespace Reitit
         [DataMember]
         public ObservableCollection<MenuItem> _menuItems = new ObservableCollection<MenuItem> {
             new MenuItem { Title = Utils.GetString("HubRoutesMenuItem"), Target = typeof(RouteSearchPage).FullName },
-            new MenuItem { Title = Utils.GetString("HubStopsMenuItem"), Target = typeof(RouteSearchPage).FullName },
+            new MenuItem { Title = Utils.GetString("HubStopsMenuItem"), Target = typeof(StopSearchPage).FullName },
             new MenuItem { Title = Utils.GetString("HubLinesMenuItem"), Target = typeof(RouteSearchPage).FullName },
         };
 

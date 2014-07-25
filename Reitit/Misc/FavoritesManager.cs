@@ -71,6 +71,7 @@ namespace Reitit
         public FavoritesManager()
         {
             SortedLocations = App.Current.Settings.Favorites.FavoriteLocations;
+            SortedLocations.CollectionChanged += (s, e) => { App.Current.LocationPickerFlyout.Clear(); };
         }
 
         public int Add(FavoriteLocation location, int index = -1)

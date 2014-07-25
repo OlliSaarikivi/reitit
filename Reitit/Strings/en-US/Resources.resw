@@ -180,11 +180,8 @@
   <data name="LocationPickerSearchFailedTitle" xml:space="preserve">
     <value>Couldn't retrieve locations</value>
   </data>
-  <data name="LocationPickerShortSearchMessage" xml:space="preserve">
+  <data name="ShortSearchMessage" xml:space="preserve">
     <value>Please type at least 3 characters.</value>
-  </data>
-  <data name="LocationPickerShortSearchMessageTitle" xml:space="preserve">
-    <value>Search term too short</value>
   </data>
   <data name="LocationPickerStopsHeader" xml:space="preserve">
     <value>stops</value>
@@ -243,7 +240,7 @@
   <data name="RouteTypeWalking" xml:space="preserve">
     <value>least walking</value>
   </data>
-  <data name="SearchingStatus" xml:space="preserve">
+  <data name="PickerSearchingStatus" xml:space="preserve">
     <value>Searching...</value>
   </data>
   <data name="SearchNoResults.Text" xml:space="preserve">
@@ -446,5 +443,26 @@
   </data>
   <data name="ValidityFormat" xml:space="preserve">
     <value>From {0} to {1}</value>
+  </data>
+  <data name="MapFlyoutNearHereItem.Text" xml:space="preserve">
+    <value>show stops in area</value>
+  </data>
+  <data name="StopSearchTitle.Title" xml:space="preserve">
+    <value>STOPS</value>
+  </data>
+  <data name="StopSearchBox.PlaceholderText" xml:space="preserve">
+    <value>search for stops</value>
+  </data>
+  <data name="StopsSearchFailed" xml:space="preserve">
+    <value>A problem occured when trying to retrieve the results for your search from the server. Try again or contact the app creator if the problem persists.</value>
+  </data>
+  <data name="StopsSearchFailedTitle" xml:space="preserve">
+    <value>Couldn't retrieve stops</value>
+  </data>
+  <data name="StopsSearchingStatus" xml:space="preserve">
+    <value>Searching...</value>
+  </data>
+  <data name="NoStopsInAreaMessage" xml:space="preserve">
+    <value>No stops in area</value>
   </data>
 </root>

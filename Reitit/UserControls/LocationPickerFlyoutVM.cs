@@ -44,13 +44,22 @@ namespace Reitit
                 Source = ResultLocationGroups,
                 IsSourceGrouped = true,
             };
-            Clear(false);
+            Clear();
         }
 
-        public void Clear(bool isInFavoriteMode)
+        public void Init(bool isInFavoriteMode)
         {
             _isInFavoriteMode = isInFavoriteMode;
+            if (_isInFavoriteMode && ResultLocationGroups.Count > 0 && ResultLocationGroups[0].IsFavorites)
+            {
+                ResultLocationGroups.RemoveAt(0);
+            }
+        }
+
+        public void Clear()
+        {
             SearchTerm = "";
+            Suggestions.Clear();
             SearchMessage = "";
             ResultLocationGroups.Clear();
             AddFavorites();
@@ -152,7 +161,7 @@ namespace Reitit
         {
             get
             {
-                return new RelayCommand<KeyRoutedEventArgs>(async (e) =>
+                return new RelayCommand<KeyRoutedEventArgs>(async e =>
                 {
                     if (e.Key == VirtualKey.Enter)
                     {
@@ -193,21 +202,28 @@ namespace Reitit
         {
             get
             {
-                return new RelayCommand<AutoSuggestBoxTextChangedEventArgs>((e) =>
+                return new RelayCommand<AutoSuggestBoxTextChangedEventArgs>(e =>
                 {
-                    if (e.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
+                    Suggestions.Clear();
+                    if (SearchTerm.Length > 0)
                     {
-                        _hasWritten = true;
-                        Suggestions.Clear();
-                        if (SearchTerm.Length > 0)
-                        {
-                            Suggestions.AddRange(App.Current.SearchHistory.SearchesWithPrefix(SearchTerm));
-                        }
+                        Suggestions.AddRange(App.Current.PickerSearchHistory.SearchesWithPrefix(SearchTerm));
                     }
                 });
             }
         }
-        private bool _hasWritten;
+        
+        public RelayCommand<AutoSuggestBoxSuggestionChosenEventArgs> SuggestionChosenCommand
+        {
+            get
+            {
+                return new RelayCommand<AutoSuggestBoxSuggestionChosenEventArgs>(async e =>
+                {
+                    SearchTerm = e.SelectedItem as string ?? "";
+                    await Search();
+                });
+            }
+        }
 
         private CancellationTokenSource _searchTokenSource;
         public async Task Search()
@@ -222,13 +238,13 @@ namespace Reitit
                 string sanitizedSearch = SearchTerm.Trim();
                 if (sanitizedSearch.Length < 3)
                 {
-                    SearchMessage = Utils.GetString("LocationPickerShortSearchMessage");
+                    SearchMessage = Utils.GetString("ShortSearchMessage");
                 }
                 else
                 {
+                    Messenger.Default.Send(new UnfocusTextBoxMessage(), this);
                     SearchMessage = null;
-                    _hasWritten = false;
-                    await Utils.UsingStatus(Utils.GetString("SearchingStatus"), async () =>
+                    await Utils.UsingStatus(Utils.GetString("PickerSearchingStatus"), async () =>
                     {
                         if (Utils.GetIsNetworkAvailableAndWarn())
                         {
@@ -294,9 +310,10 @@ namespace Reitit
                                 {
                                     Messenger.Default.Send(new ScrollIntoViewMessage { Item = ResultLocationGroups[0] }, this);
                                 }
-                                if (!_hasWritten)
+
+                                if (SomeRemoteResults)
                                 {
-                                    Messenger.Default.Send(new UnfocusTextBoxMessage(), this);
+                                    App.Current.PickerSearchHistory.Add(sanitizedSearch);
                                 }
                             }
                             catch (ReittiAPIException)
@@ -315,7 +332,7 @@ namespace Reitit
         {
             if (!_isInFavoriteMode)
             {
-                var favoritesGroup = new LocationGroup { Key = Utils.GetString("LocationPickerFavoritesHeader"), Hidden = true };
+                var favoritesGroup = new LocationGroup { Key = Utils.GetString("LocationPickerFavoritesHeader"), IsFavorites = true };
                 favoritesGroup.AddRange<SelectableLocation>(from favorite in App.Current.Favorites.LocationsWithPrefix(prefix)
                                                             select new FavoritePickerLocation(favorite));
                 if (favoritesGroup.Count > 0)
@@ -340,6 +357,6 @@ namespace Reitit
     public class LocationGroup : ObservableCollection<SelectableLocation>
     {
         public string Key { get; set; }
-        public bool Hidden { get; set; }
+        public bool IsFavorites { get; set; }
     }
 }
