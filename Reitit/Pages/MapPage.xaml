@@ -63,6 +63,7 @@
                    VerticalAlignment="Stretch"
                    Fill="Transparent"
                    Opacity="{Binding ContentMaximized, Converter={StaticResource OpaqueIfTrueConverter}}"
+                   IsHitTestVisible="{Binding ContentMaximized}"
                    PointerPressed="Minimizer_PointerPressed"/>
         <Canvas HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <Rectangle x:Name="MenuPositioner" Width="0" Height="0" Opacity="0"/>
@@ -120,9 +121,13 @@
     </Grid>
 
     <local:PageBase.MapItems>
-        <local:MyLocationPushpin local:ReititMap.PushpinCoordinate="{Binding MyLocation}"
+        <local:ReititMapItemPresenter>
+            <DataTemplate>
+                <local:MyLocationPushpin local:ReititMap.PushpinCoordinate="{Binding MyLocation}"
                                  local:ReititMap.ZLayer="1"
                                  local:ReititMap.InAutofocus="{Binding ShowMyLocationImplicit}"
                                  Visibility="{Binding MyLocation, Converter={StaticResource NullToVisibilityConverter}}"/>
+            </DataTemplate>
+        </local:ReititMapItemPresenter>
     </local:PageBase.MapItems>
 </local:PageBase>

@@ -97,7 +97,7 @@
                                     <GroupStyle HidesIfEmpty="True">
                                         <GroupStyle.HeaderTemplate>
                                             <DataTemplate>
-                                                <ListViewItem>
+                                                <ListViewItem Visibility="{Binding Hidden, Converter={StaticResource NegVisibilityConverter}}">
                                                     <Border BorderBrush="{ThemeResource PhoneAccentBrush}"
                                                             BorderThickness="{ThemeResource PhoneBorderThickness}"
                                                             Padding="5,5,5,5"

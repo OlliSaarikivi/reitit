@@ -55,7 +55,6 @@ namespace Reitit
             ResultLocationGroups.Clear();
             AddFavorites();
             AddRecent();
-            JumpingEnabled = true;
             if (ResultLocationGroups.Count > 0 && ResultLocationGroups[0].Count > 0)
             {
                 SelectedResult = ResultLocationGroups[0][0];
@@ -100,13 +99,6 @@ namespace Reitit
             get { return _suggestions; }
         }
         private ObservableCollection<string> _suggestions = new ObservableCollection<string>();
-
-        public bool JumpingEnabled
-        {
-            get { return _jumpingEnabled; }
-            set { Set(() => JumpingEnabled, ref _jumpingEnabled, value); }
-        }
-        private bool _jumpingEnabled;
 
         public bool SomeRemoteResults
         {
@@ -247,6 +239,7 @@ namespace Reitit
 
                                 SelectedResult = null;
                                 ResultLocationGroups.Clear();
+
                                 if (result.Pois.Count > 0)
                                 {
                                     var placeResults = new LocationGroup { Key = Utils.GetString("LocationPickerPlacesHeader") };
@@ -289,11 +282,6 @@ namespace Reitit
                                 AddFavorites(sanitizedSearch);
                                 AddRecent(sanitizedSearch);
 
-                                resultsCount = (from grp in ResultLocationGroups
-                                                select grp.Count).Sum();
-                                JumpingEnabled = ResultLocationGroups.Count > 1 && resultsCount > 7;
-
-
                                 if (ResultLocationGroups.Count > 0 && ResultLocationGroups[0].Count > 0)
                                 {
                                     SelectedResult = ResultLocationGroups[0][0];
@@ -327,12 +315,12 @@ namespace Reitit
         {
             if (!_isInFavoriteMode)
             {
-                var favoritesGroup = new LocationGroup { Key = Utils.GetString("LocationPickerFavoritesHeader") };
+                var favoritesGroup = new LocationGroup { Key = Utils.GetString("LocationPickerFavoritesHeader"), Hidden = true };
                 favoritesGroup.AddRange<SelectableLocation>(from favorite in App.Current.Favorites.LocationsWithPrefix(prefix)
                                                             select new FavoritePickerLocation(favorite));
                 if (favoritesGroup.Count > 0)
                 {
-                    ResultLocationGroups.Add(favoritesGroup);
+                    ResultLocationGroups.Insert(0, favoritesGroup);
                 }
             }
         }
@@ -352,5 +340,6 @@ namespace Reitit
     public class LocationGroup : ObservableCollection<SelectableLocation>
     {
         public string Key { get; set; }
+        public bool Hidden { get; set; }
     }
 }

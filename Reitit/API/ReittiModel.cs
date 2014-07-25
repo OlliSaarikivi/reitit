@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Net;
 using System.Text.RegularExpressions;
@@ -696,6 +697,16 @@ namespace Reitit.API
                     var coordinate = new ReittiCoordinate(y, x);
                     Shape[i] = coordinate;
                 }
+                IEnumerable<ReittiCoordinate> simplified;
+                if (Type != "walk")
+                {
+                    simplified = Utils.PolySimplifyVW(0.0000001, Shape);
+                }
+                else
+                {
+                    simplified = Utils.PolySimplify(0.000025, Shape);
+                }
+                Shape = simplified.ToArray();
             }
         }
 

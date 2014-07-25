@@ -101,7 +101,6 @@ namespace Reitit
                     Utils.D("OnHiding");
                     OnHiding();
                 }
-                Messenger.Default.Unregister(this);
             };
         }
 
@@ -109,10 +108,18 @@ namespace Reitit
         {
             foreach (var item in e.NewItems)
             {
-                var element = item as FrameworkElement;
-                if (element != null)
+                var presenter = item as ReititMapItemPresenter;
+                if (presenter != null)
                 {
-                    element.DataContext = DataContext;
+                    presenter.DataContext = DataContext;
+                }
+                else
+                {
+                    var element = item as FrameworkElement;
+                    if (element != null)
+                    {
+                        element.DataContext = DataContext;
+                    }
                 }
             }
         }
@@ -121,10 +128,18 @@ namespace Reitit
         {
             foreach (var item in MapItems)
             {
-                var element = item as FrameworkElement;
-                if (element != null)
+                var presenter = item as ReititMapItemPresenter;
+                if (presenter != null)
                 {
-                    element.DataContext = DataContext;
+                    presenter.DataContext = DataContext;
+                }
+                else
+                {
+                    var element = item as FrameworkElement;
+                    if (element != null)
+                    {
+                        element.DataContext = DataContext;
+                    }
                 }
             }
         }
@@ -202,7 +217,7 @@ namespace Reitit
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)
         {
-            if (_shown)
+            if (_shown && e.NavigationMode != NavigationMode.Forward)
             {
                 _shown = false;
                 Utils.D("OnHiding");

@@ -10,11 +10,82 @@ using System.Windows;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Net.Http;
+using Windows.Foundation;
 
 namespace Reitit.API
 {
     public static partial class Utils
     {
+        // Copyright 2002, softSurfer (www.softsurfer.com)
+        // This code may be freely used and modified for any purpose
+        // providing that this copyright notice is included with it.
+        // SoftSurfer makes no warranty for this code, and cannot be held
+        // liable for any real or imagined damage resulting from its use.
+        // Users of this code must verify correctness for their application.
+
+        // Assume that classes are already given for the objects:
+        //    Point and Vector with
+        //        coordinates {float x, y, z;}    // as many as are needed
+        //        operators for:
+        //            == to test equality
+        //            != to test inequality
+        //            (Vector)0 = (0,0,0)         (null vector)
+        //            Point  = Point ± Vector
+        //            Vector = Point - Point
+        //            Vector = Vector ± Vector
+        //            Vector = Scalar * Vector    (scalar product)
+        //            Vector = Vector * Vector    (cross product)
+        //    Segment with defining endpoints {Point P0, P1;}
+        //===================================================================
+
+        // dot product (3D) which allows vector operations in arguments
+        //#define dot(u,v)   ((u).x * (v).x + (u).y * (v).y + (u).z * (v).z)
+        //#define norm2(v)   dot(v,v)        // norm2 = squared length of vector
+        //#define norm(v)    sqrt(norm2(v))  // norm = length of vector
+        //#define d2(u,v)    norm2(u-v)      // distance squared = norm2 of difference
+        //#define d(u,v)     norm(u-v)       // distance = norm of difference
+
+        // poly_simplify():
+        //    Input:  tol = approximation tolerance
+        //            V[] = polyline array of vertex points 
+        //            n   = the number of points in V[]
+        //    Output: sV[]= simplified polyline vertices (max is n)
+        //    Return: m   = the number of points in sV[]
+        public static IEnumerable<ReittiCoordinate> PolySimplify(double tol, ReittiCoordinate[] V)
+        {
+            int n = V.Length;
+            int i, k, pv;            // misc counters
+            double tol2 = tol * tol;       // tolerance squared
+            ReittiCoordinate[] vt = new ReittiCoordinate[n];      // vertex buffer
+            bool[] mk = new bool[n];  // marker buffer
+
+            // STAGE 1.  Vertex Reduction within tolerance of prior vertex cluster
+            vt[0] = V[0];              // start at the beginning
+            for (i = k = 1, pv = 0; i < n; i++)
+            {
+                double dLat = V[i].Latitude - V[pv].Latitude;
+                double dLong = V[i].Longitude - V[pv].Longitude;
+                double d = dLat * dLat + dLong * dLong;
+                if (d < tol2)
+                    continue;
+                vt[k++] = V[i];
+                pv = i;
+            }
+            if (pv < n - 1)
+                vt[k++] = V[n - 1];      // finish at the end
+
+            // STAGE 2.  Douglas-Peucker polyline simplification
+            mk[0] = mk[k - 1] = true;       // mark the first and last vertices
+            SimplifyDP(tol2, vt, 0, k - 1, mk);
+
+            // copy marked vertices to the output simplified polyline
+            for (i = 0; i < k; i++)
+            {
+                if (mk[i])
+                    yield return vt[i];
+            }
+        }
+
         // simplifyDP():
         //  This is the Douglas-Peucker recursive simplification routine
         //  It just marks vertices that are part of the simplified polyline
@@ -82,6 +153,99 @@ namespace Reitit.API
             }
             // else the approximation is OK, so ignore intermediate vertices
             return;
+        }
+
+        private class VWTri : IComparable
+        {
+            public Point P3 { get; set; }
+            public Point P2 { get; set; }
+            public Point P1 { get; set; }
+            public int MiddleIndex { get; set; }
+            public double Score { get; set; }
+            public VWTri Previous { get; set; }
+            public VWTri Next { get; set; }
+
+            public VWTri(Point p1, Point p2, Point p3, int middleIndex)
+            {
+                P1 = p1;
+                P2 = p2;
+                P3 = p3;
+                Score = Area();
+                MiddleIndex = middleIndex;
+            }
+
+            public double Area()
+            {
+                return Math.Abs(-P2.X * P1.Y + P3.X * P1.Y + P1.X * P2.Y - P3.X * P2.Y - P1.X * P3.Y + P2.X * P3.Y);
+            }
+
+            public int CompareTo(object obj)
+            {
+                return Score.CompareTo((obj as VWTri).Score);
+            }
+        }
+
+        public static IEnumerable<ReittiCoordinate> PolySimplifyVW(double tolerance, ReittiCoordinate[] coordinates)
+        {
+            int n = coordinates.Length;
+            var remove = new bool[n];
+            var points = new Point[n];
+            for (int i = 0; i < n; ++i)
+            {
+                points[i] = coordinates[i].ToUniformPoint();
+            }
+
+            var triangles = new SortedSet<VWTri>();
+            VWTri previous = null;
+            for (int i = 1; i < n - 1; ++i)
+            {
+                var next = new VWTri(points[i - 1], points[i], points[i + 1], i);
+                triangles.Add(next);
+                if (previous != null)
+                {
+                    previous.Next = next;
+                    next.Previous = previous;
+                }
+                previous = next;
+            }
+
+            Action<VWTri> update = t =>
+            {
+                triangles.Remove(t);
+                t.Score = t.Area();
+                triangles.Add(t);
+            };
+
+            while (triangles.Count > 0)
+            {
+                var tri = triangles.Min;
+                if (tri.Score > tolerance)
+                {
+                    break;
+                }
+                triangles.Remove(tri);
+                remove[tri.MiddleIndex] = true;
+                if (tri.Previous != null)
+                {
+                    tri.Previous.Next = tri.Next;
+                    tri.Previous.P3 = tri.P3;
+                    update(tri.Previous);
+                }
+                if (tri.Next != null)
+                {
+                    tri.Next.Previous = tri.Previous;
+                    tri.Next.P1 = tri.P1;
+                    update(tri.Next);
+                }
+            }
+
+            for (int i = 0; i < n; ++i)
+            {
+                if (!remove[i])
+                {
+                    yield return coordinates[i];
+                }
+            }
         }
 
         public static string FormatLongName(string name, string city)

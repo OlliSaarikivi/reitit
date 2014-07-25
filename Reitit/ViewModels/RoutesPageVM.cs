@@ -123,7 +123,7 @@ namespace Reitit
                         var pushpinVM = new RoutePushpinVM
                         {
                             Background = (isFirst && leg.Type == "walk") ? (Brush)App.Current.Resources["StartBrush"] : Utils.BrushForType(leg.Type),
-                            Label = leg.Type != "walk" ? leg.Line.ShortName : "",
+                            Label = leg.Type != "walk" ? leg.Line.ShortName : null,
                             Coordinate = leg.Locs[0].Coord,
                         };
                         Pushpins.Add(pushpinVM);

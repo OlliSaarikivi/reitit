@@ -26,11 +26,10 @@ namespace Reitit
     {
         public Point CoordinateToAngledPoint(ReittiCoordinate coordinate)
         {
-            var xo = coordinate.Longitude;
-            var yo = Math.Log(Math.Tan(Math.PI / 4.0 + (coordinate.Latitude / 180 * Math.PI) / 2.0)) / Math.PI * 180;
+            var point = coordinate.ToUniformPoint();
             var angle = (Map.Heading / 180) * Math.PI;
-            var x = xo * Math.Cos(angle) - yo * Math.Sin(angle);
-            var y = xo * Math.Sin(angle) + yo * Math.Cos(angle);
+            var x = point.X * Math.Cos(angle) - point.Y * Math.Sin(angle);
+            var y = point.X * Math.Sin(angle) + point.Y * Math.Cos(angle);
             return new Point(x, y);
         }
 
@@ -164,6 +163,7 @@ namespace Reitit
         MapItemComparer _itemComparer;
         Dictionary<ObservableCollection<object>, MapItemsRegistration> _itemRegistrations = new Dictionary<ObservableCollection<object>, MapItemsRegistration>();
         List<FrameworkElement> _sortedMapItems = new List<FrameworkElement>();
+        List<FrameworkElement> _focusers = new List<FrameworkElement>();
 
         Dictionary<ObservableCollection<MapElement>, MapElementsRegistration> _elementRegistrations = new Dictionary<ObservableCollection<MapElement>, MapElementsRegistration>();
 
@@ -227,11 +227,23 @@ namespace Reitit
             });
         }
 
+        private IEnumerable<FrameworkElement> FocusList()
+        {
+            foreach (var element in _sortedMapItems)
+            {
+                yield return element;
+            }
+            foreach (var element in _focusers)
+            {
+                yield return element;
+            }
+        }
+
         public async Task DoAutofocusView()
         {
             bool atLeastOne = false;
             double maxLatitude = double.MinValue, minLatitude = double.MaxValue, maxLongitude = double.MinValue, minLongitude = double.MaxValue;
-            foreach (var element in _sortedMapItems)
+            foreach (var element in FocusList())
             {
                 if (ReititMap.GetInAutofocus(element))
                 {
@@ -260,7 +272,7 @@ namespace Reitit
                     Latitude = minLatitude - latitudeMargin,
                     Longitude = maxLongitude + longitudeMargin
                 });
-                var margin = new Thickness(40, 50, 40, _contentHeight + 12);
+                var margin = new Thickness(50, 50, 50, _contentHeight + 12);
                 var viewSet = await Map.TrySetViewBoundsAsync(bounds, margin, MapAnimationKind.Linear);
                 if (!viewSet)
                 {
@@ -329,71 +341,76 @@ namespace Reitit
 
         void SetFlippings()
         {
-            var flipped = new bool[_sortedMapItems.Count];
-            var someFlipped = true;
-            Func<Point, int, int, bool> tryFlip = (iPoint, i, j) =>
+            var flippables = new List<IFlippable>(from x in _sortedMapItems
+                                                  where x is IFlippable && Flippable.GetParticipatesInFlipping(x)
+                                                  select x as IFlippable);
+            int n = flippables.Count;
+
+            // Calculate what to avoid
+            var direction = new double[n];
+            var avoidEast = new List<int>[n];
+            var avoidWest = new List<int>[n];
+            for (int i = 0; i < n; ++i)
             {
-                var otherFlippable = _sortedMapItems[j] is IFlippable;
-                var jCoord = ReititMap.GetPushpinCoordinate(_sortedMapItems[j]);
-                if (jCoord == null || !otherFlippable)
+                var iCoord = ReititMap.GetPushpinCoordinate(flippables[i] as FrameworkElement);
+                if (iCoord != null)
                 {
-                    return false;
-                }
-                var jPoint = _itemComparer.CoordinateToAngledPoint(jCoord);
-                if (Math.Abs(iPoint.Y - jPoint.Y) > Utils.PushpinAvoidDiff)
-                {
-                    return true;
-                }
-                double longDiff = jPoint.X - iPoint.X;
-                if (longDiff > 0)
-                {
-                    if (longDiff < Utils.PushpinAvoidDiff || (flipped[j] && longDiff * 2 < Utils.PushpinAvoidDiff))
+                    var iPoint = _itemComparer.CoordinateToAngledPoint(iCoord);
+                    for (int j = i + 1; j < n; ++j)
                     {
-                        flipped[i] = true;
-                        someFlipped = true;
-                        return true;
-                    }
-                }
-                return false;
-            };
-            while (someFlipped)
-            {
-                someFlipped = false;
-                for (int i = 0; i < _sortedMapItems.Count; ++i)
-                {
-                    var flippable = _sortedMapItems[i] is IFlippable;
-                    var iCoord = ReititMap.GetPushpinCoordinate(_sortedMapItems[i]);
-                    if (flippable && iCoord != null && !flipped[i])
-                    {
-                        var iPoint = _itemComparer.CoordinateToAngledPoint(iCoord);
-                        for (int j = i - 1; j >= 0; --j)
-                        {
-                            if (tryFlip(iPoint, i, j))
-                            {
-                                break;
-                            }
-                        }
-                        if (flipped[i])
+                        var jCoord = ReititMap.GetPushpinCoordinate(flippables[j] as FrameworkElement);
+                        if (jCoord == null)
                         {
                             break;
                         }
-                        for (int j = i + 1; j < _sortedMapItems.Count; ++j)
+                        var jPoint = _itemComparer.CoordinateToAngledPoint(jCoord);
+                        if (Math.Abs(iPoint.Y - jPoint.Y) > Utils.PushpinAvoidDiffY)
                         {
-                            if (tryFlip(iPoint, i, j))
-                            {
-                                break;
-                            }
+                            break;
+                        }
+                        double xDiff = jPoint.X - iPoint.X;
+                        int eastern = xDiff > 0 ? j : i;
+                        int western = xDiff > 0 ? i : j;
+                        if (Math.Abs(xDiff) < Utils.PushpinAvoidDiffX)
+                        {
+                            direction[eastern] += flippables[western].Importance;
+                            direction[western] -= flippables[eastern].Importance;
+                        }
+                        else if (Math.Abs(xDiff) < Utils.PushpinAvoidDiffX * 2)
+                        {
+                            if (avoidWest[eastern] == null) { avoidWest[eastern] = new List<int>(); };
+                            avoidWest[eastern].Add(western);
+                            if (avoidEast[western] == null) { avoidEast[western] = new List<int>(); };
+                            avoidEast[western].Add(eastern);
                         }
                     }
                 }
             }
-            for (int i = 0; i < _sortedMapItems.Count; ++i)
+
+            // Greedy algorithm for avoidance
+            for (int i = 0; i < n; ++i)
             {
-                var flippable = _sortedMapItems[i] as IFlippable;
-                if (flippable != null)
+                if (avoidWest[i] != null)
                 {
-                    flippable.SetFlip(flipped[i] ? FlipPreference.West : FlipPreference.East);
+                    foreach (var toWest in avoidWest[i])
+                    {
+                        if (direction[toWest] >= 0)
+                        {
+                            direction[i] += flippables[toWest].Importance / 1000.0;
+                        }
+                    }
                 }
+                if (avoidEast[i] != null)
+                {
+                    foreach (var toEast in avoidEast[i])
+                    {
+                        if (direction[toEast] < 0)
+                        {
+                            direction[i] -= flippables[toEast].Importance / 1000.0;
+                        }
+                    }
+                }
+                flippables[i].SetFlip(direction[i] < 0 ? FlipPreference.West : FlipPreference.East);
             }
         }
 
@@ -421,7 +438,14 @@ namespace Reitit
 
         void AddElement(FrameworkElement element)
         {
-            InsertElement(element);
+            if (element is ReititMapFocuser)
+            {
+                _focusers.Add(element);
+            }
+            else
+            {
+                InsertElement(element);
+            }
             _pushpinCoordinateChangedActions.Add(element, async () =>
             {
                 await SortDelayed();
@@ -455,8 +479,15 @@ namespace Reitit
         {
             _pushpinCoordinateChangedActions.Remove(element);
             _inAutofocusChangedActions.Remove(element);
-            Map.Children.Remove(element);
-            _sortedMapItems.Remove(element);
+            if (element is ReititMapFocuser)
+            {
+                _focusers.Remove(element);
+            }
+            else
+            {
+                Map.Children.Remove(element);
+                _sortedMapItems.Remove(element);
+            }
             EnsureOrder();
             if (Autofocus && ReititMap.GetInAutofocus(element))
             {
@@ -535,8 +566,24 @@ namespace Reitit
                 }
                 else
                 {
-                    var element = item as FrameworkElement;
-                    _map.AddElement(element);
+                    var itemPresenter = item as ReititMapItemPresenter;
+                    if (itemPresenter != null)
+                    {
+                        _map.AddElement(itemPresenter.GenerateElement());
+                    }
+                    else
+                    {
+                        var element = item as FrameworkElement;
+                        if (element != null)
+                        {
+                            _map.AddElement(element);
+                        }
+                        else
+                        {
+                            // Not a supported type
+                            return;
+                        }
+                    }
                 }
                 _currentItems.Add(item, true);
             }
@@ -555,8 +602,24 @@ namespace Reitit
                 }
                 else
                 {
-                    var element = item as FrameworkElement;
-                    _map.RemoveElement(element);
+                    var itemPresenter = item as ReititMapItemPresenter;
+                    if (itemPresenter != null)
+                    {
+                        _map.RemoveElement(itemPresenter.CurrentElement);
+                    }
+                    else
+                    {
+                        var element = item as FrameworkElement;
+                        if (element != null)
+                        {
+                            _map.RemoveElement(element);
+                        }
+                        else
+                        {
+                            // Not a supported type
+                            return;
+                        }
+                    }
                 }
                 _currentItems.Remove(item);
             }

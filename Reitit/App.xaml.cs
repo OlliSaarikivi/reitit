@@ -1,4 +1,5 @@
-﻿using Reitit.API;
+﻿using GalaSoft.MvvmLight.Messaging;
+using Reitit.API;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -26,6 +27,8 @@ using Windows.UI.Xaml.Navigation;
 
 namespace Reitit
 {
+    public class SuspendingMessage { }
+
     /// <summary>
     /// Provides application-specific behavior to supplement the default Application class.
     /// </summary>
@@ -192,6 +195,7 @@ namespace Reitit
         /// <param name="e">Details about the suspend request.</param>
         private async void OnSuspending(object sender, SuspendingEventArgs e)
         {
+            Messenger.Default.Send(new SuspendingMessage());
             var deferral = e.SuspendingOperation.GetDeferral();
             await SuspensionManager.SaveAsync();
             await Settings.Save(Settings);

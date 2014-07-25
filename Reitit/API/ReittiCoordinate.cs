@@ -6,6 +6,7 @@ using System.Text;
 using System.Globalization;
 using System.Collections.Generic;
 using Windows.Devices.Geolocation;
+using Windows.Foundation;
 
 namespace Reitit.API
 {
@@ -118,6 +119,13 @@ namespace Reitit.API
         public static explicit operator ReittiCoordinate(Geocoordinate c)
         {
             return (ReittiCoordinate)c.Point;
+        }
+
+        public Point ToUniformPoint()
+        {
+            var x = Longitude;
+            var y = Math.Log(Math.Tan(Math.PI / 4.0 + (Latitude / 180 * Math.PI) / 2.0)) / Math.PI * 180;
+            return new Point(x, y);
         }
 
         public override string ToString()

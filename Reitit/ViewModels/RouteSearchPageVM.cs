@@ -66,21 +66,21 @@ namespace Reitit
         [DataMember]
         public IPickerLocation _to;
 
-        public DateTime Time
+        public TimeSpan Time
         {
             get { return _time; }
             set { Set(() => Time, ref _time, value); }
         }
         [DataMember]
-        public DateTime _time = DateTime.Now;
+        public TimeSpan _time = DateTime.Now - DateTime.Now.Date;
 
-        public DateTime Date
+        public DateTimeOffset Date
         {
             get { return _date; }
             set { Set(() => Date, ref _date, value); }
         }
         [DataMember]
-        public DateTime _date = DateTime.Now;
+        public DateTimeOffset _date = DateTimeOffset.Now;
 
         public RelayCommand SwapFromToCommand
         {
@@ -187,7 +187,7 @@ namespace Reitit
             set { Set(() => SelectedSpeedIndex, ref _selectedSpeedIndex, value); }
         }
         [DataMember]
-        public int _selectedSpeedIndex;
+        public int _selectedSpeedIndex = 1;
         private DerivedProperty<Speed> SelectedSpeedProperty;
         public Speed SelectedSpeed
         {
@@ -294,11 +294,17 @@ namespace Reitit
                 transportTypes = transportTypesList;
             }
 
+            if (!SelectedTimeType.IsTimed)
+            {
+                Time = DateTime.Now - DateTime.Now.Date;
+                Date = DateTimeOffset.Now;
+            }
+
             var parameters = new RouteSearchParameters
             {
                 From = From,
                 To = To,
-                DateTime = SelectedTimeType.IsTimed ? Date.AddHours(Time.Hour).AddMinutes(Time.Minute) : DateTime.Now,
+                DateTime = Date.UtcDateTime + Time,
                 Timetype = SelectedTimeType.Type,
                 Optimize = SelectedRouteType.Optimization,
                 ChangeMargin = TransferMargin,

@@ -23,17 +23,21 @@ using Windows.Storage.Streams;
 using Windows.Foundation;
 using Windows.UI.Notifications;
 using Windows.Data.Xml.Dom;
+using Windows.Globalization.DateTimeFormatting;
+using Windows.System.UserProfile;
+using Windows.Globalization;
 
 namespace Reitit
 {
-    static class Utils
+    public static partial class Utils
     {
         public static readonly string DefaultFavIcon = "FavPoi";
 
         public static readonly double MapEpsilon = 0.0000001;
         public static readonly double MinZoomedLatitudeDiff = 0.0025;
         public static readonly double MinZoomedLongitudeDiff = 0.00666;
-        public static readonly double PushpinAvoidDiff = 0.025;
+        public static readonly double PushpinAvoidDiffY = 0.025;
+        public static readonly double PushpinAvoidDiffX = 0.04;
 
         public static readonly Color FromColor = Color.FromArgb(255, 0, 160, 0);
         public static readonly Color ToColor = Color.FromArgb(255, 160, 15, 0);
@@ -407,6 +411,36 @@ namespace Reitit
         public static void D(string msg)
         {
             System.Diagnostics.Debug.WriteLine(msg);
+        }
+
+        private static string SelectFormattingLanguage()
+        {
+            var languages = new List<string>(ApplicationLanguages.Languages);
+            if (languages.Contains("fi") || languages.Contains("fi-FI"))
+            {
+                return "fi";
+            }
+            else
+            {
+                return ApplicationLanguages.Languages[0];
+            }
+        }
+
+        public static DateTimeFormatter GetDateTimeFormatter()
+        {
+            string formattingLanguage = SelectFormattingLanguage();
+            var dateFormatter = new DateTimeFormatter("shortdate", new[] { formattingLanguage }).Patterns[0];
+            var timeFormatter = new DateTimeFormatter("shorttime", new[] { formattingLanguage }).Patterns[0];
+            var fullFormatter = new DateTimeFormatter(dateFormatter + " " + timeFormatter);
+            return fullFormatter;
+        }
+
+        public static DateTimeFormatter GetTimeFormatter()
+        {
+            string formattingLanguage = SelectFormattingLanguage();
+            var timeFormatter = new DateTimeFormatter("shorttime", new[] { formattingLanguage }).Patterns[0];
+            var fullFormatter = new DateTimeFormatter(timeFormatter);
+            return fullFormatter;
         }
     }
 }

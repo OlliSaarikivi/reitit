@@ -28,15 +28,17 @@ namespace Reitit
 {
     public class ValidityToStringConverter : LambdaConverter<Validity, string, object>
     {
-        public static string FormatInRelationToNow(DateTime time)
+        public static string FormatInRelationToNow(DateTime time, DateTime? previousTime = null)
         {
-            var result = time.ToString(CultureInfo.CurrentCulture.DateTimeFormat.ShortTimePattern);
-            var now = DateTime.Now;
-            if (now.Date != time.Date)
+            var previousDate = previousTime != null ? previousTime.Value.Date : DateTime.Now.Date;
+            if (previousDate == time.Date)
             {
-                result += " " + time.ToString(CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern);
+                return Utils.GetTimeFormatter().Format(time);
             }
-            return result;
+            else
+            {
+                return Utils.GetDateTimeFormatter().Format(time);
+            }
         }
 
         public ValidityToStringConverter()

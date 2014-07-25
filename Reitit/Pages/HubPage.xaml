@@ -140,9 +140,7 @@
                         </i:Interaction.Behaviors>
                         <ListView.ItemTemplate>
                             <DataTemplate>
-                                <StackPanel Margin="0,0,0,20">
-                                    <TextBlock Text="{Binding Title}" Style="{ThemeResource ListViewItemTextBlockStyle}" FontSize="38"/>
-                                </StackPanel>
+                                <TextBlock Text="{Binding Title}" FontWeight="SemiLight" FontSize="38" Margin="0,0,0,20"/>
                             </DataTemplate>
                         </ListView.ItemTemplate>
                     </ListView>
@@ -211,7 +209,7 @@
             <HubSection x:Uid="TrafficInfoSection" HeaderTemplate="{StaticResource SectionHeaderTemplate}">
                 <DataTemplate>
                     <ScrollViewer Name="TrafficInfoScrollViewer" Loaded="TrafficInfoScrollViewer_Loaded" Margin="0,0,-15,0">
-                        <StackPanel Margin="0,0,15,80">
+                        <StackPanel Margin="0,0,20,80">
                             <ProgressBar IsIndeterminate="{Binding DisruptionsLoader.Loading}" Opacity="{Binding DisruptionsLoader.Loading, Converter={StaticResource OpaqueIfTrueConverter}}"/>
                             <ListView ItemsSource="{Binding Disruptions}">
                                 <ListView.ItemsPanel>
@@ -227,7 +225,8 @@
                                                        Text="{Binding Validity, Converter={StaticResource ValidityToStringConverter}}"/>
                                             <TextBlock Style="{ThemeResource BodyTextBlockStyle}"
                                                        Text="{Binding Info}"
-                                                       FontSize="{ThemeResource TextStyleMediumFontSize}"/>
+                                                       FontSize="{ThemeResource TextStyleMediumFontSize}"
+                                                       TextAlignment="Justify"/>
                                         </StackPanel>
                                     </DataTemplate>
                                 </ListView.ItemTemplate>

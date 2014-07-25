@@ -28,6 +28,14 @@ namespace Reitit
         public static readonly DependencyProperty LabelProperty =
             DependencyProperty.Register("Label", typeof(string), typeof(LabelPushpin), new PropertyMetadata(null));
 
+        int IFlippable.Importance
+        {
+            get
+            {
+                return Label == null || Label.Length == 0 ? 1 : 1000000;
+            }
+        }
+
         public LabelPushpin()
         {
             this.InitializeComponent();

@@ -109,6 +109,14 @@ namespace Reitit
                 _locating = false;
                 StartGPS();
             }
+            Messenger.Default.Register<SuspendingMessage>(this, m =>
+            {
+                if (_locating)
+                {
+                    StopGPS();
+                    _locating = true;
+                }
+            });
         }
 
         public RelayCommand ShowMyLocationExplicitCommand

@@ -145,10 +145,18 @@
     </Page.BottomAppBar>
 
     <local:PageBase.MapItems>
-        <local:LabelPushpin local:ReititMap.PushpinCoordinate="{Binding From, Converter={StaticResource PickerLocationToCoordinateConverter}}"
+        <local:ReititMapItemPresenter>
+            <DataTemplate>
+                <local:LabelPushpin local:ReititMap.PushpinCoordinate="{Binding From, Converter={StaticResource PickerLocationToCoordinateConverter}}"
                             Visibility="{Binding From, Converter={StaticResource PickerLocationToVisibilityConverter}}"
                             Background="{StaticResource StartBrush}"/>
-        <local:ToPushpin local:ReititMap.PushpinCoordinate="{Binding To, Converter={StaticResource PickerLocationToCoordinateConverter}}"
+            </DataTemplate>
+        </local:ReititMapItemPresenter>
+        <local:ReititMapItemPresenter>
+            <DataTemplate>
+                <local:ToPushpin local:ReititMap.PushpinCoordinate="{Binding To, Converter={StaticResource PickerLocationToCoordinateConverter}}"
                          Visibility="{Binding To, Converter={StaticResource PickerLocationToVisibilityConverter}}"/>
+            </DataTemplate>
+        </local:ReititMapItemPresenter>
     </local:PageBase.MapItems>
 </local:MapContentPage>

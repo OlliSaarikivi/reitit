@@ -111,13 +111,17 @@
     <Compile Include="UserControls\LabelPushpin.xaml.cs">
       <DependentUpon>LabelPushpin.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UserControls\LocationPickerFlyout.xaml.cs">
+      <DependentUpon>LocationPickerFlyout.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\ModeIcon.xaml.cs">
       <DependentUpon>ModeIcon.xaml</DependentUpon>
     </Compile>
     <Compile Include="UserControls\MyLocationPushpin.xaml.cs">
       <DependentUpon>MyLocationPushpin.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UserControls\ReititMapItem.cs" />
+    <Compile Include="UserControls\ReititMapFocuser.cs" />
+    <Compile Include="UserControls\ReititMapItemPresenter.cs" />
     <Compile Include="UserControls\ReititMapItemsControl.cs" />
     <Compile Include="Misc\SearchHistoryManager.cs" />
     <Compile Include="UserControls\MessageDialogContent.xaml.cs">
@@ -263,6 +267,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="UserControls\LocationPickerFlyout.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UserControls\MessageDialogContent.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -333,6 +341,7 @@
     <None Include="Strings\en-US\OldResources.resx">
       <LastGenOutput>Resources1.Designer.cs</LastGenOutput>
     </None>
+    <PRIResource Include="Strings\fi-FI\Resources.resw" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Enough.Universal.Storage">

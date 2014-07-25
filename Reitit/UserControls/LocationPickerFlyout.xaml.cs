@@ -15,26 +15,13 @@ using Windows.UI.Xaml.Navigation;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
-namespace Reitit
+namespace Reitit.UserControls
 {
-    public sealed partial class ToPushpin : UserControl, IFlippable
+    public sealed partial class LocationPickerFlyout : UserControl
     {
-        int IFlippable.Importance
-        {
-            get
-            {
-                return 1;
-            }
-        }
-
-        public ToPushpin()
+        public LocationPickerFlyout()
         {
             this.InitializeComponent();
-        }
-
-        public void SetFlip(FlipPreference preference)
-        {
-            FlipTransform.ScaleX = preference == FlipPreference.West ? -1 : 1;
         }
     }
 }

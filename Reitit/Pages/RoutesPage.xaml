@@ -17,8 +17,6 @@
         <ExponentialEase x:Key="Ease" Exponent="3"/>
         <Storyboard x:Name="ScrollBoard">
             <DoubleAnimation x:Name="ScrollAnimation"
-                             To="{Binding ScrollTo, ElementName=ThisPage}"
-                             From="{Binding ScrollFrom, ElementName=ThisPage}"
                              Storyboard.TargetName="ScrollCorrectionTransform"
                              Storyboard.TargetProperty="Y"
                              EasingFunction="{StaticResource Ease}"
@@ -124,16 +122,25 @@
     </Grid>
 
     <local:PageBase.MapItems>
-        <local:LabelPushpin local:ReititMap.PushpinCoordinate="{Binding Loader.CachedFrom}"
+        <local:ReititMapItemPresenter>
+            <DataTemplate>
+                <local:LabelPushpin local:ReititMap.PushpinCoordinate="{Binding Loader.CachedFrom}"
                             Visibility="{Binding Loader.CachedFrom, Converter={StaticResource NullToVisibilityConverter}}"
                             Opacity="{Binding SelectedRoute, Converter={StaticResource OpaqueIfNullConverter}}"
                             Background="{StaticResource StartBrush}"
-                            local:ReititMap.InAutofocus="{Binding SelectedRoute, Converter={StaticResource IsNullConverter}}"/>
-        
-        <local:ToPushpin local:ReititMap.PushpinCoordinate="{Binding Loader.CachedTo}"
+                            local:ReititMap.InAutofocus="{Binding SelectedRoute, Converter={StaticResource IsNullConverter}}"
+                            local:Flippable.ParticipatesInFlipping="{Binding SelectedRoute, Converter={StaticResource IsNullConverter}}"/>
+            </DataTemplate>
+        </local:ReititMapItemPresenter>
+
+        <local:ReititMapItemPresenter>
+            <DataTemplate>
+                <local:ToPushpin local:ReititMap.PushpinCoordinate="{Binding Loader.CachedTo}"
                          Visibility="{Binding Loader.CachedTo, Converter={StaticResource NullToVisibilityConverter}}"
                          local:ReititMap.InAutofocus="{Binding SelectedRoute, Converter={StaticResource IsNullConverter}}"/>
-        
+            </DataTemplate>
+        </local:ReititMapItemPresenter>
+
         <local:ReititMapItemsControl ItemsSource="{Binding SelectedRoute.Pushpins}">
             <local:ReititMapItemsControl.ItemTemplate>
                 <DataTemplate>
@@ -148,11 +155,8 @@
         <local:ReititMapItemsControl ItemsSource="{Binding SelectedRoute.FocusPushpins}">
             <local:ReititMapItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <Rectangle Width="0" 
-                               Height="0" 
-                               Opacity="0"
-                               local:ReititMap.PushpinCoordinate="{Binding Coordinate}"
-                               local:ReititMap.InAutofocus="{Binding InAutofocus}"/>
+                    <local:ReititMapFocuser local:ReititMap.PushpinCoordinate="{Binding Coordinate}"
+                                            local:ReititMap.InAutofocus="{Binding InAutofocus}"/>
                 </DataTemplate>
             </local:ReititMapItemsControl.ItemTemplate>
         </local:ReititMapItemsControl>
