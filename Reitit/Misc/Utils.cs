@@ -368,11 +368,11 @@ namespace Reitit
             return RandomAccessStreamReference.CreateFromUri(new Uri("ms-appx:///Assets/MapElements/" + elementIconName + ".png"));
         }
 
-        public static string GetDescriptiveShortLineName(Line line)
+        public static string GetDescriptiveShortLineName(Line line, bool onlyMetroDestination = true)
         {
-            if (line.Code.StartsWith("13") && line.LineEnd != null)
+            if ((!onlyMetroDestination || line.Code.StartsWith("13")) && line.LineEnd != null)
             {
-                return line.ShortName + Utils.GetString("MetroDestinationSeparator") + line.LineEnd;
+                return line.ShortName + Utils.GetString("DestinationSeparator") + line.LineEnd;
             }
             else
             {

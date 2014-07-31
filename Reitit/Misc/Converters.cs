@@ -48,21 +48,12 @@ namespace Reitit
         }
     }
 
-    public class DatePickerConverter : LambdaConverter<DateTime, string, object>
+    public class ShortTimeConverter : LambdaConverter<DateTime, string, object>
     {
-        public DatePickerConverter()
+        public ShortTimeConverter()
             : base((date, p, language) =>
             {
-                return date.ToString(CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern);
-            }) { }
-    }
-
-    public class TimePickerConverter : LambdaConverter<DateTime, string, object>
-    {
-        public TimePickerConverter()
-            : base((date, p, language) =>
-            {
-                return date.ToString("\u200E" + CultureInfo.CurrentCulture.DateTimeFormat.LongTimePattern.Replace(":ss", ""));
+                return Utils.GetTimeFormatter().Format(date);
             }) { }
     }
 

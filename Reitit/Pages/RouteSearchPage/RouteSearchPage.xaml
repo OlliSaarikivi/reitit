@@ -68,72 +68,13 @@
                     <DatePicker Grid.Column="1" Date="{Binding Date, Mode=TwoWay}" Margin="5,0,0,0"/>
                 </Grid>
 
-                <!--<Button Name="AdvancedButton"
-                        Visibility="{Binding ShowAdvanced, Converter={StaticResource NegVisibilityConverter}}"
-                        Content="{Binding Path=LocalizedResources.RouteSearchAdvanced, Source={StaticResource LocalizedStrings}}"
-                        Command="{Binding ShowAdvancedCommand}"/>-->
+                <Button x:Name="AdvancedButton"
+                        x:FieldModifier="public"
+                        x:Uid="RouteSearchAdvancedButton"
+                        Click="AdvancedButton_Click"/>
 
-                <!--<StackPanel Name="AdvancedPanel" Visibility="{Binding ShowAdvanced, Converter={StaticResource VisibilityConverter}, FallbackValue=Collapsed}">-->
-                <TextBlock x:Uid="RouteSearchModesHeader"
-                           Style="{ThemeResource ControlHeaderTextBlockStyle}"
-                           Margin="0,0,0,-4.5"/>
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-                    <CheckBox IsChecked="{Binding UseBus, Mode=TwoWay}" Grid.Column="0" Style="{StaticResource CompactCheckBoxStyle}">
-                        <local:ModeIcon Type="bus"/>
-                    </CheckBox>
-                    <CheckBox IsChecked="{Binding UseTrain, Mode=TwoWay}" Grid.Column="2" Style="{StaticResource CompactCheckBoxStyle}">
-                        <local:ModeIcon Type="train"/>
-                    </CheckBox>
-                    <CheckBox IsChecked="{Binding UseMetro, Mode=TwoWay}" Grid.Column="4" Style="{StaticResource CompactCheckBoxStyle}">
-                        <local:ModeIcon Type="metro"/>
-                    </CheckBox>
-                    <CheckBox IsChecked="{Binding UseTram, Mode=TwoWay}" Grid.Column="6" Style="{StaticResource CompactCheckBoxStyle}">
-                        <local:ModeIcon Type="tram"/>
-                    </CheckBox>
-                </Grid>
-
-                <ComboBox x:Uid="WalkSpeedBox"
-                          Name="WalkSpeedBox"
-                          ItemsSource="{Binding WalkingSpeeds}"
-                          SelectedIndex="{Binding SelectedSpeedIndex, Mode=TwoWay}">
-                    <ComboBox.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding Text}"/>
-                        </DataTemplate>
-                    </ComboBox.ItemTemplate>
-                </ComboBox>
-
-                <ComboBox x:Uid="RouteTypeBox"
-                          Name="RouteTypeBox"
-                          ItemsSource="{Binding RouteTypes}"
-                          SelectedIndex="{Binding SelectedRouteTypeIndex, Mode=TwoWay}">
-                    <ComboBox.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding Text}"/>
-                        </DataTemplate>
-                    </ComboBox.ItemTemplate>
-                </ComboBox>
-
-                <TextBlock Style="{ThemeResource ControlHeaderTextBlockStyle}"
-                           Margin="0,0,0,-4.5">
-                    <TextBlock.Inlines>
-                        <Run x:Uid="RouteSearchMarginHeader"/>
-                        <Run Text=": "/>
-                        <Run Text="{Binding Path=Value, ElementName=MarginSlider}"/>
-                        <Run Text=" min"/>
-                    </TextBlock.Inlines>
-                </TextBlock>
-                <Slider Name="MarginSlider" SmallChange="1" LargeChange="1" Minimum="0" Maximum="10" Value="{Binding TransferMargin, Mode=TwoWay}"/>
-                <!--</StackPanel>-->
+                <Border x:Name="AdvancedRoot"
+                        x:FieldModifier="public"/>
             </StackPanel>
         </ScrollViewer>
     </Grid>

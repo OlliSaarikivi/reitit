@@ -229,5 +229,10 @@ namespace Reitit
                 }
             }
         }
+
+        public void RaiseOnNavigatedFrom(NavigationEventArgs e)
+        {
+            OnNavigatedFrom(e);
+        }
     }
 }

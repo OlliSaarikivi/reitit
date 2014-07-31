@@ -13,6 +13,8 @@ namespace Reitit
 {
     class ReititMapItemsControl : FrameworkElement, INotifyCollectionChanged
     {
+        private bool _dirty = false;
+
         public object ItemsSource
         {
             get { return (object)GetValue(ItemsSourceProperty); }
@@ -109,6 +111,20 @@ namespace Reitit
                 case NotifyCollectionChangedAction.Reset:
                     RegenerateElements();
                     break;
+            }
+        }
+
+        public void MarkDirty()
+        {
+            _dirty = true;
+        }
+
+        public void RegenerateIfNecessary()
+        {
+            if (_dirty)
+            {
+                _dirty = false;
+                RegenerateElements();
             }
         }
 

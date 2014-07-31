@@ -1,0 +1,49 @@
+﻿<local:PageBase
+    x:Class="Reitit.SettingsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Reitit"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid x:Name="LayoutRoot" Background="{StaticResource PhoneBackgroundBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <local:LogoTitle Grid.Row="0" x:Uid="SettingsTitle" Margin="20,47,20,20"/>
+
+        <ScrollViewer Grid.Row="1" Name="ContentScroll" Margin="20,0,0,60">
+            <StackPanel Margin="0,0,20,40">
+                <TextBlock Style="{ThemeResource GroupHeaderTextBlockStyle}"
+                           x:Uid="SearchDefaultsGroupHeader"
+                           Margin="0,0,0,10"/>
+                
+                <ComboBox x:Uid="WalkSpeedBox"
+                          Name="WalkSpeedBox"
+                          ItemsSource="{Binding WalkingSpeeds}"
+                          SelectedIndex="{Binding SelectedSpeedIndex, Mode=TwoWay}"/>
+
+                <ComboBox x:Uid="RouteTypeBox"
+                          Name="RouteTypeBox"
+                          ItemsSource="{Binding RouteTypes}"
+                          SelectedIndex="{Binding SelectedRouteTypeIndex, Mode=TwoWay}"/>
+
+                <TextBlock Style="{ThemeResource ControlHeaderTextBlockStyle}"
+                           Margin="0,0,0,-4.5"
+                           OpticalMarginAlignment="TrimSideBearings">
+                    <TextBlock.Inlines>
+                        <Run x:Uid="RouteSearchMarginHeader"/>
+                        <Run Text=": "/>
+                        <Run Text="{Binding Path=Value, ElementName=MarginSlider}"/>
+                        <Run Text=" min"/>
+                    </TextBlock.Inlines>
+                </TextBlock>
+                <Slider Name="MarginSlider" SmallChange="1" LargeChange="1" Minimum="0" Maximum="10" Value="{Binding TransferMargin, Mode=TwoWay}"/>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</local:PageBase>

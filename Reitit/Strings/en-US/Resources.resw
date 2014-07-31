@@ -363,7 +363,7 @@
   <data name="RouteLoaderLocatingStatus" xml:space="preserve">
     <value>Getting your location</value>
   </data>
-  <data name="MetroDestinationSeparator" xml:space="preserve">
+  <data name="DestinationSeparator" xml:space="preserve">
     <value> to </value>
   </data>
   <data name="MapFlyoutFromItem.Text" xml:space="preserve">
@@ -464,5 +464,32 @@
   </data>
   <data name="NoStopsInAreaMessage" xml:space="preserve">
     <value>No stops in area</value>
+  </data>
+  <data name="StopDeparturesHeader" xml:space="preserve">
+    <value>departures</value>
+  </data>
+  <data name="StopLinesHeader" xml:space="preserve">
+    <value>lines</value>
+  </data>
+  <data name="NoStopsPageTitle" xml:space="preserve">
+    <value>NO STOPS</value>
+  </data>
+  <data name="RouteSearchAdvancedButton.Content" xml:space="preserve">
+    <value>more</value>
+  </data>
+  <data name="SearchDefaultsGroupHeader.Text" xml:space="preserve">
+    <value>search defaults</value>
+  </data>
+  <data name="SettingsMenuItem.Label" xml:space="preserve">
+    <value>settings</value>
+  </data>
+  <data name="SettingsTitle.Title" xml:space="preserve">
+    <value>SETTINGS</value>
+  </data>
+  <data name="NoDepartures6Hours" xml:space="preserve">
+    <value>There are no departures within 6 hours from now.</value>
+  </data>
+  <data name="NoDeparturesError" xml:space="preserve">
+    <value>A problem occured when trying to retrieve the next departures from the server. Try again or contact the app creator if the problem persists.</value>
   </data>
 </root>

@@ -202,6 +202,10 @@ namespace Reitit.API
             {
                 throw new ReittiAPIException(ReittiAPIExceptionKind.HttpRequestException, e.Message, e);
             }
+            catch (OperationCanceledException e)
+            {
+                throw e;
+            }
             catch (Exception e)
             {
                 throw new ReittiAPIException(ReittiAPIExceptionKind.ParseException, "Could not parse server response. Please contact the app creator.", e);
@@ -280,6 +284,10 @@ namespace Reitit.API
             {
                 throw new ReittiAPIException(ReittiAPIExceptionKind.HttpRequestException, e.Message, e);
             }
+            catch (OperationCanceledException e)
+            {
+                throw e;
+            }
             catch (Exception e)
             {
                 throw new ReittiAPIException(ReittiAPIExceptionKind.ParseException, "Could not parse server response. Please contact the app creator.", e);
@@ -333,8 +341,8 @@ namespace Reitit.API
             }
         }
 
-        public async Task<Stop> StopInformationAsync(
-            string code,
+        public async Task<bool> StopInformationAsync(
+            Stop stop,
             DateTime? dateTime = null,
             TimeSpan? timeLimit = null,
             int? depLimit = null,
@@ -345,7 +353,7 @@ namespace Reitit.API
 
             var query = GetCommonParameters(addressLang, poiLang, poiSpecific: false);
             query.Append("&request=stop");
-            query.Append("&code=").Append(code);
+            query.Append("&code=").Append(stop.Code);
 
             if (dateTime == null)
             {
@@ -405,18 +413,19 @@ namespace Reitit.API
                     if (json.Count > 0)
                     {
                         JToken source = json[0];
-
-                        string receivedCode = source.Value<string>("code");
-                        Stop stop = ModelCache.GetOrCreate(receivedCode, () => new Stop(receivedCode));
                         stop.UpdateFromStopResponse(source);
-                        return stop;
+                        return true;
                     }
                 }
-                return null; // TODO: is this an error?
+                return false;
             }
             catch (HttpRequestException e)
             {
                 throw new ReittiAPIException(ReittiAPIExceptionKind.HttpRequestException, e.Message, e);
+            }
+            catch (OperationCanceledException e)
+            {
+                throw e;
             }
             catch (Exception e)
             {
@@ -495,6 +504,10 @@ namespace Reitit.API
             catch (HttpRequestException e)
             {
                 throw new ReittiAPIException(ReittiAPIExceptionKind.HttpRequestException, e.Message, e);
+            }
+            catch (OperationCanceledException e)
+            {
+                throw e;
             }
             catch (Exception e)
             {
@@ -607,6 +620,10 @@ namespace Reitit.API
             catch (HttpRequestException e)
             {
                 throw new ReittiAPIException(ReittiAPIExceptionKind.HttpRequestException, e.Message, e);
+            }
+            catch (OperationCanceledException e)
+            {
+                throw e;
             }
             catch (Exception e)
             {
@@ -776,6 +793,10 @@ namespace Reitit.API
             {
                 throw new ReittiAPIException(ReittiAPIExceptionKind.HttpRequestException, e.Message, e);
             }
+            catch (OperationCanceledException e)
+            {
+                throw e;
+            }
             catch (Exception e)
             {
                 throw new ReittiAPIException(ReittiAPIExceptionKind.ParseException, "Could not parse server response. Please contact the app creator.", e);
@@ -861,6 +882,10 @@ namespace Reitit.API
             catch (HttpRequestException e)
             {
                 throw new ReittiAPIException(ReittiAPIExceptionKind.HttpRequestException, e.Message, e);
+            }
+            catch (OperationCanceledException e)
+            {
+                throw e;
             }
             catch (Exception e)
             {

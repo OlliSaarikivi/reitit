@@ -636,12 +636,15 @@ namespace Reitit
             class ItemsControlRegistration : IDisposable
             {
                 ReititMap _map;
+                ReititMapItemsControl _itemsControl;
                 ObservableCollection<FrameworkElement> _generatedElements;
                 Dictionary<FrameworkElement, bool> _currentElements = new Dictionary<FrameworkElement, bool>();
 
                 public ItemsControlRegistration(ReititMap map, ReititMapItemsControl itemsControl)
                 {
                     _map = map;
+                    _itemsControl = itemsControl;
+                    _itemsControl.RegenerateIfNecessary();
                     _generatedElements = itemsControl.GeneratedElements;
                     foreach (var element in _generatedElements)
                     {
@@ -708,6 +711,7 @@ namespace Reitit
                     {
                         _map.RemoveElement(element);
                     }
+                    _itemsControl.MarkDirty();
                 }
             }
         }

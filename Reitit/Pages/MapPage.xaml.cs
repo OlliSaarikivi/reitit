@@ -18,6 +18,7 @@ using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkID=390556
@@ -66,6 +67,12 @@ namespace Reitit
         {
             this.InitializeComponent();
             ContentFrame.SizeChanged += ContentFrame_SizeChanged;
+            ContentFrame.ContentTransitions = new TransitionCollection() {
+                new NavigationThemeTransition
+                {
+                    DefaultNavigationTransitionInfo = new SlideNavigationTransitionInfo(),
+                }
+            };
         }
 
         protected override void OnShown()
@@ -141,9 +148,12 @@ namespace Reitit
             {
                 _frameRegistered = false;
                 ContentFrame.BackStack.Clear();
-                ContentFrame.BackStack.Add(new PageStackEntry(typeof(DummyPage), null, null));
-                ContentFrame.GoBack();
-                SuspensionManager.UnregisterFrame(ContentFrame);
+                ContentFrame.BackStack.Add(new PageStackEntry(typeof(DummyPage), null, new SlideNavigationTransitionInfo()));
+                Utils.OnCoreDispatcher(() =>
+                {
+                    ContentFrame.GoBack();
+                    SuspensionManager.UnregisterFrame(ContentFrame);
+                });
             }
         }
 

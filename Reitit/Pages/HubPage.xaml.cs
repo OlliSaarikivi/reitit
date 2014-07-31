@@ -212,5 +212,10 @@ namespace Reitit
             _noFavoritesHint = sender as TextBlock;
             _noFavoritesHint.Visibility = App.Current.Favorites.SortedLocations.Count > 0 ? Visibility.Collapsed : Visibility.Visible;
         }
+
+        private void SettingsMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            Utils.Navigate(typeof(SettingsPage));
+        }
     }
 }

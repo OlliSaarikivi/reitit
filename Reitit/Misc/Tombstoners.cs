@@ -206,4 +206,27 @@ namespace Reitit
             var result = _element.ChangeView(0, 0, 1, true);
         }
     }
+
+    public class AutoSuggestBoxTombstoner : FrameworkElementTombstoner<AutoSuggestBox>
+    {
+        public AutoSuggestBoxTombstoner(AutoSuggestBox box) : base(box) { }
+
+        public override void ResetState()
+        {
+            _element.Text = "";
+        }
+
+        protected override void SaveState(IDictionary<string, object> state)
+        {
+            state["Text"] = _element.Text;
+        }
+
+        protected override void RestoreState(IDictionary<string, object> state)
+        {
+            if (state.ContainsKey("Text"))
+            {
+                _element.Text = state["Text"] as string;
+            }
+        }
+    }
 }

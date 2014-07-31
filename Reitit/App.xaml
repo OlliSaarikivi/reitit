@@ -26,8 +26,7 @@
             <SolidColorBrush x:Key="PhoneSubtleBrush" Color="#FF999999"/>
             <SolidColorBrush x:Key="BlackBrush" Color="#FF000000"/>
 
-            <local:DatePickerConverter x:Key="DatePickerConverter"/>
-            <local:TimePickerConverter x:Key="TimePickerConverter"/>
+            <local:ShortTimeConverter x:Key="ShortTimeConverter"/>
             <local:LocationPickerConverter x:Key="LocationPickerConverter"/>
             <local:VisibilityConverter x:Key="VisibilityConverter"/>
             <local:NegVisibilityConverter x:Key="NegVisibilityConverter"/>
@@ -59,13 +58,15 @@
                                Style="{ThemeResource ListViewItemTextBlockStyle}"
                                Foreground="{Binding Selected, Converter={StaticResource SelectedBrushConverter}}"
                                TextWrapping="WrapWholeWords"
-                               Margin="0,0,0,0"/>
+                               Margin="0,0,0,0"
+                               OpticalMarginAlignment="TrimSideBearings"/>
                     <TextBlock Text="{Binding Detail}"
                                Visibility="{Binding Detail, Converter={StaticResource NullToVisibilityConverter}}"
                                Style="{ThemeResource ListViewItemSubheaderTextBlockStyle}"
                                Foreground="{Binding Selected, Converter={StaticResource SelectedBrushConverter}, ConverterParameter={ThemeResource ApplicationSecondaryForegroundThemeBrush}}"
                                TextWrapping="WrapWholeWords"
-                               Margin="0,0,0,0"/>
+                               Margin="0,0,0,0"
+                               OpticalMarginAlignment="TrimSideBearings"/>
                 </StackPanel>
             </DataTemplate>
 
@@ -84,7 +85,8 @@
                                Foreground="{Binding Selected, Converter={StaticResource SelectedBrushConverter}}"
                                TextWrapping="WrapWholeWords"
                                Margin="10,-5,0,0"
-                               VerticalAlignment="Center"/>
+                               VerticalAlignment="Center"
+                               OpticalMarginAlignment="TrimSideBearings"/>
                 </Grid>
             </DataTemplate>
 
@@ -94,13 +96,15 @@
                                Style="{ThemeResource ListViewItemTextBlockStyle}"
                                Foreground="{Binding Selected, Converter={StaticResource SelectedBrushConverter}}"
                                TextWrapping="WrapWholeWords"
-                               Margin="0,0,0,0"/>
+                               Margin="0,0,0,0"
+                               OpticalMarginAlignment="TrimSideBearings"/>
                     <TextBlock Text="{Binding Detail}"
                                Visibility="{Binding Detail, Converter={StaticResource NullToVisibilityConverter}}"
                                Style="{ThemeResource ListViewItemSubheaderTextBlockStyle}"
                                Foreground="{Binding Selected, Converter={StaticResource SelectedBrushConverter}, ConverterParameter={ThemeResource ApplicationSecondaryForegroundThemeBrush}}"
                                TextWrapping="WrapWholeWords"
-                               Margin="0,0,0,0"/>
+                               Margin="0,0,0,0"
+                               OpticalMarginAlignment="TrimSideBearings"/>
                 </StackPanel>
             </DataTemplate>
 

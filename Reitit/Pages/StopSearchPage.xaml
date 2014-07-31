@@ -61,27 +61,45 @@
         <PowerEase x:Key="Ease" EasingMode="EaseOut" Power="2"/>
     </Page.Resources>
 
-    <Grid x:Name="LayoutRoot" Background="{StaticResource PhoneBackgroundBrush}">
+    <Grid Background="{StaticResource PhoneBackgroundBrush}" Margin="0,0,0,-500">
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup x:Name="SearchBoxFocusStates">
-                <VisualState x:Name="SearchBoxFocused">
+                <VisualState x:Name="Focused">
                     <Storyboard>
-                        <DoubleAnimation To="-114"
-                                         Storyboard.TargetProperty="Y"
-                                         Storyboard.TargetName="ContentTranslation"
-                                         Duration="0:0:0.2"
-                                         EasingFunction="{StaticResource Ease}"/>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Y"
+                                                       Storyboard.TargetName="ContentTranslation">
+                            <DiscreteObjectKeyFrame Value="-94" KeyTime="0:0:0"/>
+                        </ObjectAnimationUsingKeyFrames>
                     </Storyboard>
                 </VisualState>
-                <VisualState x:Name="SearchBoxNotFocused">
+                <VisualState x:Name="NotFocused">
                     <Storyboard>
-                        <DoubleAnimation To="0"
-                                         Storyboard.TargetProperty="Y"
-                                         Storyboard.TargetName="ContentTranslation"
-                                         Duration="0:0:0.2"
-                                         EasingFunction="{StaticResource Ease}"/>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Y"
+                                                       Storyboard.TargetName="ContentTranslation">
+                            <DiscreteObjectKeyFrame Value="0" KeyTime="0:0:0"/>
+                        </ObjectAnimationUsingKeyFrames>
                     </Storyboard>
                 </VisualState>
+                <VisualStateGroup.Transitions>
+                    <VisualTransition From="NotFocused" To="Focused">
+                        <Storyboard>
+                            <DoubleAnimation To="-94"
+                                             Storyboard.TargetProperty="Y"
+                                             Storyboard.TargetName="ContentTranslation"
+                                             Duration="0:0:0.2"
+                                             EasingFunction="{StaticResource Ease}"/>
+                        </Storyboard>
+                    </VisualTransition>
+                    <VisualTransition From="Focused" To="NotFocused">
+                        <Storyboard>
+                            <DoubleAnimation To="0"
+                                             Storyboard.TargetProperty="Y"
+                                             Storyboard.TargetName="ContentTranslation"
+                                             Duration="0:0:0.2"
+                                             EasingFunction="{StaticResource Ease}"/>
+                        </Storyboard>
+                    </VisualTransition>
+                </VisualStateGroup.Transitions>
             </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
         
@@ -89,65 +107,75 @@
             <TranslateTransform x:Name="ContentTranslation"/>
         </Grid.RenderTransform>
         
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+        <Grid x:Name="LayoutRoot" Margin="0,0,0,500">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
 
-        <local:LogoTitle Grid.Row="0" x:Uid="StopSearchTitle" Margin="20,15,20,25"/>
-        <HyperlinkButton x:Name="UnfocusButton" Height="0" Width="0"/>
+            <local:LogoTitle Grid.Row="0" x:Uid="StopSearchTitle" Margin="20,15,20,25"/>
+            <HyperlinkButton x:Name="UnfocusButton" Height="0" Width="0"/>
 
-        <AutoSuggestBox Grid.Row="1"
-                        x:Uid="StopSearchBox"
-                        Name="SearchBox"
-                        KeyDown="SearchBox_KeyDown"
-                        TextChanged="SearchBox_TextChanged"
-                        Margin="20,0,20,0"
-                        ItemsSource="{Binding Suggestions}"
-                        GotFocus="SearchBox_GotFocus"
-                        LostFocus="SearchBox_LostFocus"
-                        AutoMaximizeSuggestionArea="False"
-                        Style="{StaticResource AlwaysDownAutoSuggestBoxStyle}">
-            <i:Interaction.Behaviors>
-                <core:EventTriggerBehavior EventName="SuggestionChosen">
-                    <core:InvokeCommandAction Command="{Binding SuggestionChosenCommand}"/>
-                </core:EventTriggerBehavior>
-            </i:Interaction.Behaviors>
-        </AutoSuggestBox>
-        <TextBlock Grid.Row="2"
-                   Text="{Binding SearchMessage, Mode=OneWay}"
-                   Style="{ThemeResource ControlContextualInfoTextBlockStyle}"
-                   Margin="20,0,20,15"/>
-        <Grid Grid.Row="3"
+            <AutoSuggestBox Grid.Row="1"
+                            x:Uid="StopSearchBox"
+                            Name="SearchBox"
+                            KeyDown="SearchBox_KeyDown"
+                            TextChanged="SearchBox_TextChanged"
+                            Margin="20,0,20,0"
+                            ItemsSource="{Binding Suggestions}"
+                            GotFocus="SearchBox_GotFocus"
+                            LostFocus="SearchBox_LostFocus"
+                            AutoMaximizeSuggestionArea="False"
+                            Style="{StaticResource AlwaysDownAutoSuggestBoxStyle}">
+                <i:Interaction.Behaviors>
+                    <core:EventTriggerBehavior EventName="SuggestionChosen">
+                        <core:InvokeCommandAction Command="{Binding SuggestionChosenCommand}"/>
+                    </core:EventTriggerBehavior>
+                </i:Interaction.Behaviors>
+            </AutoSuggestBox>
+            <TextBlock Grid.Row="2"
+                       Text="{Binding SearchMessage, Mode=OneWay}"
+                       Style="{ThemeResource ControlContextualInfoTextBlockStyle}"
+                       Margin="20,0,20,15"/>
+            <Grid Grid.Row="3"
               Margin="20,0,0,0">
-            <ListView Name="StopsListView"
-                      ItemsSource="{Binding Results}">
-                <ListView.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <StackPanel/>
-                    </ItemsPanelTemplate>
-                </ListView.ItemsPanel>
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel Margin="0,0,20,10">
-                            <TextBlock Style="{ThemeResource ListViewItemTextBlockStyle}"
-                                       Text="{Binding Name}"/>
-                            <TextBlock Style="{ThemeResource ListViewItemSubheaderTextBlockStyle}"
-                                       Text="{Binding Detail}"/>
-                        </StackPanel>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-                <ListView.Footer>
-                    <Rectangle Height="100"/>
-                </ListView.Footer>
-            </ListView>
-            <TextBlock x:Uid="LocationPickerNoResults"
-                       Margin="0,0,20,0"
-                       Style="{ThemeResource ListViewEmptyStaticTextBlockStyle}"
-                       Visibility="{Binding NoResults, Converter={StaticResource VisibilityConverter}}"
-                       VerticalAlignment="Top"/>
+                <ListView Name="StopsListView"
+                          ItemsSource="{Binding Results}"
+                          IsItemClickEnabled="True">
+                    <i:Interaction.Behaviors>
+                        <core:EventTriggerBehavior EventName="ItemClick">
+                            <core:InvokeCommandAction Command="{Binding StopClickedCommand}"/>
+                        </core:EventTriggerBehavior>
+                    </i:Interaction.Behaviors>
+                    <ListView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel/>
+                        </ItemsPanelTemplate>
+                    </ListView.ItemsPanel>
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Margin="0,0,20,10">
+                                <TextBlock Style="{ThemeResource ListViewItemTextBlockStyle}"
+                                           Text="{Binding Name}"
+                                           OpticalMarginAlignment="TrimSideBearings"/>
+                                <TextBlock Style="{ThemeResource ListViewItemSubheaderTextBlockStyle}"
+                                           Text="{Binding Detail}"
+                                           OpticalMarginAlignment="TrimSideBearings"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                    <ListView.Footer>
+                        <Rectangle Height="100"/>
+                    </ListView.Footer>
+                </ListView>
+                <TextBlock x:Uid="LocationPickerNoResults"
+                           Margin="0,0,20,0"
+                           Style="{ThemeResource ListViewEmptyStaticTextBlockStyle}"
+                           Visibility="{Binding NoResults, Converter={StaticResource VisibilityConverter}}"
+                           VerticalAlignment="Top"/>
+            </Grid>
         </Grid>
     </Grid>
 

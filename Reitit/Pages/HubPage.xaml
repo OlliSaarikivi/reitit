@@ -237,4 +237,12 @@
             </HubSection>
         </Hub>
     </Grid>
+    
+    <Page.BottomAppBar>
+        <CommandBar ClosedDisplayMode="Minimal">
+            <CommandBar.SecondaryCommands>
+                <AppBarButton x:Uid="SettingsMenuItem" Click="SettingsMenuItem_Click"/>
+            </CommandBar.SecondaryCommands>
+        </CommandBar>
+    </Page.BottomAppBar>
 </local:PageBase>

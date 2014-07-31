@@ -44,6 +44,7 @@ namespace Reitit
                 typeof(RouteSearchPageVM),
                 typeof(RoutesPageVM),
                 typeof(StopSearchPageVM),
+                typeof(StopsPageVM),
             });
         }
 

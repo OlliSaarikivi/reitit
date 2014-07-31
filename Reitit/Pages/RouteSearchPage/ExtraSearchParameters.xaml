@@ -1,0 +1,99 @@
+﻿<UserControl
+    x:Class="Reitit.ExtraSearchParameters"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Reitit"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="300"
+    d:DesignWidth="400">
+    
+    <UserControl.Resources>
+        <PowerEase x:Key="Ease" EasingMode="EaseOut" Power="2"/>
+    </UserControl.Resources>
+
+    <StackPanel x:Name="Root" Opacity="0">
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="VisibilityStates">
+                <VisualState x:Name="Hidden">
+                    <Storyboard>
+                        <DoubleAnimation To="0"
+                                         Storyboard.TargetName="Root"
+                                         Storyboard.TargetProperty="Opacity"/>
+                    </Storyboard>
+                </VisualState>
+                <VisualState x:Name="Visible">
+                    <Storyboard>
+                        <DoubleAnimation To="1"
+                                         Storyboard.TargetName="Root"
+                                         Storyboard.TargetProperty="Opacity"
+                                         Duration="0:0:0.15"
+                                         EasingFunction="{StaticResource Ease}"/>
+                    </Storyboard>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+        <TextBlock x:Uid="RouteSearchModesHeader"
+                           Style="{ThemeResource ControlHeaderTextBlockStyle}"
+                           Margin="0,0,0,-4.5"/>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <CheckBox IsChecked="{Binding UseBus, Mode=TwoWay}" Grid.Column="0" Style="{StaticResource CompactCheckBoxStyle}">
+                <local:ModeIcon Type="bus"/>
+            </CheckBox>
+            <CheckBox IsChecked="{Binding UseTrain, Mode=TwoWay}" Grid.Column="2" Style="{StaticResource CompactCheckBoxStyle}">
+                <local:ModeIcon Type="train"/>
+            </CheckBox>
+            <CheckBox IsChecked="{Binding UseMetro, Mode=TwoWay}" Grid.Column="4" Style="{StaticResource CompactCheckBoxStyle}">
+                <local:ModeIcon Type="metro"/>
+            </CheckBox>
+            <CheckBox IsChecked="{Binding UseTram, Mode=TwoWay}" Grid.Column="6" Style="{StaticResource CompactCheckBoxStyle}">
+                <local:ModeIcon Type="tram"/>
+            </CheckBox>
+        </Grid>
+
+        <ComboBox x:Uid="WalkSpeedBox"
+                          Name="WalkSpeedBox"
+                          ItemsSource="{Binding WalkingSpeeds}"
+                          SelectedIndex="{Binding SelectedSpeedIndex, Mode=TwoWay}">
+            <ComboBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Text}"/>
+                </DataTemplate>
+            </ComboBox.ItemTemplate>
+        </ComboBox>
+
+        <ComboBox x:Uid="RouteTypeBox"
+                          Name="RouteTypeBox"
+                          ItemsSource="{Binding RouteTypes}"
+                          SelectedIndex="{Binding SelectedRouteTypeIndex, Mode=TwoWay}">
+            <ComboBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Text}"/>
+                </DataTemplate>
+            </ComboBox.ItemTemplate>
+        </ComboBox>
+
+        <TextBlock Style="{ThemeResource ControlHeaderTextBlockStyle}"
+                           Margin="0,0,0,-4.5"
+                           OpticalMarginAlignment="TrimSideBearings">
+            <TextBlock.Inlines>
+                <Run x:Uid="RouteSearchMarginHeader"/>
+                <Run Text=": "/>
+                <Run Text="{Binding Path=Value, ElementName=MarginSlider}"/>
+                <Run Text=" min"/>
+            </TextBlock.Inlines>
+        </TextBlock>
+        <Slider Name="MarginSlider" SmallChange="1" LargeChange="1" Minimum="0"
+                Maximum="10" Value="{Binding TransferMargin, Mode=TwoWay}"/>
+    </StackPanel>
+</UserControl>

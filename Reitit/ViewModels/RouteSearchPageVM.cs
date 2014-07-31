@@ -187,7 +187,7 @@ namespace Reitit
             set { Set(() => SelectedSpeedIndex, ref _selectedSpeedIndex, value); }
         }
         [DataMember]
-        public int _selectedSpeedIndex = 1;
+        public int _selectedSpeedIndex = App.Current.Settings.DefaultSpeedIndex;
         private DerivedProperty<Speed> SelectedSpeedProperty;
         public Speed SelectedSpeed
         {
@@ -219,7 +219,7 @@ namespace Reitit
             set { Set(() => SelectedRouteTypeIndex, ref _selectedRouteTypeIndex, value); }
         }
         [DataMember]
-        public int _selectedRouteTypeIndex;
+        public int _selectedRouteTypeIndex = App.Current.Settings.DefaultRouteTypeIndex;
         private DerivedProperty<RouteType> SelectedRouteTypeProperty;
         public RouteType SelectedRouteType
         {
@@ -232,7 +232,7 @@ namespace Reitit
             set { Set(() => TransferMargin, ref _transferMargin, value); }
         }
         [DataMember]
-        public int _transferMargin = 3;
+        public int _transferMargin = App.Current.Settings.DefaultTransferMargin;
 
         //public bool ShowAdvanced
         //{

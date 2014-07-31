@@ -107,10 +107,15 @@
             <Grid.RenderTransform>
                 <TranslateTransform x:Name="ContentTranslation"/>
             </Grid.RenderTransform>
+            <!--<Rectangle HorizontalAlignment="Stretch"
+                       Height="300"
+                       VerticalAlignment="Bottom"
+                       Fill="{ThemeResource PhoneBackgroundBrush}"/>-->
             <Frame Name="ContentFrame"
                    Navigated="ContentFrame_Navigated"
                    Navigating="ContentFrame_Navigating"
-                   VerticalContentAlignment="Bottom"/>
+                   VerticalContentAlignment="Bottom"
+                   Background="Transparent"/>
             <SymbolIcon x:Name="MaximizerDots"
                         Symbol="More"
                         VerticalAlignment="Top"

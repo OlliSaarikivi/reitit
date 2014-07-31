@@ -13,7 +13,7 @@ using Windows.UI.Core;
 namespace Reitit
 {
     [DataContract]
-    public class Settings
+    public class Settings : ExtendedObservableObject
     {
         [DataMember]
         public int ParamCacheNextId = 1;
@@ -29,7 +29,12 @@ namespace Reitit
         public FavoritesManagerSettings Favorites = new FavoritesManagerSettings();
         [DataMember]
         public int CustomIconFreeIndex = -1;
-
+        [DataMember]
+        public int DefaultTransferMargin = 3;
+        [DataMember]
+        public int DefaultRouteTypeIndex = 0;
+        [DataMember]
+        public int DefaultSpeedIndex = 1;
 
         public static async Task Save(Settings settings)
         {

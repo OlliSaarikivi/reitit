@@ -35,11 +35,24 @@ namespace Reitit
         public StopSearchPage()
         {
             this.InitializeComponent();
+            Tombstoners.Add(new AutoSuggestBoxTombstoner(SearchBox));
         }
 
         protected override object ConstructVM(object parameter)
         {
+            SearchBox.Focus(FocusState.Programmatic);
+            if (SearchBox.FocusState == FocusState.Unfocused)
+            {
+                SearchBox.Loaded += FocusSearch;
+            }
+
             return new StopSearchPageVM();
+        }
+
+        void FocusSearch(object sender, RoutedEventArgs e)
+        {
+            SearchBox.Focus(FocusState.Programmatic);
+            SearchBox.Loaded -= FocusSearch;
         }
 
         public override void OnMapHolding(FrameworkElement source, ReittiCoordinate coordinate)
@@ -74,18 +87,19 @@ namespace Reitit
 
         private void SearchBox_GotFocus(object sender, RoutedEventArgs e)
         {
-            VisualStateManager.GoToState(this, "SearchBoxFocused", true);
+            VisualStateManager.GoToState(this, "Focused", SearchBox.FocusState != FocusState.Programmatic);
         }
 
         private void SearchBox_LostFocus(object sender, RoutedEventArgs e)
         {
-            VisualStateManager.GoToState(this, "SearchBoxNotFocused", true);
+            VisualStateManager.GoToState(this, "NotFocused", true);
         }
 
         private async void SearchBox_KeyDown(object sender, KeyRoutedEventArgs e)
         {
             if (e.Key == VirtualKey.Enter)
             {
+                ((StopSearchPageVM)DataContext).SearchTerm = SearchBox.Text;
                 await ((StopSearchPageVM)DataContext).Search();
             }
         }

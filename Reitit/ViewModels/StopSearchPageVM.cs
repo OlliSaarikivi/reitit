@@ -280,5 +280,24 @@ namespace Reitit
                 Results.Add(stopsVM);
             }
         }
+
+        public RelayCommand<ItemClickEventArgs> StopClickedCommand
+        {
+            get
+            {
+                return new RelayCommand<ItemClickEventArgs>(async e =>
+                {
+                    var item = e.ClickedItem as MultiStopResultVM;
+                    if (item != null)
+                    {
+                        Utils.Navigate(typeof(StopsPage), item.Stops);
+                    }
+                    else
+                    {
+                        await Utils.ShowOperationFailedError();
+                    }
+                });
+            }
+        }
     }
 }
